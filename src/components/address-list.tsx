@@ -112,26 +112,54 @@ export function AddressList({
       <Panel 
         headerTemplate={
           <div className="p-panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '1rem' }}>
-            <div className="flex items-center gap-2">
-              <MapPin className="h-1rem w-1rem" />
-              <span className="font-semibold text-900">
+            {/* Mobile Header */}
+            <div className="block sm:hidden w-full">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-gray-600" />
+                  <span className="font-semibold text-gray-900 text-sm">
+                    Adresses ({totalAddresses}{addresses.length !== totalAddresses && `/${addresses.length}`})
+                  </span>
+                </div>
+                {onAddAddress && (
+                  <Button
+                    onClick={onAddAddress}
+                    icon="pi pi-plus"
+                    size="small"
+                    className="p-button-sm"
+                  />
+                )}
+              </div>
+              {totalPages > 1 && (
+                <div className="text-xs text-gray-600 ml-6">
+                  Page {currentPage + 1} sur {totalPages}
+                </div>
+              )}
+            </div>
+
+            {/* Desktop Header */}
+            <div className="hidden sm:flex items-center gap-3 flex-1">
+              <MapPin className="h-4 w-4 text-gray-600" />
+              <span className="font-semibold text-gray-900">
                 Adresses extraites ({totalAddresses}{addresses.length !== totalAddresses && ` sur ${addresses.length}`})
                 {totalPages > 1 && (
-                  <span className="text-600 font-normal ml-2">
+                  <span className="text-gray-600 font-normal ml-3">
                     - Page {currentPage + 1} sur {totalPages}
                   </span>
                 )}
               </span>
             </div>
             
-            {onAddAddress && (
-              <Button
-                onClick={onAddAddress}
-                label="Ajouter une adresse"
-                icon="pi pi-plus"
-                size="small"
-              />
-            )}
+            <div className="hidden sm:block">
+              {onAddAddress && (
+                <Button
+                  onClick={onAddAddress}
+                  label="Ajouter une adresse"
+                  icon="pi pi-plus"
+                  size="small"
+                />
+              )}
+            </div>
           </div>
         }
         className="w-full"
@@ -200,32 +228,72 @@ interface AddressCardProps {
 
 const AddressCard = React.memo<AddressCardProps>(function AddressCard({ address, onEdit, onDelete }) {
   return (
-    <div className="surface-card p-3 border-round border-1 surface-border hover:surface-hover transition-colors transition-duration-200">
-      <div className="flex items-center gap-3">
-        <User className="h-1rem w-1rem text-500" />
-        <div className="flex-1 flex flex-column gap-1">
-          <div className="font-semibold text-900 text-sm">
+    <div className="bg-white p-4 rounded-lg border border-gray-200">
+      {/* Mobile Layout */}
+      <div className="block sm:hidden">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <User className="h-4 w-4 text-gray-400 flex-shrink-0" />
+            <div className="font-semibold text-gray-900 text-sm">
+              {address.firstName} {address.lastName}
+            </div>
+          </div>
+          {/* Mobile Actions */}
+          {(onEdit || onDelete) && (
+            <div className="flex gap-1">
+              {onEdit && (
+                <Button
+                  onClick={onEdit}
+                  icon="pi pi-pencil"
+                  className="p-button-text p-button-sm"
+                  size="small"
+                />
+              )}
+              {onDelete && (
+                <Button
+                  onClick={onDelete}
+                  icon="pi pi-trash"
+                  className="p-button-text p-button-sm p-button-danger"
+                  size="small"
+                />
+              )}
+            </div>
+          )}
+        </div>
+        <div className="space-y-1 text-sm text-gray-600 ml-6">
+          <div>{address.addressLine1}</div>
+          {address.addressLine2 && <div>{address.addressLine2}</div>}
+          <div>{address.postalCode} {address.city}</div>
+          <div className="font-medium text-gray-700">{address.country}</div>
+        </div>
+      </div>
+
+      {/* Desktop Layout */}
+      <div className="hidden sm:flex items-center gap-4">
+        <User className="h-4 w-4 text-gray-400 flex-shrink-0" />
+        <div className="flex-1 min-w-0">
+          <div className="font-semibold text-gray-900 text-sm mb-1">
             {address.firstName} {address.lastName}
           </div>
-
-          <div className="text-sm text-600 flex flex-column gap-1">
-            <div>{address.addressLine1}</div>
-            {address.addressLine2 && <div>{address.addressLine2}</div>}
-            <div>
-              {address.postalCode} {address.city}
+          <div className="text-sm text-gray-600 space-y-1">
+            <div className="truncate">{address.addressLine1}</div>
+            {address.addressLine2 && <div className="truncate">{address.addressLine2}</div>}
+            <div className="flex gap-4">
+              <span>{address.postalCode} {address.city}</span>
+              <span className="font-medium text-gray-700">{address.country}</span>
             </div>
-            <div className="font-semibold text-700">{address.country}</div>
           </div>
         </div>
 
-        {/* Actions */}
+        {/* Desktop Actions */}
         {(onEdit || onDelete) && (
-          <div className="flex flex-column gap-1">
+          <div className="flex flex-col gap-1 flex-shrink-0">
             {onEdit && (
               <Button
                 onClick={onEdit}
                 icon="pi pi-pencil"
                 className="p-button-text p-button-sm"
+                size="small"
               />
             )}
             {onDelete && (
@@ -233,6 +301,7 @@ const AddressCard = React.memo<AddressCardProps>(function AddressCard({ address,
                 onClick={onDelete}
                 icon="pi pi-trash"
                 className="p-button-text p-button-sm p-button-danger"
+                size="small"
               />
             )}
           </div>
