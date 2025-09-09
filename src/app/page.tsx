@@ -20,6 +20,7 @@ export default function Home() {
   const [fileName, setFileName] = useState<string>('')
   const [editingAddress, setEditingAddress] = useState<Address | null>(null)
   const [isAddingAddress, setIsAddingAddress] = useState(false)
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(false)
   const printPreviewRef = useRef<HTMLDivElement>(null)
 
   // Utility function for smooth scrolling with header offset
@@ -46,15 +47,23 @@ export default function Home() {
     setAddresses(cleanedAddresses)
     setErrors(result.errors)
     setFileName(filename)
+    
+    // Déclencher l'auto-scroll seulement lors de l'import de fichier
+    if (cleanedAddresses.length > 0) {
+      setShouldAutoScroll(true)
+    }
   }, [])
 
-  // Auto-scroll to print options when addresses are imported
+  // Auto-scroll to print options only when triggered by file import
   useEffect(() => {
-    if (addresses.length > 0) {
-      const timeoutId = setTimeout(scrollToPrintOptions, SCROLL_DELAY)
-      return () => clearTimeout(timeoutId) // Cleanup timeout
+    if (shouldAutoScroll && addresses.length > 0) {
+      const timeoutId = setTimeout(() => {
+        scrollToPrintOptions()
+        setShouldAutoScroll(false) // Reset flag après le scroll
+      }, SCROLL_DELAY)
+      return () => clearTimeout(timeoutId)
     }
-  }, [addresses.length, scrollToPrintOptions])
+  }, [shouldAutoScroll, addresses.length, scrollToPrintOptions])
 
   const handleEditAddress = (address: Address) => {
     setEditingAddress(address)
@@ -282,9 +291,6 @@ export default function Home() {
                 © 2024 Lablr. Tous droits réservés.
               </p>
               <div className="flex items-center gap-6">
-                <span className="text-xs text-gray-500 uppercase font-semibold tracking-wider">
-                  Made with React & PrimeReact
-                </span>
                 <div className="flex items-center gap-2 text-xs text-gray-500">
                   <span className="uppercase font-semibold tracking-wider">Version</span>
                   <span className="font-medium text-gray-700">1.0.0</span>
