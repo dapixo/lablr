@@ -1,11 +1,9 @@
 'use client'
 
-import { AlertCircle, FileText, Upload } from 'lucide-react'
-import type React from 'react'
+import { FileText, Upload } from 'lucide-react'
 import { useCallback, useState } from 'react'
-
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Panel } from 'primereact/panel'
+import { Message } from 'primereact/message'
 import { ACCEPTED_FILE_TYPES, ERROR_MESSAGES, MAX_FILE_SIZE_BYTES } from '@/constants'
 import { cn } from '@/lib/utils'
 
@@ -78,32 +76,33 @@ export function FileUpload({ onFileContent, className }: FileUploadProps) {
   )
 
   return (
-    <Card className={cn('w-full', className)}>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <FileText className="h-5 w-5" />
-          Import du rapport Amazon Seller
-        </CardTitle>
-        <CardDescription>
-          Glissez-déposez ou sélectionnez votre rapport Amazon Seller (.txt au format TSV)
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div
-          role="button"
-          tabIndex={0}
-          className={cn(
-            'relative rounded-lg border-2 border-dashed p-8 text-center transition-colors',
-            isDragOver ? 'border-primary bg-primary/5' : 'border-muted-foreground/25',
-            isLoading && 'pointer-events-none opacity-50'
-          )}
-          onDrop={handleDrop}
-          onDragOver={(e) => {
-            e.preventDefault()
-            setIsDragOver(true)
-          }}
-          onDragLeave={() => setIsDragOver(false)}
-        >
+    <Panel 
+      header={
+        <div className="flex items-center gap-2">
+          <FileText className="h-1rem w-1rem" />
+          <span className="font-semibold text-900">Import du rapport Amazon Seller</span>
+        </div>
+      }
+      className={cn('w-full', className)}
+    >
+      <div className="mb-3 text-600 text-sm">
+        Glissez-déposez ou sélectionnez votre rapport Amazon Seller (.txt au format TSV)
+      </div>
+      <div
+        role="button"
+        tabIndex={0}
+        className={cn(
+          'relative rounded-lg border-2 border-dashed p-8 text-center transition-colors cursor-pointer',
+          isDragOver ? 'border-primary bg-primary/5' : 'border-gray-300',
+          isLoading && 'pointer-events-none opacity-50'
+        )}
+        onDrop={handleDrop}
+        onDragOver={(e) => {
+          e.preventDefault()
+          setIsDragOver(true)
+        }}
+        onDragLeave={() => setIsDragOver(false)}
+      >
           <input
             type="file"
             accept=".txt"
@@ -112,31 +111,27 @@ export function FileUpload({ onFileContent, className }: FileUploadProps) {
             disabled={isLoading}
           />
 
-          <div className="flex flex-col items-center gap-4">
-            <Upload
-              className={cn('h-10 w-10', isDragOver ? 'text-primary' : 'text-muted-foreground')}
-            />
+        <div className="flex flex-col items-center gap-4">
+          <Upload
+            className={cn('h-10 w-10', isDragOver ? 'text-primary' : 'text-muted-foreground')}
+          />
 
-            <div className="space-y-2">
-              <p className="text-lg font-medium">
-                {isLoading ? 'Traitement en cours...' : 'Glissez votre fichier ici'}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                ou cliquez pour parcourir vos fichiers
-              </p>
-            </div>
-
-            {!isLoading && <Button variant="secondary">Sélectionner un fichier</Button>}
+          <div className="space-y-2">
+            <p className="text-lg font-medium">
+              {isLoading ? 'Traitement en cours...' : 'Glissez votre fichier ici'}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              ou cliquez pour parcourir vos fichiers
+            </p>
           </div>
         </div>
+      </div>
 
-        {error && (
-          <div className="mt-4 flex items-center gap-2 rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-            <AlertCircle className="h-4 w-4" />
-            {error}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+      {error && (
+        <div className="mt-3">
+          <Message severity="error" text={error} className="w-full" />
+        </div>
+      )}
+    </Panel>
   )
 }
