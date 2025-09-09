@@ -36,17 +36,17 @@ export function PrintPreview({ addresses, className }: PrintPreviewProps) {
         header={
           <div className="flex items-center gap-2">
             <Settings className="h-1rem w-1rem" />
-            <span className="font-semibold text-900">Options d'impression</span>
+            <span className="font-semibold text-900">Options d&apos;impression</span>
           </div>
         }
         className="w-full"
       >
         <div className="mb-3 text-600 text-sm">
-          Choisissez le format d'impression pour vos {addresses.length} adresses
+          Choisissez le format d&apos;impression pour vos {addresses.length} adresses
         </div>
         {/* Sélecteur de format */}
         <div className="space-y-3">
-          <div className="text-sm font-semibold text-900">Format d'impression</div>
+          <div className="text-sm font-semibold text-900">Format d&apos;impression</div>
           <SelectButton
             value={selectedFormat}
             onChange={(e) => setSelectedFormat(e.value)}

@@ -199,7 +199,7 @@ export function AddressEditor({
         {/* Adresse ligne 2 */}
         <div className="space-y-2">
           <label htmlFor="addressLine2" className="block text-sm font-medium">
-            Complément d'adresse
+            Complément d&apos;adresse
           </label>
           <InputText
             id="addressLine2"
