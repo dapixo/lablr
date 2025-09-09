@@ -1,10 +1,14 @@
 'use client'
 
-import { AlertTriangle, MapPin, User } from 'lucide-react'
-import React, { useCallback, useMemo } from 'react'
+import { AlertTriangle, MapPin, Search, User } from 'lucide-react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { Button } from 'primereact/button'
 import { Panel } from 'primereact/panel'
 import { Message } from 'primereact/message'
+import { Paginator } from 'primereact/paginator'
+import { InputText } from 'primereact/inputtext'
+import { IconField } from 'primereact/iconfield'
+import { InputIcon } from 'primereact/inputicon'
 
 import { cn } from '@/lib/utils'
 import type { Address } from '@/types/address'
@@ -18,6 +22,8 @@ interface AddressListProps {
   onAddAddress?: () => void
 }
 
+const ADDRESSES_PER_PAGE = 15
+
 export function AddressList({
   addresses,
   errors = [],
@@ -26,6 +32,9 @@ export function AddressList({
   onDeleteAddress,
   onAddAddress,
 }: AddressListProps) {
+  const [currentPage, setCurrentPage] = useState(0)
+  const [searchQuery, setSearchQuery] = useState('')
+
   // Mémorisation des callbacks pour éviter les re-renders inutiles
   const handleEditAddress = useCallback(
     (address: Address) => onEditAddress?.(address),
@@ -37,19 +46,62 @@ export function AddressList({
     [onDeleteAddress]
   )
 
-  // Mémorisation des adresses rendues
+  // Combinaison optimisée : filtrage + pagination en un seul useMemo
+  const { filteredAddresses, currentAddresses, totalAddresses, totalPages } = useMemo(() => {
+    // Filtrage
+    const filtered = !searchQuery.trim() 
+      ? addresses 
+      : addresses.filter(address => {
+          const query = searchQuery.toLowerCase()
+          const searchableText = `${address.firstName} ${address.lastName} ${address.addressLine1} ${address.addressLine2 || ''} ${address.city} ${address.postalCode} ${address.country}`.toLowerCase()
+          return searchableText.includes(query)
+        })
+    
+    // Pagination
+    const total = filtered.length
+    const pages = Math.ceil(total / ADDRESSES_PER_PAGE)
+    const start = currentPage * ADDRESSES_PER_PAGE
+    const current = filtered.slice(start, start + ADDRESSES_PER_PAGE)
+    
+    return {
+      filteredAddresses: filtered,
+      currentAddresses: current,
+      totalAddresses: total,
+      totalPages: pages
+    }
+  }, [addresses, searchQuery, currentPage])
+
+  // Mémorisation des callbacks d'actions par adresse
+  const createEditHandler = useCallback((address: Address) => () => handleEditAddress(address), [handleEditAddress])
+  const createDeleteHandler = useCallback((addressId: string) => () => handleDeleteAddress(addressId), [handleDeleteAddress])
+
+  // Mémorisation des adresses rendues pour la page courante
   const addressCards = useMemo(
-    () =>
-      addresses.map((address) => (
-        <AddressCard
-          key={address.id}
-          address={address}
-          onEdit={onEditAddress ? () => handleEditAddress(address) : undefined}
-          onDelete={onDeleteAddress ? () => handleDeleteAddress(address.id) : undefined}
-        />
-      )),
-    [addresses, onEditAddress, onDeleteAddress, handleEditAddress, handleDeleteAddress]
+    () => currentAddresses.map((address) => (
+      <AddressCard
+        key={address.id}
+        address={address}
+        onEdit={onEditAddress ? createEditHandler(address) : undefined}
+        onDelete={onDeleteAddress ? createDeleteHandler(address.id) : undefined}
+      />
+    )),
+    [currentAddresses, onEditAddress, onDeleteAddress, createEditHandler, createDeleteHandler]
   )
+
+  // Reset page when addresses or search query change
+  React.useEffect(() => {
+    setCurrentPage(0)
+  }, [addresses.length, searchQuery])
+
+  // Handler de changement de page mémorisé
+  const handlePageChange = useCallback((event: { first: number; page: number }) => {
+    setCurrentPage(event.page)
+  }, [])
+
+  // Handler de recherche debounced pour éviter trop de re-renders
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value)
+  }, [])
 
   if (addresses.length === 0 && errors.length === 0) {
     return null
@@ -62,7 +114,14 @@ export function AddressList({
           <div className="p-panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '1rem' }}>
             <div className="flex items-center gap-2">
               <MapPin className="h-1rem w-1rem" />
-              <span className="font-semibold text-900">Adresses extraites ({addresses.length})</span>
+              <span className="font-semibold text-900">
+                Adresses extraites ({totalAddresses}{addresses.length !== totalAddresses && ` sur ${addresses.length}`})
+                {totalPages > 1 && (
+                  <span className="text-600 font-normal ml-2">
+                    - Page {currentPage + 1} sur {totalPages}
+                  </span>
+                )}
+              </span>
             </div>
             
             {onAddAddress && (
@@ -77,6 +136,12 @@ export function AddressList({
         }
         className="w-full"
       >
+        <SearchBar 
+          addresses={addresses}
+          searchQuery={searchQuery}
+          onSearchChange={handleSearchChange}
+        />
+
         {/* Affichage des erreurs */}
         {errors.length > 0 && (
           <div className="mb-3">
@@ -98,11 +163,30 @@ export function AddressList({
         )}
 
         {/* Liste des adresses */}
-        {addresses.length > 0 && (
-          <div className="space-y-3">
-            {addressCards}
-          </div>
-        )}
+        {totalAddresses > 0 ? (
+          <>
+            <div className="space-y-3">
+              {addressCards}
+            </div>
+            
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="mt-4">
+                <Paginator
+                  first={currentPage * ADDRESSES_PER_PAGE}
+                  rows={ADDRESSES_PER_PAGE}
+                  totalRecords={totalAddresses}
+                  onPageChange={handlePageChange}
+                  template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport"
+                  currentPageReportTemplate="Affichage de {first} à {last} sur {totalRecords} adresses"
+                  className="justify-content-center"
+                />
+              </div>
+            )}
+          </>
+        ) : searchQuery.trim() && addresses.length > 0 ? (
+          <EmptySearchState />
+        ) : null}
       </Panel>
     </div>
   )
@@ -154,6 +238,46 @@ const AddressCard = React.memo<AddressCardProps>(function AddressCard({ address,
           </div>
         )}
       </div>
+    </div>
+  )
+})
+
+// Composant SearchBar séparé pour une meilleure lisibilité
+interface SearchBarProps {
+  addresses: Address[]
+  searchQuery: string
+  onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+}
+
+const SearchBar = React.memo<SearchBarProps>(function SearchBar({ addresses, searchQuery, onSearchChange }) {
+  if (addresses.length <= 5) return null
+
+  return (
+    <div className="mb-4">
+      <IconField iconPosition="left">
+        <InputIcon>
+          <Search className="h-4 w-4" />
+        </InputIcon>
+        <InputText
+          value={searchQuery}
+          onChange={onSearchChange}
+          placeholder="Rechercher par nom, adresse, ville, pays..."
+          className="w-full"
+        />
+      </IconField>
+    </div>
+  )
+})
+
+// Composant EmptyState pour les recherches sans résultat
+const EmptySearchState = React.memo(function EmptySearchState() {
+  return (
+    <div className="text-center py-6">
+      <Search className="h-12 w-12 mx-auto text-gray-400 mb-3" />
+      <p className="text-gray-600 text-lg font-medium">Aucun résultat trouvé</p>
+      <p className="text-gray-500 text-sm">
+        Essayez avec d&apos;autres mots-clés ou vérifiez l&apos;orthographe
+      </p>
     </div>
   )
 })
