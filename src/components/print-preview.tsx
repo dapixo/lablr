@@ -7,7 +7,7 @@ import { SelectButton } from 'primereact/selectbutton'
 import { Panel } from 'primereact/panel'
 
 import { PREVIEW_DIMENSIONS, PREVIEW_MAX_LABELS_ROLL, PREVIEW_MAX_PAGES } from '@/constants'
-import { getPrintCSS, PRINT_FORMAT_LABELS } from '@/lib/print-formats'
+import { getPrintCSS, PRINT_FORMAT_LABELS, downloadCSV } from '@/lib/print-formats'
 import { printAddresses } from '@/lib/print-utils'
 import { cn } from '@/lib/utils'
 import type { Address, PrintFormat } from '@/types/address'
@@ -22,6 +22,11 @@ export function PrintPreview({ addresses, className }: PrintPreviewProps) {
   const [showPreview, setShowPreview] = useState(false)
 
   const handlePrint = () => {
+    if (selectedFormat === 'CSV_EXPORT') {
+      downloadCSV(addresses, 'adresses-lablr.csv')
+      return
+    }
+    
     const printCSS = getPrintCSS(selectedFormat)
     printAddresses(addresses, selectedFormat, printCSS)
   }
@@ -45,20 +50,20 @@ export function PrintPreview({ addresses, className }: PrintPreviewProps) {
           Choisissez le format d&apos;impression pour vos {addresses.length} adresses
         </div>
         {/* Sélecteur de format */}
-        <div className="space-y-3">
-          <div className="text-sm font-semibold text-900">Format d&apos;impression</div>
-          <SelectButton
-            value={selectedFormat}
-            onChange={(e) => setSelectedFormat(e.value)}
-            options={(Object.keys(PRINT_FORMAT_LABELS) as PrintFormat[]).map(format => ({
-              label: PRINT_FORMAT_LABELS[format],
-              value: format
-            }))}
-            className="w-full"
-          />
-          <div className="text-xs text-500">
-            {getFormatDescription(selectedFormat)}
-          </div>
+        <div className="space-y-4">
+          <fieldset>
+            <legend className="text-sm font-semibold text-900 mb-4">Format d&apos;impression</legend>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3" role="radiogroup" aria-label="Choisir un format d'impression">
+              {getOrderedFormats().map(format => (
+                <FormatCard
+                  key={format}
+                  format={format}
+                  isSelected={selectedFormat === format}
+                  onSelect={setSelectedFormat}
+                />
+              ))}
+            </div>
+          </fieldset>
         </div>
 
         {/* Actions */}
@@ -71,15 +76,15 @@ export function PrintPreview({ addresses, className }: PrintPreviewProps) {
           />
           <Button
             onClick={handlePrint}
-            label="Imprimer"
-            icon="pi pi-print"
+            label={selectedFormat === 'CSV_EXPORT' ? 'Télécharger CSV' : 'Imprimer'}
+            icon={selectedFormat === 'CSV_EXPORT' ? 'pi pi-download' : 'pi pi-print'}
             className="flex-1"
           />
         </div>
       </Panel>
 
       {/* Aperçu */}
-      {showPreview && (
+      {showPreview && selectedFormat !== 'CSV_EXPORT' && (
         <div className="rounded-lg border bg-white shadow-sm">
           <div className="flex flex-col space-y-1.5 p-6">
             <div className="flex items-center gap-2 text-2xl font-semibold leading-none tracking-tight">
@@ -93,6 +98,31 @@ export function PrintPreview({ addresses, className }: PrintPreviewProps) {
           <div className="p-6 pt-0">
             <div className="flex justify-center bg-gray-100 p-6 rounded-lg">
               <PrintPreviewSheet addresses={addresses} format={selectedFormat} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Aperçu CSV */}
+      {showPreview && selectedFormat === 'CSV_EXPORT' && (
+        <div className="rounded-lg border bg-white shadow-sm">
+          <div className="flex flex-col space-y-1.5 p-6">
+            <div className="flex items-center gap-2 text-2xl font-semibold leading-none tracking-tight">
+              <Eye className="h-5 w-5" />
+              Aperçu - Export CSV
+            </div>
+            <div className="text-sm text-gray-600">
+              Prévisualisation des données qui seront exportées
+            </div>
+          </div>
+          <div className="p-6 pt-0">
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <CSVPreview addresses={addresses.slice(0, 5)} />
+              {addresses.length > 5 && (
+                <div className="text-center text-sm text-gray-500 mt-3">
+                  ... et {addresses.length - 5} ligne{addresses.length - 5 > 1 ? 's' : ''} supplémentaire{addresses.length - 5 > 1 ? 's' : ''} ({addresses.length} adresses au total)
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -113,15 +143,21 @@ const PrintPreviewSheet = React.memo<PrintPreviewSheetProps>(function PrintPrevi
     width: PREVIEW_DIMENSIONS.A4_SHEET.height * PREVIEW_DIMENSIONS.A4_SHEET.ratio
   }), [])
 
-  // Calculer le nombre de pages nécessaires
+  // Calculer le nombre de pages nécessaires selon le format
   const { addressesPerPage, totalPages, pagesToShow } = useMemo(() => {
-    const perPage = format === 'A4_LABELS_10' ? 10 : 15
+    let perPage: number
+    switch (format) {
+      case 'A4_LABELS_10': perPage = 10; break
+      case 'A4_LABELS_21': perPage = 21; break
+      case 'A4_COMPACT': perPage = 20; break // 2 colonnes de 10
+      default: perPage = 15; break
+    }
     const total = Math.ceil(addresses.length / perPage)
     const show = Math.min(PREVIEW_MAX_PAGES, total)
     return { addressesPerPage: perPage, totalPages: total, pagesToShow: show }
   }, [addresses.length, format])
 
-  // Format rouleau : affichage spécial
+  // Formats rouleau : affichage spécial
   if (format === 'ROLL_57x32') {
     return <PrintPreviewRoll addresses={addresses} />
   }
@@ -153,7 +189,11 @@ const PrintPreviewSheet = React.memo<PrintPreviewSheetProps>(function PrintPrevi
               style={{ fontSize: '8px', lineHeight: '1.3' }}
             >
               {format === 'A4_LABELS_10' ? (
-                <PrintPreviewLabels addresses={pageAddresses} />
+                <PrintPreviewLabels addresses={pageAddresses} gridCols={2} />
+              ) : format === 'A4_LABELS_21' ? (
+                <PrintPreviewLabels addresses={pageAddresses} gridCols={3} />
+              ) : format === 'A4_COMPACT' ? (
+                <PrintPreviewCompact addresses={pageAddresses} />
               ) : (
                 <PrintPreviewList addresses={pageAddresses} />
               )}
@@ -178,20 +218,23 @@ const PrintPreviewSheet = React.memo<PrintPreviewSheetProps>(function PrintPrevi
   )
 })
 
-const PrintPreviewLabels = React.memo<{ addresses: Address[] }>(function PrintPreviewLabels({ addresses }) {
+const PrintPreviewLabels = React.memo<{ addresses: Address[], gridCols: number }>(function PrintPreviewLabels({ addresses, gridCols }) {
+  const totalLabels = gridCols === 2 ? 10 : 21
+  const labelHeight = gridCols === 2 ? '19%' : '13%'
+  
   return (
-    <div className="grid grid-cols-2 gap-2 h-full">
-      {Array.from({ length: 10 }, (_, index) => {
+    <div className={`grid gap-2 h-full`} style={{ gridTemplateColumns: `repeat(${gridCols}, 1fr)` }}>
+      {Array.from({ length: totalLabels }, (_, index) => {
         const address = addresses[index]
         return (
           <div
             key={index}
             className="border border-gray-400 rounded-sm bg-white flex flex-col justify-center items-center overflow-hidden"
             style={{
-              height: '19%', // Plus grand pour 57mm sur 297mm
-              minHeight: '80px', // Hauteur minimum pour la lisibilité
-              padding: '6px',
-              fontSize: '7px',
+              height: labelHeight,
+              minHeight: gridCols === 2 ? '80px' : '55px',
+              padding: gridCols === 2 ? '6px' : '4px',
+              fontSize: gridCols === 2 ? '7px' : '6px',
               lineHeight: '1.2',
               textAlign: 'center',
             }}
@@ -246,8 +289,36 @@ const PrintPreviewList = React.memo<{ addresses: Address[] }>(function PrintPrev
   )
 })
 
+// Composant pour le format compact (2 colonnes)
+const PrintPreviewCompact = React.memo<{ addresses: Address[] }>(function PrintPreviewCompact({ addresses }) {
+  return (
+    <div className="grid grid-cols-2 gap-4 h-full">
+      {addresses.map((address) => (
+        <div
+          key={address.id}
+          className="border border-gray-300 rounded-sm p-2 bg-gray-50"
+          style={{ fontSize: '7px', lineHeight: '1.2' }}
+        >
+          <div className="space-y-0.5">
+            <div className="font-semibold text-black">
+              {address.firstName} {address.lastName}
+            </div>
+            <div className="text-gray-700">{address.addressLine1}</div>
+            {address.addressLine2 && <div className="text-gray-700">{address.addressLine2}</div>}
+            <div className="text-gray-700">
+              {address.postalCode} {address.city}
+            </div>
+            <div className="font-medium text-gray-800">{address.country}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+})
+
+
 const PrintPreviewRoll = React.memo<{ addresses: Address[] }>(function PrintPreviewRoll({ addresses }) {
-  // Dimensions rouleau
+  // Dimensions rouleau 57x32mm
   const rollHeight = PREVIEW_DIMENSIONS.ROLL_LABEL.height
   const rollWidth = rollHeight * PREVIEW_DIMENSIONS.ROLL_LABEL.ratio
 
@@ -281,18 +352,21 @@ const PrintPreviewRoll = React.memo<{ addresses: Address[] }>(function PrintPrev
               {/* Contenu de l'étiquette */}
               <div className="absolute inset-0 flex flex-col justify-center items-center text-center p-2">
                 {address ? (
-                  <div className="w-full text-center overflow-hidden" style={{ fontSize: '9px', lineHeight: '1.1' }}>
-                    <div className="font-bold text-black truncate mb-0.5">
+                  <div className="w-full text-center overflow-hidden" style={{ 
+                    fontSize: '9px', 
+                    lineHeight: '1.1' 
+                  }}>
+                    <div className="font-bold text-black truncate mb-1">
                       {address.firstName} {address.lastName}
                     </div>
-                    <div className="text-gray-700 truncate mb-0.5 text-xs">{address.addressLine1}</div>
+                    <div className="text-gray-700 truncate mb-1">{address.addressLine1}</div>
                     {address.addressLine2 && (
-                      <div className="text-gray-700 truncate mb-0.5 text-xs">{address.addressLine2}</div>
+                      <div className="text-gray-700 truncate mb-1">{address.addressLine2}</div>
                     )}
-                    <div className="text-gray-700 truncate mb-0.5 text-xs">
+                    <div className="text-gray-700 truncate mb-1">
                       {address.postalCode} {address.city}
                     </div>
-                    <div className="font-semibold text-gray-800 truncate text-xs">{address.country}</div>
+                    <div className="font-semibold text-gray-800 truncate">{address.country}</div>
                   </div>
                 ) : (
                   <div className="text-gray-300 text-center text-xs">Étiquette vide</div>
@@ -324,6 +398,90 @@ const PrintPreviewRoll = React.memo<{ addresses: Address[] }>(function PrintPrev
 })
 
 
+// Composant pour l'aperçu CSV
+// Composant FormatCard optimisé
+interface FormatCardProps {
+  format: PrintFormat
+  isSelected: boolean
+  onSelect: (format: PrintFormat) => void
+}
+
+const FormatCard = React.memo<FormatCardProps>(function FormatCard({ format, isSelected, onSelect }) {
+  const { cardStyles, iconStyles, titleStyles, descriptionStyles } = getFormatCardStyles(isSelected)
+  
+  return (
+    <label
+      className={cardStyles}
+      htmlFor={`format-${format}`}
+    >
+      <input
+        type="radio"
+        id={`format-${format}`}
+        name="printFormat"
+        value={format}
+        checked={isSelected}
+        onChange={() => onSelect(format)}
+        className="sr-only"
+        aria-describedby={`format-${format}-description`}
+      />
+      <div className="flex items-start gap-3">
+        <div className={iconStyles}>
+          {getFormatIcon(format)}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className={titleStyles}>
+            {PRINT_FORMAT_LABELS[format]}
+          </div>
+          <div 
+            id={`format-${format}-description`}
+            className={descriptionStyles}
+          >
+            {getFormatDescription(format)}
+          </div>
+        </div>
+      </div>
+      {isSelected && (
+        <div className="absolute top-2 right-2" aria-hidden="true">
+          <i className="pi pi-check text-blue-500 text-sm"></i>
+        </div>
+      )}
+    </label>
+  )
+})
+
+const CSVPreview = React.memo<{ addresses: Address[] }>(function CSVPreview({ addresses }) {
+  const headers = ['Prénom', 'Nom', 'Adresse 1', 'Adresse 2', 'Code Postal', 'Ville', 'Pays']
+  
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-xs font-mono">
+        <thead>
+          <tr className="bg-gray-200">
+            {headers.map((header, index) => (
+              <th key={index} className="px-2 py-1 text-left border border-gray-300">
+                {header}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {addresses.map((address, index) => (
+            <tr key={address.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+              <td className="px-2 py-1 border border-gray-300">{address.firstName}</td>
+              <td className="px-2 py-1 border border-gray-300">{address.lastName}</td>
+              <td className="px-2 py-1 border border-gray-300">{address.addressLine1}</td>
+              <td className="px-2 py-1 border border-gray-300">{address.addressLine2 || ''}</td>
+              <td className="px-2 py-1 border border-gray-300">{address.postalCode}</td>
+              <td className="px-2 py-1 border border-gray-300">{address.city}</td>
+              <td className="px-2 py-1 border border-gray-300">{address.country}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+})
+
 function getFormatDescription(format: PrintFormat): string {
   switch (format) {
     case 'A4':
@@ -332,7 +490,68 @@ function getFormatDescription(format: PrintFormat): string {
       return '10 étiquettes de 105×57mm par page'
     case 'ROLL_57x32':
       return 'Une étiquette 57×32mm par adresse'
+    case 'A4_LABELS_21':
+      return '21 étiquettes Avery 70×42.3mm par page (format L7160)'
+    case 'A4_COMPACT':
+      return 'Format compact 2 colonnes, économise le papier'
+    case 'CSV_EXPORT':
+      return 'Export des données au format CSV pour tableur'
     default:
       return ''
+  }
+}
+
+function getFormatIcon(format: PrintFormat): string {
+  switch (format) {
+    case 'A4':
+      return '📄'
+    case 'A4_LABELS_10':
+      return '🏷️'
+    case 'ROLL_57x32':
+      return '🎞️'
+    case 'A4_LABELS_21':
+      return '📇'
+    case 'A4_COMPACT':
+      return '📋'
+    case 'CSV_EXPORT':
+      return '📊'
+    default:
+      return '📄'
+  }
+}
+
+function getOrderedFormats(): PrintFormat[] {
+  return [
+    'A4',              // Formats A4 groupés
+    'A4_COMPACT', 
+    'A4_LABELS_10',
+    'A4_LABELS_21',
+    'ROLL_57x32',      // Formats rouleau
+    'CSV_EXPORT'       // Export
+  ]
+}
+
+function getFormatCardStyles(isSelected: boolean) {
+  const baseCardStyles = 'relative cursor-pointer rounded-lg border-2 p-4 transition-all duration-200 focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2'
+  const selectedCardStyles = 'border-blue-500 bg-blue-50'
+  const unselectedCardStyles = 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+  
+  const baseIconStyles = 'flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-lg'
+  const selectedIconStyles = 'bg-blue-500 text-white'
+  const unselectedIconStyles = 'bg-gray-100 text-gray-600'
+  
+  const baseTitleStyles = 'font-medium text-sm mb-1 leading-tight'
+  const selectedTitleStyles = 'text-blue-900'
+  const unselectedTitleStyles = 'text-gray-900'
+  
+  const baseDescriptionStyles = 'text-xs leading-relaxed'
+  const selectedDescriptionStyles = 'text-blue-700'
+  const unselectedDescriptionStyles = 'text-gray-600'
+  
+  return {
+    cardStyles: `${baseCardStyles} ${isSelected ? selectedCardStyles : unselectedCardStyles}`,
+    iconStyles: `${baseIconStyles} ${isSelected ? selectedIconStyles : unselectedIconStyles}`,
+    titleStyles: `${baseTitleStyles} ${isSelected ? selectedTitleStyles : unselectedTitleStyles}`,
+    descriptionStyles: `${baseDescriptionStyles} ${isSelected ? selectedDescriptionStyles : unselectedDescriptionStyles}`
   }
 }

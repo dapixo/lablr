@@ -67,8 +67,11 @@ src/
 
 ### 5. Formats d'Impression Supportés
 - **A4** : Format standard (une adresse par ligne)
+- **A4_COMPACT** : Format compact 2 colonnes, économise le papier
 - **A4_LABELS_10** : 10 étiquettes autocollantes 105×57mm par page
+- **A4_LABELS_21** : 21 étiquettes Avery 70×42.3mm par page (format L7160)
 - **ROLL_57x32** : Rouleaux d'étiquettes 57×32mm (une par adresse)
+- **CSV_EXPORT** : Export des données au format CSV pour tableur
 
 ## Commandes de Développement
 
@@ -130,7 +133,13 @@ interface Address {
 
 ### PrintFormat
 ```typescript
-type PrintFormat = 'A4' | 'A4_LABELS_10' | 'ROLL_57x32'
+type PrintFormat = 
+  | 'A4' 
+  | 'A4_LABELS_10' 
+  | 'ROLL_57x32'
+  | 'A4_LABELS_21'
+  | 'A4_COMPACT'
+  | 'CSV_EXPORT'
 ```
 
 ## Formats d'Impression Détaillés
@@ -141,11 +150,23 @@ type PrintFormat = 'A4' | 'A4_LABELS_10' | 'ROLL_57x32'
 - Une adresse par ligne avec bordures
 - Optimisé pour impression bureautique
 
-### Format A4 Étiquettes (105×57mm)
+### Format A4 Compact (2 colonnes)
+- Marge : 15mm
+- Police : 10px
+- Disposition en 2 colonnes avec float CSS
+- Économise le papier, idéal pour les listes importantes
+
+### Format A4 Étiquettes 10 (105×57mm)
 - 10 étiquettes par page (grille 2×5)
 - Espacement optimisé pour étiquettes autocollantes
 - Centrage du contenu
-- Compatible étiquettes Avery
+- Compatible étiquettes autocollantes standards
+
+### Format A4 Étiquettes Avery 21 (70×42.3mm)
+- 21 étiquettes par page (grille 3×7)
+- Format Avery L7160 standard
+- Positionnement précis avec inline-flex
+- Texte centré verticalement et horizontalement
 
 ### Format Rouleau (57×32mm)
 - Étiquettes individuelles 57mm × 32mm
@@ -154,12 +175,33 @@ type PrintFormat = 'A4' | 'A4_LABELS_10' | 'ROLL_57x32'
 - Marges minimales (2mm)
 - Compatible imprimantes thermiques
 
+### Format CSV Export
+- Export au format CSV avec encodage UTF-8
+- Headers : Prénom, Nom, Adresse 1, Adresse 2, Code Postal, Ville, Pays
+- Compatible avec Excel, Google Sheets, etc.
+- Téléchargement automatique via blob
+
 ## Fonctionnalités UX Avancées
 
 ### Auto-scroll Intelligent
 - Scroll automatique vers les options d'impression après upload
+- PAS de scroll automatique lors de la suppression d'adresses
 - Compensation de la hauteur du header sticky (80px)
 - Animation smooth pour meilleure expérience
+
+### Interface de Sélection des Formats
+- **Design en cartes** : Interface moderne avec cartes cliquables
+- **Groupement logique** : Tous les formats A4 groupés ensemble
+- **Iconographie** : Emojis distinctifs pour chaque format
+- **Feedback visuel** : États sélectionné/non-sélectionné clairement marqués
+- **Animations** : Transitions fluides et hover effects
+
+### Accessibilité Améliorée
+- **Structure sémantique** : `<fieldset>`, `<legend>`, `<label>` appropriés
+- **Navigation clavier** : Support complet des radio buttons natifs
+- **Lecteurs d'écran** : ARIA labels et descriptions
+- **Focus management** : Indicateurs visuels de focus
+- **Standards WCAG** : Conformité aux bonnes pratiques d'accessibilité
 
 ### Responsive Design
 - **Mobile-first** : Interface optimisée mobile
@@ -181,6 +223,7 @@ type PrintFormat = 'A4' | 'A4_LABELS_10' | 'ROLL_57x32'
 const AddressCard = React.memo(function AddressCard({...}))
 const SearchBar = React.memo(function SearchBar({...}))
 const EmptySearchState = React.memo(function EmptySearchState())
+const FormatCard = React.memo(function FormatCard({...}))
 ```
 
 ### Hooks Personnalisés
