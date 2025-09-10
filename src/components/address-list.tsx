@@ -11,6 +11,7 @@ import { IconField } from 'primereact/iconfield'
 import { InputIcon } from 'primereact/inputicon'
 
 import { cn } from '@/lib/utils'
+import { STORAGE_KEYS, useCollapsiblePanel } from '@/lib/storage'
 import type { Address } from '@/types/address'
 
 interface AddressListProps {
@@ -34,6 +35,9 @@ export function AddressList({
 }: AddressListProps) {
   const [currentPage, setCurrentPage] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
+  
+  // Panel collapsible avec hook personnalisé
+  const addressesPanel = useCollapsiblePanel(STORAGE_KEYS.ADDRESSES_PANEL_COLLAPSED, false)
 
   // Mémorisation des callbacks pour éviter les re-renders inutiles
   const handleEditAddress = useCallback(
@@ -103,6 +107,7 @@ export function AddressList({
     setSearchQuery(e.target.value)
   }, [])
 
+
   if (addresses.length === 0 && errors.length === 0) {
     return null
   }
@@ -110,65 +115,49 @@ export function AddressList({
   return (
     <div className={cn('space-y-4', className)}>
       <Panel 
-        headerTemplate={
-          <div className="p-panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '1rem' }}>
-            {/* Mobile Header */}
-            <div className="block sm:hidden w-full">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-gray-600" />
-                  <span className="font-semibold text-gray-900 text-sm">
-                    Adresses ({totalAddresses}{addresses.length !== totalAddresses && `/${addresses.length}`})
-                  </span>
-                </div>
-                {onAddAddress && (
-                  <Button
-                    onClick={onAddAddress}
-                    icon="pi pi-plus"
-                    size="small"
-                    className="p-button-sm"
-                  />
-                )}
-              </div>
-              {totalPages > 1 && (
-                <div className="text-xs text-gray-600 ml-6">
-                  Page {currentPage + 1} sur {totalPages}
-                </div>
-              )}
-            </div>
-
-            {/* Desktop Header */}
-            <div className="hidden sm:flex items-center gap-3 flex-1">
-              <MapPin className="h-4 w-4 text-gray-600" />
-              <span className="font-semibold text-gray-900">
-                Adresses extraites ({totalAddresses}{addresses.length !== totalAddresses && ` sur ${addresses.length}`})
-                {totalPages > 1 && (
-                  <span className="text-gray-600 font-normal ml-3">
-                    - Page {currentPage + 1} sur {totalPages}
-                  </span>
-                )}
+        header={
+          <div className="flex items-center gap-2">
+            <MapPin className="h-4 w-4" />
+            <span className="font-semibold text-gray-900">
+              Adresses extraites ({totalAddresses}{addresses.length !== totalAddresses && ` sur ${addresses.length}`})
+            </span>
+            {totalPages > 1 && (
+              <span className="text-gray-600 font-normal ml-3 hidden sm:inline">
+                - Page {currentPage + 1} sur {totalPages}
               </span>
-            </div>
-            
-            <div className="hidden sm:block">
-              {onAddAddress && (
-                <Button
-                  onClick={onAddAddress}
-                  label="Ajouter une adresse"
-                  icon="pi pi-plus"
-                  size="small"
-                />
-              )}
-            </div>
+            )}
           </div>
         }
         className="w-full"
+        toggleable
+        collapsed={addressesPanel.isCollapsed}
+        onToggle={addressesPanel.toggle}
       >
-        <SearchBar 
-          addresses={addresses}
-          searchQuery={searchQuery}
-          onSearchChange={handleSearchChange}
-        />
+        <div className="flex flex-col sm:flex-row gap-3 mb-4">
+          <div className="flex-1">
+            <SearchBar 
+              addresses={addresses}
+              searchQuery={searchQuery}
+              onSearchChange={handleSearchChange}
+            />
+          </div>
+          {onAddAddress && (
+            <Button
+              onClick={onAddAddress}
+              label="Ajouter une adresse"
+              icon="pi pi-plus"
+              size="small"
+              className="flex-shrink-0"
+            />
+          )}
+        </div>
+
+        {/* Info pagination mobile */}
+        {totalPages > 1 && (
+          <div className="text-xs text-gray-600 mb-3 sm:hidden">
+            Page {currentPage + 1} sur {totalPages}
+          </div>
+        )}
 
         {/* Affichage des erreurs */}
         {errors.length > 0 && (
@@ -319,22 +308,22 @@ interface SearchBarProps {
 }
 
 const SearchBar = React.memo<SearchBarProps>(function SearchBar({ addresses, searchQuery, onSearchChange }) {
-  if (addresses.length <= 5) return null
+  if (addresses.length <= 5) {
+    return <div /> // Placeholder vide pour maintenir la structure flex
+  }
 
   return (
-    <div className="mb-4">
-      <IconField iconPosition="left">
-        <InputIcon>
-          <Search className="h-4 w-4" />
-        </InputIcon>
-        <InputText
-          value={searchQuery}
-          onChange={onSearchChange}
-          placeholder="Rechercher par nom, adresse, ville, pays..."
-          className="w-full"
-        />
-      </IconField>
-    </div>
+    <IconField iconPosition="left">
+      <InputIcon>
+        <Search className="h-4 w-4" />
+      </InputIcon>
+      <InputText
+        value={searchQuery}
+        onChange={onSearchChange}
+        placeholder="Rechercher par nom, adresse, ville, pays..."
+        className="w-full"
+      />
+    </IconField>
   )
 })
 

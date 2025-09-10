@@ -1,14 +1,14 @@
 'use client'
 
 import { Eye, Settings } from 'lucide-react'
-import React, { useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { Button } from 'primereact/button'
-import { SelectButton } from 'primereact/selectbutton'
 import { Panel } from 'primereact/panel'
 
 import { PREVIEW_DIMENSIONS, PREVIEW_MAX_LABELS_ROLL, PREVIEW_MAX_PAGES } from '@/constants'
 import { getPrintCSS, PRINT_FORMAT_LABELS, downloadCSV } from '@/lib/print-formats'
 import { printAddresses } from '@/lib/print-utils'
+import { STORAGE_KEYS, useCollapsiblePanel, usePersistedSelection } from '@/lib/storage'
 import { cn } from '@/lib/utils'
 import type { Address, PrintFormat } from '@/types/address'
 
@@ -18,17 +18,25 @@ interface PrintPreviewProps {
 }
 
 export function PrintPreview({ addresses, className }: PrintPreviewProps) {
-  const [selectedFormat, setSelectedFormat] = useState<PrintFormat>('A4')
-  const [showPreview, setShowPreview] = useState(false)
+  // Fonction de validation pour les formats
+  const isValidFormat = useCallback((value: string): value is PrintFormat => {
+    return getOrderedFormats().includes(value as PrintFormat)
+  }, [])
+
+  // États avec hooks personnalisés
+  const selectedFormat = usePersistedSelection(STORAGE_KEYS.SELECTED_FORMAT, 'A4' as PrintFormat, isValidFormat)
+  const printPanel = useCollapsiblePanel(STORAGE_KEYS.PRINT_PANEL_COLLAPSED, false)
+  const previewPanel = useCollapsiblePanel(STORAGE_KEYS.PREVIEW_PANEL_COLLAPSED, true)
+
 
   const handlePrint = () => {
-    if (selectedFormat === 'CSV_EXPORT') {
+    if (selectedFormat.value === 'CSV_EXPORT') {
       downloadCSV(addresses, 'adresses-lablr.csv')
       return
     }
     
-    const printCSS = getPrintCSS(selectedFormat)
-    printAddresses(addresses, selectedFormat, printCSS)
+    const printCSS = getPrintCSS(selectedFormat.value)
+    printAddresses(addresses, selectedFormat.value, printCSS)
   }
 
   if (addresses.length === 0) {
@@ -40,11 +48,14 @@ export function PrintPreview({ addresses, className }: PrintPreviewProps) {
       <Panel 
         header={
           <div className="flex items-center gap-2">
-            <Settings className="h-1rem w-1rem" />
-            <span className="font-semibold text-900">Options d&apos;impression</span>
+            <Settings className="h-4 w-4" />
+            <span className="font-semibold text-gray-900">Options d&apos;impression</span>
           </div>
         }
         className="w-full"
+        toggleable
+        collapsed={printPanel.isCollapsed}
+        onToggle={printPanel.toggle}
       >
         <div className="mb-3 text-600 text-sm">
           Choisissez le format d&apos;impression pour vos {addresses.length} adresses
@@ -58,8 +69,8 @@ export function PrintPreview({ addresses, className }: PrintPreviewProps) {
                 <FormatCard
                   key={format}
                   format={format}
-                  isSelected={selectedFormat === format}
-                  onSelect={setSelectedFormat}
+                  isSelected={selectedFormat.value === format}
+                  onSelect={selectedFormat.updateValue}
                 />
               ))}
             </div>
@@ -67,65 +78,66 @@ export function PrintPreview({ addresses, className }: PrintPreviewProps) {
         </div>
 
         {/* Actions */}
-        <div className="flex gap-2 mt-4">
-          <Button
-            onClick={() => setShowPreview(!showPreview)}
-            label={showPreview ? 'Masquer' : 'Aperçu'}
-            icon="pi pi-eye"
-            className="p-button-secondary flex-1"
-          />
+        <div className="flex justify-center mt-4">
           <Button
             onClick={handlePrint}
-            label={selectedFormat === 'CSV_EXPORT' ? 'Télécharger CSV' : 'Imprimer'}
-            icon={selectedFormat === 'CSV_EXPORT' ? 'pi pi-download' : 'pi pi-print'}
-            className="flex-1"
+            label={selectedFormat.value === 'CSV_EXPORT' ? 'Télécharger CSV' : 'Imprimer'}
+            icon={selectedFormat.value === 'CSV_EXPORT' ? 'pi pi-download' : 'pi pi-print'}
+            size="small"
+            className="px-6"
           />
         </div>
       </Panel>
 
       {/* Aperçu */}
-      {showPreview && selectedFormat !== 'CSV_EXPORT' && (
-        <div className="rounded-lg border bg-white shadow-sm">
-          <div className="flex flex-col space-y-1.5 p-6">
-            <div className="flex items-center gap-2 text-2xl font-semibold leading-none tracking-tight">
-              <Eye className="h-5 w-5" />
-              Aperçu - {PRINT_FORMAT_LABELS[selectedFormat]}
+      {selectedFormat.value !== 'CSV_EXPORT' && (
+        <Panel
+          header={
+            <div className="flex items-center gap-2">
+              <Eye className="h-4 w-4" />
+              <span className="font-semibold text-gray-900">Aperçu - {PRINT_FORMAT_LABELS[selectedFormat.value]}</span>
             </div>
-            <div className="text-sm text-gray-600">
-              Visualisation réaliste du rendu d&apos;impression (échelle réduite)
-            </div>
+          }
+          className="w-full"
+          toggleable
+          collapsed={previewPanel.isCollapsed}
+          onToggle={previewPanel.toggle}
+        >
+          <div className="text-sm text-gray-600 mb-4">
+            Visualisation réaliste du rendu d&apos;impression (échelle réduite)
           </div>
-          <div className="p-6 pt-0">
-            <div className="flex justify-center bg-gray-100 p-6 rounded-lg">
-              <PrintPreviewSheet addresses={addresses} format={selectedFormat} />
-            </div>
+          <div className="flex justify-center bg-gray-100 p-6 rounded-lg">
+            <PrintPreviewSheet addresses={addresses} format={selectedFormat.value} />
           </div>
-        </div>
+        </Panel>
       )}
 
       {/* Aperçu CSV */}
-      {showPreview && selectedFormat === 'CSV_EXPORT' && (
-        <div className="rounded-lg border bg-white shadow-sm">
-          <div className="flex flex-col space-y-1.5 p-6">
-            <div className="flex items-center gap-2 text-2xl font-semibold leading-none tracking-tight">
-              <Eye className="h-5 w-5" />
-              Aperçu - Export CSV
+      {selectedFormat.value === 'CSV_EXPORT' && (
+        <Panel
+          header={
+            <div className="flex items-center gap-2">
+              <Eye className="h-4 w-4" />
+              <span className="font-semibold text-gray-900">Aperçu - Export CSV</span>
             </div>
-            <div className="text-sm text-gray-600">
-              Prévisualisation des données qui seront exportées
-            </div>
+          }
+          className="w-full"
+          toggleable
+          collapsed={previewPanel.isCollapsed}
+          onToggle={previewPanel.toggle}
+        >
+          <div className="text-sm text-gray-600 mb-4">
+            Prévisualisation des données qui seront exportées
           </div>
-          <div className="p-6 pt-0">
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <CSVPreview addresses={addresses.slice(0, 5)} />
-              {addresses.length > 5 && (
-                <div className="text-center text-sm text-gray-500 mt-3">
-                  ... et {addresses.length - 5} ligne{addresses.length - 5 > 1 ? 's' : ''} supplémentaire{addresses.length - 5 > 1 ? 's' : ''} ({addresses.length} adresses au total)
-                </div>
-              )}
-            </div>
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <CSVPreview addresses={addresses.slice(0, 5)} />
+            {addresses.length > 5 && (
+              <div className="text-center text-sm text-gray-500 mt-3">
+                ... et {addresses.length - 5} ligne{addresses.length - 5 > 1 ? 's' : ''} supplémentaire{addresses.length - 5 > 1 ? 's' : ''} ({addresses.length} adresses au total)
+              </div>
+            )}
           </div>
-        </div>
+        </Panel>
       )}
     </div>
   )
