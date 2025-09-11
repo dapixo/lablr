@@ -30,8 +30,6 @@ const CSS_MIXINS: CSSMixins = {
     body {
       margin: 0;
       padding: 0;
-      border: 3px solid green;
-      box-sizing: border-box;
     }`,
 
   addressItem: (fontSize, padding = '2mm') => `
@@ -91,8 +89,6 @@ const CSS_MIXINS: CSSMixins = {
         grid-template-rows: repeat(${rows}, ${height});
         height: ${totalHeight}mm;
         width: ${totalWidth}mm;
-        border: 2px solid red;
-        background-color: rgba(255, 0, 0, 0.05);
       }`
     }
     
@@ -104,8 +100,6 @@ const CSS_MIXINS: CSSMixins = {
       width: ${width};
       height: ${height};
       font-size: ${fontSize}px;
-      border: 1px solid blue;
-      background-color: rgba(0, 0, 255, 0.05);
       /* Assurer le centrage */
       display: flex;
       flex-direction: column;

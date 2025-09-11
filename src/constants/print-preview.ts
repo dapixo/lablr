@@ -60,7 +60,7 @@ export const PRINT_PREVIEW_CONFIG = {
 // Dimensions pour l'aperçu des feuilles A4
 export const PREVIEW_DIMENSIONS = {
   A4_SHEET: {
-    height: 400, // Hauteur de base en pixels
+    height: 600, // Hauteur de base en pixels
     ratio: 210 / 297, // Ratio A4 (largeur/hauteur)
   },
   ROLL_LABEL: {
@@ -71,7 +71,7 @@ export const PREVIEW_DIMENSIONS = {
 
 // Limites d'affichage
 export const PREVIEW_LIMITS = {
-  MAX_PAGES: 3,
+  MAX_PAGES: 1,
   MAX_LABELS_ROLL: 10,
 } as const
 

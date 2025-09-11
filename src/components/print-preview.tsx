@@ -1,7 +1,7 @@
 'use client'
 
 import { Eye, Settings } from 'lucide-react'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { Button } from 'primereact/button'
 import { Panel } from 'primereact/panel'
 
@@ -26,7 +26,6 @@ export function PrintPreview({ addresses, className }: PrintPreviewProps) {
   // États avec hooks personnalisés
   const selectedFormat = usePersistedSelection(STORAGE_KEYS.SELECTED_FORMAT, 'A4' as PrintFormat, isValidFormat)
   const printPanel = useCollapsiblePanel(STORAGE_KEYS.PRINT_PANEL_COLLAPSED, false)
-  const previewPanel = useCollapsiblePanel(STORAGE_KEYS.PREVIEW_PANEL_COLLAPSED, true)
 
 
   const handlePrint = () => {
@@ -78,7 +77,7 @@ export function PrintPreview({ addresses, className }: PrintPreviewProps) {
         </div>
 
         {/* Actions */}
-        <div className="flex justify-center mt-4">
+        <div className="flex justify-center mt-6 mb-4">
           <Button
             onClick={handlePrint}
             label={selectedFormat.value === 'CSV_EXPORT' ? 'Télécharger CSV' : 'Imprimer'}
@@ -87,58 +86,44 @@ export function PrintPreview({ addresses, className }: PrintPreviewProps) {
             className="px-6"
           />
         </div>
+
+        {/* Aperçu intégré */}
+        {selectedFormat.value !== 'CSV_EXPORT' && (
+          <div className="mt-2">
+            <div className="text-sm font-semibold text-900 mb-3 flex items-center gap-2">
+              <Eye className="h-4 w-4" />
+              Aperçu - {PRINT_FORMAT_LABELS[selectedFormat.value]}
+            </div>
+            <div className="text-sm text-gray-600 mb-4">
+              Visualisation réaliste du rendu d&apos;impression (échelle réduite)
+            </div>
+            <div className="flex justify-center bg-gray-100 p-6 rounded-lg mb-4">
+              <PrintPreviewSheet addresses={addresses} format={selectedFormat.value} />
+            </div>
+          </div>
+        )}
+
+        {/* Aperçu CSV intégré */}
+        {selectedFormat.value === 'CSV_EXPORT' && (
+          <div className="mt-2">
+            <div className="text-sm font-semibold text-900 mb-3 flex items-center gap-2">
+              <Eye className="h-4 w-4" />
+              Aperçu - Export CSV
+            </div>
+            <div className="text-sm text-gray-600 mb-4">
+              Prévisualisation des données qui seront exportées
+            </div>
+            <div className="bg-gray-50 p-4 rounded-lg mb-4">
+              <CSVPreview addresses={addresses.slice(0, 5)} />
+              {addresses.length > 5 && (
+                <div className="text-center text-sm text-gray-500 mt-3">
+                  ... et {addresses.length - 5} ligne{addresses.length - 5 > 1 ? 's' : ''} supplémentaire{addresses.length - 5 > 1 ? 's' : ''} ({addresses.length} adresses au total)
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </Panel>
-
-      {/* Aperçu */}
-      {selectedFormat.value !== 'CSV_EXPORT' && (
-        <Panel
-          header={
-            <div className="flex items-center gap-2">
-              <Eye className="h-4 w-4" />
-              <span className="font-semibold text-gray-900">Aperçu - {PRINT_FORMAT_LABELS[selectedFormat.value]}</span>
-            </div>
-          }
-          className="w-full"
-          toggleable
-          collapsed={previewPanel.isCollapsed}
-          onToggle={previewPanel.toggle}
-        >
-          <div className="text-sm text-gray-600 mb-4">
-            Visualisation réaliste du rendu d&apos;impression (échelle réduite)
-          </div>
-          <div className="flex justify-center bg-gray-100 p-6 rounded-lg">
-            <PrintPreviewSheet addresses={addresses} format={selectedFormat.value} />
-          </div>
-        </Panel>
-      )}
-
-      {/* Aperçu CSV */}
-      {selectedFormat.value === 'CSV_EXPORT' && (
-        <Panel
-          header={
-            <div className="flex items-center gap-2">
-              <Eye className="h-4 w-4" />
-              <span className="font-semibold text-gray-900">Aperçu - Export CSV</span>
-            </div>
-          }
-          className="w-full"
-          toggleable
-          collapsed={previewPanel.isCollapsed}
-          onToggle={previewPanel.toggle}
-        >
-          <div className="text-sm text-gray-600 mb-4">
-            Prévisualisation des données qui seront exportées
-          </div>
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <CSVPreview addresses={addresses.slice(0, 5)} />
-            {addresses.length > 5 && (
-              <div className="text-center text-sm text-gray-500 mt-3">
-                ... et {addresses.length - 5} ligne{addresses.length - 5 > 1 ? 's' : ''} supplémentaire{addresses.length - 5 > 1 ? 's' : ''} ({addresses.length} adresses au total)
-              </div>
-            )}
-          </div>
-        </Panel>
-      )}
     </div>
   )
 }

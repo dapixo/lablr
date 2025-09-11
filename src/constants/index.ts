@@ -7,7 +7,7 @@ export const AMAZON_REPORT_MIN_COLUMNS = 24
 
 // Constantes pour l'impression
 export const PRINT_DELAY_MS = 250
-export const PREVIEW_MAX_PAGES = 3
+export const PREVIEW_MAX_PAGES = 1
 export const PREVIEW_MAX_LABELS_ROLL = 8
 
 
