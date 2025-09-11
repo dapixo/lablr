@@ -7,7 +7,8 @@ import { AddressEditor } from '@/components/address-editor'
 import { AddressList } from '@/components/address-list'
 import { FileUpload } from '@/components/file-upload'
 import { PrintPreview } from '@/components/print-preview'
-import { cleanAddressData, parseAmazonSellerReport } from '@/lib/address-parser'
+import { cleanAddressData } from '@/lib/address-parser'
+import { parseUniversalFile, type UniversalParseResult } from '@/lib/universal-parser'
 import type { Address } from '@/types/address'
 
 // Constants
@@ -18,6 +19,7 @@ export default function Home() {
   const [addresses, setAddresses] = useState<Address[]>([])
   const [errors, setErrors] = useState<string[]>([])
   const [fileName, setFileName] = useState<string>('')
+  const [parseResult, setParseResult] = useState<UniversalParseResult | null>(null)
   const [editingAddress, setEditingAddress] = useState<Address | null>(null)
   const [isAddingAddress, setIsAddingAddress] = useState(false)
   const [shouldAutoScroll, setShouldAutoScroll] = useState(false)
@@ -41,12 +43,13 @@ export default function Home() {
   }, [scrollToElement])
 
   const handleFileContent = useCallback((content: string, filename: string) => {
-    const result = parseAmazonSellerReport(content)
+    const result = parseUniversalFile(content)
     const cleanedAddresses = cleanAddressData(result.addresses)
 
     setAddresses(cleanedAddresses)
     setErrors(result.errors)
     setFileName(filename)
+    setParseResult(result)
     
     // Déclencher l'auto-scroll seulement lors de l'import de fichier
     if (cleanedAddresses.length > 0) {
@@ -144,8 +147,8 @@ export default function Home() {
                   Bienvenue sur Lablr
                 </h2>
                 <p className="text-gray-600 text-lg leading-relaxed max-w-2xl mx-auto">
-                  Importez votre rapport Amazon Seller et transformez vos données en étiquettes 
-                  d&apos;expédition professionnelles en quelques clics.
+                  Importez vos données de n&apos;importe quelle plateforme e-commerce et transformez-les 
+                  en étiquettes d&apos;expédition professionnelles en quelques clics.
                 </p>
               </div>
               
@@ -155,7 +158,7 @@ export default function Home() {
                     <i className="pi pi-upload text-blue-500 text-2xl"></i>
                   </div>
                   <h3 className="font-semibold text-gray-900 mb-2 text-lg">1. Importez</h3>
-                  <p className="text-gray-600 text-sm">Glissez votre fichier TSV Amazon Seller</p>
+                  <p className="text-gray-600 text-sm">Glissez votre fichier d&apos;adresses (Amazon, Shopify, eBay...)</p>
                 </div>
                 <div className="text-center">
                   <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-4">
@@ -196,10 +199,10 @@ export default function Home() {
               </>
             )}
 
-            {/* Stats Card */}
-            {fileName && (
+            {/* Stats Card avec informations de détection */}
+            {fileName && parseResult && (
               <div className="bg-white rounded-xl shadow-sm p-6">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center">
                       <i className="pi pi-check text-green-500 text-xl"></i>
@@ -237,7 +240,7 @@ export default function Home() {
               </div>
               <p className="text-gray-600 leading-relaxed pr-4">
                 Solution professionnelle pour l&apos;extraction et l&apos;impression 
-                d&apos;étiquettes à partir de vos rapports Amazon Seller.
+                d&apos;étiquettes à partir de toutes vos plateformes e-commerce.
               </p>
             </div>
 
@@ -247,7 +250,7 @@ export default function Home() {
               <ul className="space-y-3 text-gray-600">
                 <li className="flex items-center gap-3">
                   <i className="pi pi-check text-green-500 text-sm"></i>
-                  <span>Import rapports Amazon TSV</span>
+                  <span>Import multi-plateformes (Amazon, Shopify, eBay...)</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <i className="pi pi-check text-green-500 text-sm"></i>
@@ -259,7 +262,7 @@ export default function Home() {
                 </li>
                 <li className="flex items-center gap-3">
                   <i className="pi pi-check text-green-500 text-sm"></i>
-                  <span>Aperçu avant impression</span>
+                  <span>Détection automatique des formats</span>
                 </li>
               </ul>
             </div>
@@ -293,7 +296,7 @@ export default function Home() {
               <div className="flex items-center gap-6">
                 <div className="flex items-center gap-2 text-xs text-gray-500">
                   <span className="uppercase font-semibold tracking-wider">Version</span>
-                  <span className="font-medium text-gray-700">1.0.0</span>
+                  <span className="font-medium text-gray-700">2.1.0</span>
                 </div>
               </div>
             </div>

@@ -14,7 +14,7 @@
 - **Icons** : PrimeIcons + Lucide React
 - **Build Tool** : Turbopack pour développement rapide
 
-### Structure du Projet
+### Structure du Projet (Architecture Refactorisée)
 ```
 src/
 ├── app/
@@ -25,11 +25,16 @@ src/
 │   ├── file-upload.tsx    # Upload drag & drop avec PrimeReact
 │   ├── address-list.tsx   # Liste avec pagination (15 par page) et recherche
 │   ├── address-editor.tsx # Éditeur modal avec PrimeReact Dialog
-│   └── print-preview.tsx  # Aperçu et impression
+│   └── print-preview.tsx  # Aperçu intégré et impression
 ├── lib/
-│   ├── utils.ts           # Utilitaires (cn)
-│   ├── address-parser.ts  # Parser robuste pour fichiers TSV Amazon
-│   └── print-formats.ts   # Formats d'impression optimisés
+│   ├── utils.ts              # Utilitaires (cn)
+│   ├── universal-parser.ts   # 🆕 Parser universel multi-plateformes
+│   ├── direct-column-finder.ts # 🆕 Détection directe des colonnes
+│   ├── column-detector.ts    # Détection de plateforme (legacy)
+│   ├── address-parser.ts     # Parser Amazon Seller (legacy)
+│   └── print-formats.ts      # Formats d'impression optimisés
+├── constants/
+│   └── index.ts           # Constantes globales et messages d'erreur
 └── types/
     └── address.ts         # Types TypeScript stricts
 ```
@@ -43,12 +48,14 @@ src/
 - Design responsive mobile-first
 - Transitions et animations fluides
 
-### 2. Import de Données Amazon Seller
-- Upload drag & drop intuitif avec PrimeReact
-- Validation stricte des fichiers (TSV, max 10MB)
-- Parsing automatique et robuste des adresses
-- Gestion d'erreurs détaillée avec feedback utilisateur
-- Auto-scroll vers les options d'impression après upload
+### 2. Import de Données Multi-Plateformes
+- **Upload universel** : Support CSV et TSV avec drag & drop intuitif
+- **Parser universel** : Amazon Seller, Shopify, eBay, formats génériques
+- **Parser CSV avancé** : Gestion des quotes et virgules dans les adresses
+- **Extraction intelligente** : Détection automatique des colonnes d'adresses
+- **Pas de déduplication** : Une étiquette par commande même si adresse identique
+- **Validation stricte** : Fichiers max 10MB avec feedback utilisateur
+- **Interface épurée** : Suppression des détails techniques de détection
 
 ### 3. Gestion Avancée des Adresses
 - **Liste paginée** : 15 adresses par page avec navigation
@@ -69,6 +76,8 @@ src/
 - **A4** : Format standard (une adresse par ligne)
 - **A4_COMPACT** : Format compact 2 colonnes, économise le papier
 - **A4_LABELS_10** : 10 étiquettes autocollantes 105×57mm par page
+- **A4_LABELS_14** : 14 étiquettes Avery 99.1×38.1mm par page (format L7163)
+- **A4_LABELS_16** : 16 étiquettes Avery 99.1×33.9mm par page (format L7162)
 - **A4_LABELS_21** : 21 étiquettes Avery 70×42.3mm par page (format L7160)
 - **ROLL_57x32** : Rouleaux d'étiquettes 57×32mm (une par adresse)
 - **CSV_EXPORT** : Export des données au format CSV pour tableur
@@ -136,8 +145,10 @@ interface Address {
 type PrintFormat = 
   | 'A4' 
   | 'A4_LABELS_10' 
-  | 'ROLL_57x32'
+  | 'A4_LABELS_14'
+  | 'A4_LABELS_16'
   | 'A4_LABELS_21'
+  | 'ROLL_57x32'
   | 'A4_COMPACT'
   | 'CSV_EXPORT'
 ```
@@ -161,6 +172,18 @@ type PrintFormat =
 - Espacement optimisé pour étiquettes autocollantes
 - Centrage du contenu
 - Compatible étiquettes autocollantes standards
+
+### Format A4 Étiquettes Avery 14 (99.1×38.1mm)
+- 14 étiquettes par page (grille 2×7)
+- Format Avery L7163 standard
+- Marges précises : 15.1mm gauche/droite, 8mm haut/bas
+- Police 11px avec centrage optimal
+
+### Format A4 Étiquettes Avery 16 (99.1×33.9mm)
+- 16 étiquettes par page (grille 2×8)
+- Format Avery L7162 standard
+- Dimensions précises pour étiquettes autocollantes
+- Police 10px optimisée pour la lisibilité
 
 ### Format A4 Étiquettes Avery 21 (70×42.3mm)
 - 21 étiquettes par page (grille 3×7)
@@ -189,6 +212,13 @@ type PrintFormat =
 - Compensation de la hauteur du header sticky (80px)
 - Animation smooth pour meilleure expérience
 
+### Aperçu d'Impression Intégré (🆕 V2.0)
+- **Aperçu intégré** : Directement dans le panel d'options d'impression
+- **Affichage optimisé** : Une seule page d'aperçu au lieu de 3
+- **Actions repositionnées** : Bouton d'impression au-dessus de l'aperçu
+- **Moins de scroll** : Interface plus ergonomique sans défilement excessif
+- **Aperçu en temps réel** : Mise à jour instantanée selon le format sélectionné
+
 ### Interface de Sélection des Formats
 - **Design en cartes** : Interface moderne avec cartes cliquables
 - **Groupement logique** : Tous les formats A4 groupés ensemble
@@ -215,7 +245,23 @@ type PrintFormat =
 - **Empty states** : Messages informatifs quand pas de données
 - **Success feedback** : Confirmations d'actions
 
-## Architecture des Composants
+## Architecture des Composants (🆕 V2.0 - Refactorisation Majeure)
+
+### Architecture Parser Universel (🆕)
+```typescript
+// Nouvelle architecture de parsing multi-plateformes
+/src/lib/
+├── universal-parser.ts      # Parser principal avec CSV avancé
+├── direct-column-finder.ts  # Détection directe des colonnes
+└── column-detector.ts       # Détection plateforme (legacy)
+```
+
+**Fonctionnalités du Parser Universel** :
+- **CSV avancé** : Gestion des quotes et virgules dans les adresses
+- **Détection automatique** : Colonnes d'adresses trouvées sans détection de plateforme
+- **Pas de déduplication** : Une étiquette par commande même si adresse identique
+- **Support multi-formats** : Amazon Seller, Shopify, eBay, CSV génériques
+- **Code optimisé** : Suppression des logs debug, helper functions, imports nettoyés
 
 ### Composants Mémorisés
 ```typescript
@@ -226,10 +272,12 @@ const EmptySearchState = React.memo(function EmptySearchState())
 const FormatCard = React.memo(function FormatCard({...}))
 ```
 
-### Hooks Personnalisés
+### Optimisations Performance
 - **Callbacks mémorisés** : `useCallback` pour éviter re-renders
 - **Computed values** : `useMemo` pour calculs coûteux
 - **Event handlers** : Optimisés avec dependencies
+- **CSS Grid dynamique** : Génération intelligente des colonnes
+- **Pagination limite** : Affichage d'une seule page d'aperçu
 
 ## Points d'Attention
 
@@ -253,17 +301,35 @@ const FormatCard = React.memo(function FormatCard({...}))
 
 ### Maintenance
 - **TypeScript strict** : Typage fort pour éviter les erreurs
-- **Code splitting** : Architecture modulaire
+- **Code splitting** : Architecture modulaire refactorisée
 - **Clean code** : Fonctions pures, séparation des responsabilités
+- **Rétrocompatibilité** : Re-exports maintiennent la compatibilité
+- **Tests de régression** : Formats d'impression validés
+
+## Évolutions Récentes (✅ V2.0)
+
+### Améliorations UX Majeures
+- ✅ **Aperçu intégré** : Plus de panel séparé, interface unifiée
+- ✅ **Une page d'aperçu** : Performance et simplicité améliorées
+- ✅ **Bouton repositionné** : Actions au-dessus pour moins de scroll
+- ✅ **Nouveaux formats Avery** : L7162 (16 étiquettes) et L7163 (14 étiquettes)
+
+### Refactorisation Architecturale
+- ✅ **Code modulaire** : -300 lignes de duplication éliminées
+- ✅ **CSS Mixins** : Styles réutilisables et maintenables
+- ✅ **Configuration unifiée** : Formats centralisés et typés
+- ✅ **Grid CSS fixé** : Problème 3×7 colonnes résolu
 
 ## Évolutions Futures
 
 ### Fonctionnalités
-- Support CSV et Excel en plus du TSV
+- ✅ **Support CSV universel** : Implémenté avec parser avancé
+- ✅ **Parser multi-plateformes** : Amazon, Shopify, eBay, CSV génériques
+- ✅ **Pas de déduplication** : Une étiquette par commande
 - Templates d'étiquettes personnalisables  
 - Export PDF/PNG pour archivage
 - Sauvegarde locale des configurations utilisateur
-- Support formats d'étiquettes additionnels
+- Support formats d'étiquettes additionnels (Avery L4778, L6011...)
 
 ### Techniques
 - PWA (Progressive Web App) pour usage offline

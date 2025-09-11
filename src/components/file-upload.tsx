@@ -80,13 +80,13 @@ export function FileUpload({ onFileContent, className }: FileUploadProps) {
       header={
         <div className="flex items-center gap-2">
           <FileText className="h-1rem w-1rem" />
-          <span className="font-semibold text-900">Import du rapport Amazon Seller</span>
+          <span className="font-semibold text-900">Import de fichier d'adresses</span>
         </div>
       }
       className={cn('w-full', className)}
     >
       <div className="mb-3 text-600 text-sm">
-        Glissez-déposez ou sélectionnez votre rapport Amazon Seller (.txt au format TSV)
+        Glissez-déposez ou sélectionnez votre fichier d'adresses (.txt, .csv - Amazon Seller, Shopify, eBay, etc.)
       </div>
       <div
         role="button"
@@ -105,7 +105,7 @@ export function FileUpload({ onFileContent, className }: FileUploadProps) {
       >
           <input
             type="file"
-            accept=".txt"
+            accept=".txt,.csv"
             onChange={handleFileInput}
             className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
             disabled={isLoading}
