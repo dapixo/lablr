@@ -35,7 +35,7 @@ export function AddressList({
 }: AddressListProps) {
   const [currentPage, setCurrentPage] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
-  
+
   // Panel collapsible avec hook personnalisé
   const addressesPanel = useCollapsiblePanel(STORAGE_KEYS.ADDRESSES_PANEL_COLLAPSED, false)
 
@@ -51,44 +51,51 @@ export function AddressList({
   )
 
   // Combinaison optimisée : filtrage + pagination en un seul useMemo
-  const { filteredAddresses, currentAddresses, totalAddresses, totalPages } = useMemo(() => {
+  const { currentAddresses, totalAddresses, totalPages } = useMemo(() => {
     // Filtrage
-    const filtered = !searchQuery.trim() 
-      ? addresses 
-      : addresses.filter(address => {
+    const filtered = !searchQuery.trim()
+      ? addresses
+      : addresses.filter((address) => {
           const query = searchQuery.toLowerCase()
-          const searchableText = `${address.firstName} ${address.lastName} ${address.addressLine1} ${address.addressLine2 || ''} ${address.city} ${address.postalCode} ${address.country}`.toLowerCase()
+          const searchableText =
+            `${address.firstName} ${address.lastName} ${address.addressLine1} ${address.addressLine2 || ''} ${address.city} ${address.postalCode} ${address.country}`.toLowerCase()
           return searchableText.includes(query)
         })
-    
+
     // Pagination
     const total = filtered.length
     const pages = Math.ceil(total / ADDRESSES_PER_PAGE)
     const start = currentPage * ADDRESSES_PER_PAGE
     const current = filtered.slice(start, start + ADDRESSES_PER_PAGE)
-    
+
     return {
-      filteredAddresses: filtered,
       currentAddresses: current,
       totalAddresses: total,
-      totalPages: pages
+      totalPages: pages,
     }
   }, [addresses, searchQuery, currentPage])
 
   // Mémorisation des callbacks d'actions par adresse
-  const createEditHandler = useCallback((address: Address) => () => handleEditAddress(address), [handleEditAddress])
-  const createDeleteHandler = useCallback((addressId: string) => () => handleDeleteAddress(addressId), [handleDeleteAddress])
+  const createEditHandler = useCallback(
+    (address: Address) => () => handleEditAddress(address),
+    [handleEditAddress]
+  )
+  const createDeleteHandler = useCallback(
+    (addressId: string) => () => handleDeleteAddress(addressId),
+    [handleDeleteAddress]
+  )
 
   // Mémorisation des adresses rendues pour la page courante
   const addressCards = useMemo(
-    () => currentAddresses.map((address) => (
-      <AddressCard
-        key={address.id}
-        address={address}
-        onEdit={onEditAddress ? createEditHandler(address) : undefined}
-        onDelete={onDeleteAddress ? createDeleteHandler(address.id) : undefined}
-      />
-    )),
+    () =>
+      currentAddresses.map((address) => (
+        <AddressCard
+          key={address.id}
+          address={address}
+          onEdit={onEditAddress ? createEditHandler(address) : undefined}
+          onDelete={onDeleteAddress ? createDeleteHandler(address.id) : undefined}
+        />
+      )),
     [currentAddresses, onEditAddress, onDeleteAddress, createEditHandler, createDeleteHandler]
   )
 
@@ -107,19 +114,19 @@ export function AddressList({
     setSearchQuery(e.target.value)
   }, [])
 
-
   if (addresses.length === 0 && errors.length === 0) {
     return null
   }
 
   return (
     <div className={cn('space-y-4', className)}>
-      <Panel 
+      <Panel
         header={
           <div className="flex items-center gap-2">
             <MapPin className="h-4 w-4" />
             <span className="font-semibold text-gray-900">
-              Adresses extraites ({totalAddresses}{addresses.length !== totalAddresses && ` sur ${addresses.length}`})
+              Adresses extraites ({totalAddresses}
+              {addresses.length !== totalAddresses && ` sur ${addresses.length}`})
             </span>
             {totalPages > 1 && (
               <span className="text-gray-600 font-normal ml-3 hidden sm:inline">
@@ -135,7 +142,7 @@ export function AddressList({
       >
         <div className="flex flex-col sm:flex-row gap-3 mb-4">
           <div className="flex-1">
-            <SearchBar 
+            <SearchBar
               addresses={addresses}
               searchQuery={searchQuery}
               onSearchChange={handleSearchChange}
@@ -168,12 +175,7 @@ export function AddressList({
             </div>
             <div className="flex flex-column gap-2">
               {errors.map((error, index) => (
-                <Message 
-                  key={index}
-                  severity="warn" 
-                  text={error}
-                  className="w-full"
-                />
+                <Message key={index} severity="warn" text={error} className="w-full" />
               ))}
             </div>
           </div>
@@ -182,10 +184,8 @@ export function AddressList({
         {/* Liste des adresses */}
         {totalAddresses > 0 ? (
           <>
-            <div className="space-y-3">
-              {addressCards}
-            </div>
-            
+            <div className="space-y-3">{addressCards}</div>
+
             {/* Pagination */}
             {totalPages > 1 && (
               <div className="mt-4">
@@ -215,7 +215,11 @@ interface AddressCardProps {
   onDelete?: () => void
 }
 
-const AddressCard = React.memo<AddressCardProps>(function AddressCard({ address, onEdit, onDelete }) {
+const AddressCard = React.memo<AddressCardProps>(function AddressCard({
+  address,
+  onEdit,
+  onDelete,
+}) {
   return (
     <div className="bg-white p-4 rounded-lg border border-gray-200">
       {/* Mobile Layout */}
@@ -252,7 +256,9 @@ const AddressCard = React.memo<AddressCardProps>(function AddressCard({ address,
         <div className="space-y-1 text-sm text-gray-600 ml-6">
           <div>{address.addressLine1}</div>
           {address.addressLine2 && <div>{address.addressLine2}</div>}
-          <div>{address.postalCode} {address.city}</div>
+          <div>
+            {address.postalCode} {address.city}
+          </div>
           <div className="font-medium text-gray-700">{address.country}</div>
         </div>
       </div>
@@ -268,7 +274,9 @@ const AddressCard = React.memo<AddressCardProps>(function AddressCard({ address,
             <div className="truncate">{address.addressLine1}</div>
             {address.addressLine2 && <div className="truncate">{address.addressLine2}</div>}
             <div className="flex gap-4">
-              <span>{address.postalCode} {address.city}</span>
+              <span>
+                {address.postalCode} {address.city}
+              </span>
               <span className="font-medium text-gray-700">{address.country}</span>
             </div>
           </div>
@@ -307,7 +315,11 @@ interface SearchBarProps {
   onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-const SearchBar = React.memo<SearchBarProps>(function SearchBar({ addresses, searchQuery, onSearchChange }) {
+const SearchBar = React.memo<SearchBarProps>(function SearchBar({
+  addresses,
+  searchQuery,
+  onSearchChange,
+}) {
   if (addresses.length <= 5) {
     return <div /> // Placeholder vide pour maintenir la structure flex
   }

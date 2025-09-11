@@ -24,7 +24,7 @@ export function FileUpload({ onFileContent, className }: FileUploadProps) {
 
       try {
         // Vérifier le type de fichier
-        if (!ACCEPTED_FILE_TYPES.some(type => file.name.toLowerCase().endsWith(type))) {
+        if (!ACCEPTED_FILE_TYPES.some((type) => file.name.toLowerCase().endsWith(type))) {
           throw new Error(ERROR_MESSAGES.INVALID_FILE_TYPE)
         }
 
@@ -76,17 +76,18 @@ export function FileUpload({ onFileContent, className }: FileUploadProps) {
   )
 
   return (
-    <Panel 
+    <Panel
       header={
         <div className="flex items-center gap-2">
           <FileText className="h-1rem w-1rem" />
-          <span className="font-semibold text-900">Import de fichier d'adresses</span>
+          <span className="font-semibold text-900">Import de fichier d&apos;adresses</span>
         </div>
       }
       className={cn('w-full', className)}
     >
       <div className="mb-3 text-600 text-sm">
-        Glissez-déposez ou sélectionnez votre fichier d'adresses (.txt, .csv - Amazon Seller, Shopify, eBay, etc.)
+        Glissez-déposez ou sélectionnez votre fichier d&apos;adresses (.txt, .csv - Amazon Seller,
+        Shopify, eBay, etc.)
       </div>
       <div
         role="button"
@@ -103,13 +104,13 @@ export function FileUpload({ onFileContent, className }: FileUploadProps) {
         }}
         onDragLeave={() => setIsDragOver(false)}
       >
-          <input
-            type="file"
-            accept=".txt,.csv"
-            onChange={handleFileInput}
-            className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-            disabled={isLoading}
-          />
+        <input
+          type="file"
+          accept=".txt,.csv"
+          onChange={handleFileInput}
+          className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+          disabled={isLoading}
+        />
 
         <div className="flex flex-col items-center gap-4">
           <Upload
@@ -120,9 +121,7 @@ export function FileUpload({ onFileContent, className }: FileUploadProps) {
             <p className="text-lg font-medium">
               {isLoading ? 'Traitement en cours...' : 'Glissez votre fichier ici'}
             </p>
-            <p className="text-sm text-muted-foreground">
-              ou cliquez pour parcourir vos fichiers
-            </p>
+            <p className="text-sm text-muted-foreground">ou cliquez pour parcourir vos fichiers</p>
           </div>
         </div>
       </div>

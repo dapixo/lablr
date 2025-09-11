@@ -9,33 +9,30 @@ import { getPreviewConfig } from '@/constants/print-preview'
  */
 export function useFormatSelection() {
   const selectedFormat = usePersistedSelection(
-    STORAGE_KEYS.SELECTED_FORMAT, 
-    'A4' as PrintFormat, 
+    STORAGE_KEYS.SELECTED_FORMAT,
+    'A4' as PrintFormat,
     isValidFormat
   )
-  
-  const formatConfig = useMemo(() => 
-    getFormatConfig(selectedFormat.value), 
+
+  const formatConfig = useMemo(() => getFormatConfig(selectedFormat.value), [selectedFormat.value])
+
+  const previewConfig = useMemo(
+    () => getPreviewConfig(selectedFormat.value),
     [selectedFormat.value]
   )
-  
-  const previewConfig = useMemo(() => 
-    getPreviewConfig(selectedFormat.value),
-    [selectedFormat.value]
-  )
-  
-  const itemsPerPage = useMemo(() => 
-    formatConfig.layout.itemsPerPage || 15,
+
+  const itemsPerPage = useMemo(
+    () => formatConfig.layout.itemsPerPage || 15,
     [formatConfig.layout.itemsPerPage]
   )
-  
+
   return {
     selectedFormat: selectedFormat.value,
     updateFormat: selectedFormat.updateValue,
     formatConfig,
     previewConfig,
     itemsPerPage,
-    
+
     // Propriétés dérivées pour faciliter l'utilisation
     isCSVFormat: selectedFormat.value === 'CSV_EXPORT',
     isRollFormat: selectedFormat.value === 'ROLL_57x32',

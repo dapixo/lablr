@@ -31,14 +31,14 @@ function generateAddressTemplate(address: Address): string {
  */
 function wrapAddressItem(content: string, format: PrintFormat): string {
   const config = PRINT_CONFIGS[format]
-  
+
   switch (format) {
     case 'A4':
       return `<div class="${config.styling.itemClass}">
         <div><strong>${content.replace('<div class="address-name">', '').split('</div>')[0]}</strong></div>
         ${content.replace(/<div class="address-name">.*?<\/div>/, '')}
       </div>`
-    
+
     default:
       return `<div class="${config.styling.itemClass}">${content}</div>`
   }
@@ -49,10 +49,10 @@ function wrapAddressItem(content: string, format: PrintFormat): string {
  */
 export function generateAddressesHTML(addresses: Address[], format: PrintFormat): string {
   const config = PRINT_CONFIGS[format]
-  
+
   // Génération du contenu des adresses
   const addressesContent = addresses
-    .map(address => {
+    .map((address) => {
       const template = generateAddressTemplate(address)
       return wrapAddressItem(template, format)
     })
@@ -62,13 +62,13 @@ export function generateAddressesHTML(addresses: Address[], format: PrintFormat)
   switch (config.layout.type) {
     case 'grid':
       return `<div class="${config.styling.containerClass}">${addressesContent}</div>`
-    
+
     case 'compact':
       return `<div class="${config.styling.containerClass}">${addressesContent}</div>`
-    
+
     case 'roll':
       return addressesContent // Pas de wrapper pour le rouleau
-    
+
     case 'list':
     default:
       return addressesContent // Pas de wrapper pour les listes

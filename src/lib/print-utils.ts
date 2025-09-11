@@ -14,19 +14,15 @@ export function generateAddressesHTML(addresses: Address[], format: PrintFormat)
 /**
  * Lance l'impression directement depuis la page actuelle sans ouvrir d'onglet
  */
-export function printAddresses(
-  addresses: Address[], 
-  format: PrintFormat,
-  printCSS: string
-): void {
+export function printAddresses(addresses: Address[], format: PrintFormat, printCSS: string): void {
   // Créer un ID unique pour cette session d'impression
   const printSessionId = `lablr-print-${Date.now()}`
   const printStyleId = `${printSessionId}-styles`
   const printContentId = `${printSessionId}-content`
-  
+
   // Sauvegarder le titre original
   const originalTitle = document.title
-  
+
   // Créer le style d'impression
   const printStyleElement = document.createElement('style')
   printStyleElement.id = printStyleId
@@ -84,19 +80,19 @@ export function printAddresses(
   const cleanupPrint = () => {
     // Restaurer le titre original
     document.title = originalTitle
-    
+
     // Supprimer le contenu d'impression
     const contentElement = document.getElementById(printContentId)
     if (contentElement) {
       contentElement.remove()
     }
-    
+
     // Supprimer les styles d'impression
     const styleElement = document.getElementById(printStyleId)
     if (styleElement) {
       styleElement.remove()
     }
-    
+
     // Supprimer l'event listener
     window.removeEventListener('afterprint', cleanupPrint)
   }
@@ -115,7 +111,7 @@ export function downloadCSV(addresses: Address[], filename: string = 'addresses.
   const csvContent = generateCSV(addresses)
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
   const link = document.createElement('a')
-  
+
   if (link.download !== undefined) {
     const url = URL.createObjectURL(blob)
     link.setAttribute('href', url)

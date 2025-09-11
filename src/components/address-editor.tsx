@@ -111,23 +111,17 @@ export function AddressEditor({
     }
   }
 
-  const countryOptions = SUPPORTED_COUNTRIES.map(country => ({
+  const countryOptions = SUPPORTED_COUNTRIES.map((country) => ({
     label: country,
-    value: country
+    value: country,
   }))
 
   const footerContent = (
     <div className="flex gap-2">
-      <Button 
-        label="Annuler" 
-        icon="pi pi-times" 
-        onClick={onCancel} 
-        outlined 
-        className="flex-1"
-      />
-      <Button 
-        label="Sauvegarder" 
-        icon="pi pi-check" 
+      <Button label="Annuler" icon="pi pi-times" onClick={onCancel} outlined className="flex-1" />
+      <Button
+        label="Sauvegarder"
+        icon="pi pi-check"
         onClick={handleSubmit}
         className="flex-1"
         autoFocus
@@ -239,9 +233,7 @@ export function AddressEditor({
               placeholder="Paris"
               className={`w-full ${errors.city ? 'p-invalid' : ''}`}
             />
-            {errors.city && (
-              <Message severity="error" text={errors.city} className="mt-1" />
-            )}
+            {errors.city && <Message severity="error" text={errors.city} className="mt-1" />}
           </div>
         </div>
 
@@ -258,9 +250,7 @@ export function AddressEditor({
             placeholder="Sélectionner un pays"
             className={`w-full ${errors.country ? 'p-invalid' : ''}`}
           />
-          {errors.country && (
-            <Message severity="error" text={errors.country} className="mt-1" />
-          )}
+          {errors.country && <Message severity="error" text={errors.country} className="mt-1" />}
         </div>
       </form>
     </Dialog>

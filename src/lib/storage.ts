@@ -22,7 +22,7 @@ export function isStorageAvailable(): boolean {
  */
 export function getStorageItem(key: string): string | null {
   if (!isStorageAvailable()) return null
-  
+
   try {
     return localStorage.getItem(key)
   } catch (error) {
@@ -36,7 +36,7 @@ export function getStorageItem(key: string): string | null {
  */
 export function setStorageItem(key: string, value: string): boolean {
   if (!isStorageAvailable()) return false
-  
+
   try {
     localStorage.setItem(key, value)
     return true
@@ -67,7 +67,7 @@ export function setStorageBoolean(key: string, value: boolean): boolean {
 import { useCallback, useState } from 'react'
 
 export function useCollapsiblePanel(storageKey: string, defaultCollapsed: boolean = false) {
-  const [isCollapsed, setIsCollapsed] = useState(() => 
+  const [isCollapsed, setIsCollapsed] = useState(() =>
     getStorageBoolean(storageKey, defaultCollapsed)
   )
 
@@ -84,8 +84,8 @@ export function useCollapsiblePanel(storageKey: string, defaultCollapsed: boolea
  * Hook personnalisé pour gérer la sélection persistante avec validation
  */
 export function usePersistedSelection<T extends string>(
-  storageKey: string, 
-  defaultValue: T, 
+  storageKey: string,
+  defaultValue: T,
   validator?: (value: string) => value is T
 ) {
   const [value, setValue] = useState<T>(() => {
@@ -96,10 +96,13 @@ export function usePersistedSelection<T extends string>(
     return defaultValue
   })
 
-  const updateValue = useCallback((newValue: T) => {
-    setValue(newValue)
-    setStorageItem(storageKey, newValue)
-  }, [storageKey])
+  const updateValue = useCallback(
+    (newValue: T) => {
+      setValue(newValue)
+      setStorageItem(storageKey, newValue)
+    },
+    [storageKey]
+  )
 
   return { value, updateValue }
 }

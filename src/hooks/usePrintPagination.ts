@@ -11,18 +11,18 @@ export function usePrintPagination(addresses: Address[], format: PrintFormat) {
     const { itemsPerPage } = getPreviewConfig(format)
     const totalPages = Math.ceil(addresses.length / itemsPerPage)
     const pagesToShow = Math.min(PREVIEW_LIMITS.MAX_PAGES, totalPages)
-    
+
     return {
       itemsPerPage,
       totalPages,
       pagesToShow,
-      
+
       // Fonction pour obtenir les adresses d'une page spécifique
       getPageAddresses: (pageIndex: number): Address[] => {
         const startIndex = pageIndex * itemsPerPage
         return addresses.slice(startIndex, startIndex + itemsPerPage)
       },
-      
+
       // Informations utiles
       hasMorePages: totalPages > pagesToShow,
       remainingPages: Math.max(0, totalPages - pagesToShow),
@@ -37,12 +37,12 @@ export function usePrintPagination(addresses: Address[], format: PrintFormat) {
 export function useRollPreview(addresses: Address[]) {
   return useMemo(() => {
     const maxLabelsToShow = Math.min(PREVIEW_LIMITS.MAX_LABELS_ROLL, addresses.length)
-    
+
     return {
       maxLabelsToShow,
       hasMoreLabels: addresses.length > maxLabelsToShow,
       remainingLabels: Math.max(0, addresses.length - maxLabelsToShow),
-      
+
       // Fonction pour obtenir les étiquettes à afficher
       getDisplayLabels: (): Address[] => {
         return addresses.slice(0, maxLabelsToShow)

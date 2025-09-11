@@ -29,70 +29,70 @@ export const PRINT_CONFIGS: Record<PrintFormat, FormatConfig> = {
   A4: {
     pageSettings: { margin: 20, fontSize: 12 },
     layout: { type: 'list', itemsPerPage: 15 },
-    styling: { containerClass: '', itemClass: 'address-item' }
+    styling: { containerClass: '', itemClass: 'address-item' },
   },
-  
+
   A4_LABELS_10: {
     pageSettings: { margin: 10, fontSize: 12 },
     layout: { type: 'grid', itemsPerPage: 10, columns: 2, rows: 5 },
-    styling: { 
-      containerClass: 'labels-grid', 
+    styling: {
+      containerClass: 'labels-grid',
       itemClass: 'address-item',
-      dimensions: { width: '105mm', height: '57mm' }
-    }
+      dimensions: { width: '105mm', height: '57mm' },
+    },
   },
-  
+
   A4_LABELS_14: {
     pageSettings: { margin: 8, fontSize: 11, specialMargins: '15.1mm 5.95mm' },
     layout: { type: 'grid', itemsPerPage: 14, columns: 2, rows: 7 },
-    styling: { 
-      containerClass: 'labels-grid', 
+    styling: {
+      containerClass: 'labels-grid',
       itemClass: 'address-item',
-      dimensions: { width: '99.1mm', height: '38.1mm' }
-    }
+      dimensions: { width: '99.1mm', height: '38.1mm' },
+    },
   },
-  
+
   A4_LABELS_16: {
     pageSettings: { margin: 8, fontSize: 10, specialMargins: '12.9mm 5.9mm' },
     layout: { type: 'grid', itemsPerPage: 16, columns: 2, rows: 8 },
-    styling: { 
-      containerClass: 'labels-grid', 
+    styling: {
+      containerClass: 'labels-grid',
       itemClass: 'address-item',
-      dimensions: { width: '99.1mm', height: '33.9mm' }
-    }
+      dimensions: { width: '99.1mm', height: '33.9mm' },
+    },
   },
-  
+
   A4_LABELS_21: {
     pageSettings: { margin: 8, fontSize: 10, specialMargins: '0mm' },
     layout: { type: 'grid', itemsPerPage: 21, columns: 3, rows: 7 },
-    styling: { 
-      containerClass: 'labels-grid', 
+    styling: {
+      containerClass: 'labels-grid',
       itemClass: 'address-item',
-      dimensions: { width: '70mm', height: '42.4mm' }
-    }
+      dimensions: { width: '70mm', height: '42.4mm' },
+    },
   },
-  
+
   A4_COMPACT: {
     pageSettings: { margin: 15, fontSize: 10 },
     layout: { type: 'compact', itemsPerPage: 20, columns: 2 },
-    styling: { containerClass: 'compact-grid', itemClass: 'address-item' }
+    styling: { containerClass: 'compact-grid', itemClass: 'address-item' },
   },
-  
+
   ROLL_57x32: {
     pageSettings: { margin: 2, fontSize: 9 },
     layout: { type: 'roll', itemsPerPage: 1 },
-    styling: { 
-      containerClass: '', 
+    styling: {
+      containerClass: '',
       itemClass: 'address-item',
-      dimensions: { width: '57mm', height: '32mm' }
-    }
+      dimensions: { width: '57mm', height: '32mm' },
+    },
   },
-  
+
   CSV_EXPORT: {
     pageSettings: { margin: 0, fontSize: 0 },
     layout: { type: 'list', itemsPerPage: 0 },
-    styling: { containerClass: '', itemClass: '' }
-  }
+    styling: { containerClass: '', itemClass: '' },
+  },
 }
 
 // Labels et descriptions des formats
@@ -140,7 +140,7 @@ export const PRINT_FORMAT_ORDER: PrintFormat[] = [
   'A4_LABELS_16',
   'A4_LABELS_21',
   'ROLL_57x32',
-  'CSV_EXPORT'
+  'CSV_EXPORT',
 ]
 
 // Fonction utilitaire pour obtenir la configuration d'un format

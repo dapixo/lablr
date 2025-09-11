@@ -24,16 +24,19 @@ export function PrintPreview({ addresses, className }: PrintPreviewProps) {
   }, [])
 
   // États avec hooks personnalisés
-  const selectedFormat = usePersistedSelection(STORAGE_KEYS.SELECTED_FORMAT, 'A4' as PrintFormat, isValidFormat)
+  const selectedFormat = usePersistedSelection(
+    STORAGE_KEYS.SELECTED_FORMAT,
+    'A4' as PrintFormat,
+    isValidFormat
+  )
   const printPanel = useCollapsiblePanel(STORAGE_KEYS.PRINT_PANEL_COLLAPSED, false)
-
 
   const handlePrint = () => {
     if (selectedFormat.value === 'CSV_EXPORT') {
       downloadCSV(addresses, 'adresses-lablr.csv')
       return
     }
-    
+
     const printCSS = getPrintCSS(selectedFormat.value)
     printAddresses(addresses, selectedFormat.value, printCSS)
   }
@@ -44,7 +47,7 @@ export function PrintPreview({ addresses, className }: PrintPreviewProps) {
 
   return (
     <div className={cn('space-y-4', className)}>
-      <Panel 
+      <Panel
         header={
           <div className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
@@ -62,9 +65,15 @@ export function PrintPreview({ addresses, className }: PrintPreviewProps) {
         {/* Sélecteur de format */}
         <div className="space-y-4">
           <fieldset>
-            <legend className="text-sm font-semibold text-900 mb-4">Format d&apos;impression</legend>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3" role="radiogroup" aria-label="Choisir un format d'impression">
-              {getOrderedFormats().map(format => (
+            <legend className="text-sm font-semibold text-900 mb-4">
+              Format d&apos;impression
+            </legend>
+            <div
+              className="grid grid-cols-1 md:grid-cols-2 gap-3"
+              role="radiogroup"
+              aria-label="Choisir un format d'impression"
+            >
+              {getOrderedFormats().map((format) => (
                 <FormatCard
                   key={format}
                   format={format}
@@ -117,7 +126,9 @@ export function PrintPreview({ addresses, className }: PrintPreviewProps) {
               <CSVPreview addresses={addresses.slice(0, 5)} />
               {addresses.length > 5 && (
                 <div className="text-center text-sm text-gray-500 mt-3">
-                  ... et {addresses.length - 5} ligne{addresses.length - 5 > 1 ? 's' : ''} supplémentaire{addresses.length - 5 > 1 ? 's' : ''} ({addresses.length} adresses au total)
+                  ... et {addresses.length - 5} ligne{addresses.length - 5 > 1 ? 's' : ''}{' '}
+                  supplémentaire{addresses.length - 5 > 1 ? 's' : ''} ({addresses.length} adresses
+                  au total)
                 </div>
               )}
             </div>
@@ -133,23 +144,41 @@ interface PrintPreviewSheetProps {
   format: PrintFormat
 }
 
-const PrintPreviewSheet = React.memo<PrintPreviewSheetProps>(function PrintPreviewSheet({ addresses, format }) {
+const PrintPreviewSheet = React.memo<PrintPreviewSheetProps>(function PrintPreviewSheet({
+  addresses,
+  format,
+}) {
   // Calcul dimensions A4 mémorisé
-  const dimensions = useMemo(() => ({
-    height: PREVIEW_DIMENSIONS.A4_SHEET.height,
-    width: PREVIEW_DIMENSIONS.A4_SHEET.height * PREVIEW_DIMENSIONS.A4_SHEET.ratio
-  }), [])
+  const dimensions = useMemo(
+    () => ({
+      height: PREVIEW_DIMENSIONS.A4_SHEET.height,
+      width: PREVIEW_DIMENSIONS.A4_SHEET.height * PREVIEW_DIMENSIONS.A4_SHEET.ratio,
+    }),
+    []
+  )
 
   // Calculer le nombre de pages nécessaires selon le format
   const { addressesPerPage, totalPages, pagesToShow } = useMemo(() => {
     let perPage: number
     switch (format) {
-      case 'A4_LABELS_10': perPage = 10; break
-      case 'A4_LABELS_14': perPage = 14; break
-      case 'A4_LABELS_16': perPage = 16; break
-      case 'A4_LABELS_21': perPage = 21; break
-      case 'A4_COMPACT': perPage = 20; break // 2 colonnes de 10
-      default: perPage = 15; break
+      case 'A4_LABELS_10':
+        perPage = 10
+        break
+      case 'A4_LABELS_14':
+        perPage = 14
+        break
+      case 'A4_LABELS_16':
+        perPage = 16
+        break
+      case 'A4_LABELS_21':
+        perPage = 21
+        break
+      case 'A4_COMPACT':
+        perPage = 20
+        break // 2 colonnes de 10
+      default:
+        perPage = 15
+        break
     }
     const total = Math.ceil(addresses.length / perPage)
     const show = Math.min(PREVIEW_MAX_PAGES, total)
@@ -221,12 +250,20 @@ const PrintPreviewSheet = React.memo<PrintPreviewSheetProps>(function PrintPrevi
   )
 })
 
-const PrintPreviewLabels = React.memo<{ addresses: Address[], gridCols: number, gridRows?: number }>(function PrintPreviewLabels({ addresses, gridCols, gridRows }) {
-  const totalLabels = gridRows ? gridCols * gridRows : (gridCols === 2 ? 10 : 21)
-  const labelHeight = gridRows === 8 ? '12.5%' : gridRows === 7 ? '14.3%' : (gridCols === 2 ? '19%' : '13%')
-  
+const PrintPreviewLabels = React.memo<{
+  addresses: Address[]
+  gridCols: number
+  gridRows?: number
+}>(function PrintPreviewLabels({ addresses, gridCols, gridRows }) {
+  const totalLabels = gridRows ? gridCols * gridRows : gridCols === 2 ? 10 : 21
+  const labelHeight =
+    gridRows === 8 ? '12.5%' : gridRows === 7 ? '14.3%' : gridCols === 2 ? '19%' : '13%'
+
   return (
-    <div className={`grid gap-2 h-full`} style={{ gridTemplateColumns: `repeat(${gridCols}, 1fr)` }}>
+    <div
+      className={`grid gap-2 h-full`}
+      style={{ gridTemplateColumns: `repeat(${gridCols}, 1fr)` }}
+    >
       {Array.from({ length: totalLabels }, (_, index) => {
         const address = addresses[index]
         return (
@@ -235,9 +272,18 @@ const PrintPreviewLabels = React.memo<{ addresses: Address[], gridCols: number, 
             className="border border-gray-400 rounded-sm bg-white flex flex-col justify-center items-center overflow-hidden"
             style={{
               height: labelHeight,
-              minHeight: gridRows === 8 ? '55px' : gridRows === 7 ? '60px' : (gridCols === 2 ? '80px' : '55px'),
-              padding: gridRows === 8 ? '4px' : gridRows === 7 ? '5px' : (gridCols === 2 ? '6px' : '4px'),
-              fontSize: gridRows === 8 ? '6px' : gridRows === 7 ? '6.5px' : (gridCols === 2 ? '7px' : '6px'),
+              minHeight:
+                gridRows === 8
+                  ? '55px'
+                  : gridRows === 7
+                    ? '60px'
+                    : gridCols === 2
+                      ? '80px'
+                      : '55px',
+              padding:
+                gridRows === 8 ? '4px' : gridRows === 7 ? '5px' : gridCols === 2 ? '6px' : '4px',
+              fontSize:
+                gridRows === 8 ? '6px' : gridRows === 7 ? '6.5px' : gridCols === 2 ? '7px' : '6px',
               lineHeight: '1.2',
               textAlign: 'center',
             }}
@@ -266,7 +312,9 @@ const PrintPreviewLabels = React.memo<{ addresses: Address[], gridCols: number, 
   )
 })
 
-const PrintPreviewList = React.memo<{ addresses: Address[] }>(function PrintPreviewList({ addresses }) {
+const PrintPreviewList = React.memo<{ addresses: Address[] }>(function PrintPreviewList({
+  addresses,
+}) {
   return (
     <div className="space-y-2 h-full overflow-hidden">
       {addresses.map((address) => (
@@ -293,7 +341,9 @@ const PrintPreviewList = React.memo<{ addresses: Address[] }>(function PrintPrev
 })
 
 // Composant pour le format compact (2 colonnes)
-const PrintPreviewCompact = React.memo<{ addresses: Address[] }>(function PrintPreviewCompact({ addresses }) {
+const PrintPreviewCompact = React.memo<{ addresses: Address[] }>(function PrintPreviewCompact({
+  addresses,
+}) {
   return (
     <div className="grid grid-cols-2 gap-4 h-full">
       {addresses.map((address) => (
@@ -319,8 +369,9 @@ const PrintPreviewCompact = React.memo<{ addresses: Address[] }>(function PrintP
   )
 })
 
-
-const PrintPreviewRoll = React.memo<{ addresses: Address[] }>(function PrintPreviewRoll({ addresses }) {
+const PrintPreviewRoll = React.memo<{ addresses: Address[] }>(function PrintPreviewRoll({
+  addresses,
+}) {
   // Dimensions rouleau 57x32mm
   const rollHeight = PREVIEW_DIMENSIONS.ROLL_LABEL.height
   const rollWidth = rollHeight * PREVIEW_DIMENSIONS.ROLL_LABEL.ratio
@@ -332,11 +383,11 @@ const PrintPreviewRoll = React.memo<{ addresses: Address[] }>(function PrintPrev
       <div className="text-sm text-gray-600 text-center mb-4">
         Aperçu du rouleau d&apos;étiquettes 57×32mm (une étiquette par adresse)
       </div>
-      
+
       <div className="flex flex-col items-center space-y-2 bg-gray-50 p-4 rounded-lg">
         {Array.from({ length: maxLabelsToShow }, (_, index) => {
           const address = addresses[index]
-          
+
           return (
             <div
               key={index}
@@ -355,10 +406,13 @@ const PrintPreviewRoll = React.memo<{ addresses: Address[] }>(function PrintPrev
               {/* Contenu de l'étiquette */}
               <div className="absolute inset-0 flex flex-col justify-center items-center text-center p-2">
                 {address ? (
-                  <div className="w-full text-center overflow-hidden" style={{ 
-                    fontSize: '9px', 
-                    lineHeight: '1.1' 
-                  }}>
+                  <div
+                    className="w-full text-center overflow-hidden"
+                    style={{
+                      fontSize: '9px',
+                      lineHeight: '1.1',
+                    }}
+                  >
                     <div className="font-bold text-black truncate mb-1">
                       {address.firstName} {address.lastName}
                     </div>
@@ -383,14 +437,15 @@ const PrintPreviewRoll = React.memo<{ addresses: Address[] }>(function PrintPrev
             </div>
           )
         })}
-        
+
         {addresses.length > maxLabelsToShow && (
           <div className="text-center text-sm text-gray-500 py-2 flex items-center gap-2">
             <div className="h-px bg-gray-300 flex-1" />
             <span>
-              ... et {addresses.length - maxLabelsToShow} étiquette{addresses.length - maxLabelsToShow > 1 ? 's' : ''} supplémentaire{addresses.length - maxLabelsToShow > 1 ? 's' : ''} 
-              <br />
-              ({addresses.length} étiquettes au total)
+              ... et {addresses.length - maxLabelsToShow} étiquette
+              {addresses.length - maxLabelsToShow > 1 ? 's' : ''} supplémentaire
+              {addresses.length - maxLabelsToShow > 1 ? 's' : ''}
+              <br />({addresses.length} étiquettes au total)
             </span>
             <div className="h-px bg-gray-300 flex-1" />
           </div>
@@ -400,7 +455,6 @@ const PrintPreviewRoll = React.memo<{ addresses: Address[] }>(function PrintPrev
   )
 })
 
-
 // Composant pour l'aperçu CSV
 // Composant FormatCard optimisé
 interface FormatCardProps {
@@ -409,14 +463,15 @@ interface FormatCardProps {
   onSelect: (format: PrintFormat) => void
 }
 
-const FormatCard = React.memo<FormatCardProps>(function FormatCard({ format, isSelected, onSelect }) {
+const FormatCard = React.memo<FormatCardProps>(function FormatCard({
+  format,
+  isSelected,
+  onSelect,
+}) {
   const { cardStyles, iconStyles, titleStyles, descriptionStyles } = getFormatCardStyles(isSelected)
-  
+
   return (
-    <label
-      className={cardStyles}
-      htmlFor={`format-${format}`}
-    >
+    <label className={cardStyles} htmlFor={`format-${format}`}>
       <input
         type="radio"
         id={`format-${format}`}
@@ -428,17 +483,10 @@ const FormatCard = React.memo<FormatCardProps>(function FormatCard({ format, isS
         aria-describedby={`format-${format}-description`}
       />
       <div className="flex items-start gap-3">
-        <div className={iconStyles}>
-          {getFormatIcon(format)}
-        </div>
+        <div className={iconStyles}>{getFormatIcon(format)}</div>
         <div className="flex-1 min-w-0">
-          <div className={titleStyles}>
-            {PRINT_FORMAT_LABELS[format]}
-          </div>
-          <div 
-            id={`format-${format}-description`}
-            className={descriptionStyles}
-          >
+          <div className={titleStyles}>{PRINT_FORMAT_LABELS[format]}</div>
+          <div id={`format-${format}-description`} className={descriptionStyles}>
             {getFormatDescription(format)}
           </div>
         </div>
@@ -454,7 +502,7 @@ const FormatCard = React.memo<FormatCardProps>(function FormatCard({ format, isS
 
 const CSVPreview = React.memo<{ addresses: Address[] }>(function CSVPreview({ addresses }) {
   const headers = ['Prénom', 'Nom', 'Adresse 1', 'Adresse 2', 'Code Postal', 'Ville', 'Pays']
-  
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-xs font-mono">
@@ -533,38 +581,40 @@ function getFormatIcon(format: PrintFormat): string {
 
 function getOrderedFormats(): PrintFormat[] {
   return [
-    'A4',              // Formats A4 groupés
-    'A4_COMPACT', 
+    'A4', // Formats A4 groupés
+    'A4_COMPACT',
     'A4_LABELS_10',
     'A4_LABELS_14',
     'A4_LABELS_16',
     'A4_LABELS_21',
-    'ROLL_57x32',      // Formats rouleau
-    'CSV_EXPORT'       // Export
+    'ROLL_57x32', // Formats rouleau
+    'CSV_EXPORT', // Export
   ]
 }
 
 function getFormatCardStyles(isSelected: boolean) {
-  const baseCardStyles = 'relative cursor-pointer rounded-lg border-2 p-4 transition-all duration-200 focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2'
+  const baseCardStyles =
+    'relative cursor-pointer rounded-lg border-2 p-4 transition-all duration-200 focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2'
   const selectedCardStyles = 'border-blue-500 bg-blue-50'
   const unselectedCardStyles = 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
-  
-  const baseIconStyles = 'flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-lg'
+
+  const baseIconStyles =
+    'flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-lg'
   const selectedIconStyles = 'bg-blue-500 text-white'
   const unselectedIconStyles = 'bg-gray-100 text-gray-600'
-  
+
   const baseTitleStyles = 'font-medium text-sm mb-1 leading-tight'
   const selectedTitleStyles = 'text-blue-900'
   const unselectedTitleStyles = 'text-gray-900'
-  
+
   const baseDescriptionStyles = 'text-xs leading-relaxed'
   const selectedDescriptionStyles = 'text-blue-700'
   const unselectedDescriptionStyles = 'text-gray-600'
-  
+
   return {
     cardStyles: `${baseCardStyles} ${isSelected ? selectedCardStyles : unselectedCardStyles}`,
     iconStyles: `${baseIconStyles} ${isSelected ? selectedIconStyles : unselectedIconStyles}`,
     titleStyles: `${baseTitleStyles} ${isSelected ? selectedTitleStyles : unselectedTitleStyles}`,
-    descriptionStyles: `${baseDescriptionStyles} ${isSelected ? selectedDescriptionStyles : unselectedDescriptionStyles}`
+    descriptionStyles: `${baseDescriptionStyles} ${isSelected ? selectedDescriptionStyles : unselectedDescriptionStyles}`,
   }
 }

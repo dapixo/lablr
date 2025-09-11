@@ -13,7 +13,7 @@ export const PRINT_PREVIEW_CONFIG = {
     ROLL_57x32: 1,
     CSV_EXPORT: 0,
   } as const,
-  
+
   // Configuration des grilles d'étiquettes pour l'aperçu
   LABEL_GRID_CONFIG: {
     A4_LABELS_10: { gridCols: 2, gridRows: 5, height: '19%' },
@@ -21,19 +21,19 @@ export const PRINT_PREVIEW_CONFIG = {
     A4_LABELS_16: { gridCols: 2, gridRows: 8, height: '12.5%' },
     A4_LABELS_21: { gridCols: 3, gridRows: 7, height: '13%' },
   } as const,
-  
+
   // Tailles de police pour l'aperçu
   PREVIEW_FONT_SIZES: {
     A4_LABELS_10: '7px',
     A4_LABELS_14: '6.5px',
-    A4_LABELS_16: '6px', 
+    A4_LABELS_16: '6px',
     A4_LABELS_21: '6px',
     A4_COMPACT: '7px',
     A4: '8px',
     ROLL_57x32: '9px',
     CSV_EXPORT: '12px',
   } as const,
-  
+
   // Hauteurs minimales pour l'aperçu
   PREVIEW_MIN_HEIGHTS: {
     A4_LABELS_10: '80px',
@@ -44,7 +44,7 @@ export const PRINT_PREVIEW_CONFIG = {
     A4: '40px',
     ROLL_57x32: '120px',
   } as const,
-  
+
   // Padding pour l'aperçu
   PREVIEW_PADDING: {
     A4_LABELS_10: '6px',
@@ -80,14 +80,25 @@ export function getPreviewConfig(format: PrintFormat) {
   return {
     itemsPerPage: PRINT_PREVIEW_CONFIG.ITEMS_PER_PAGE[format] || 15,
     fontSize: PRINT_PREVIEW_CONFIG.PREVIEW_FONT_SIZES[format] || '8px',
-    minHeight: PRINT_PREVIEW_CONFIG.PREVIEW_MIN_HEIGHTS[format as keyof typeof PRINT_PREVIEW_CONFIG.PREVIEW_MIN_HEIGHTS] || '40px',
-    padding: PRINT_PREVIEW_CONFIG.PREVIEW_PADDING[format as keyof typeof PRINT_PREVIEW_CONFIG.PREVIEW_PADDING] || '6px',
-    gridConfig: PRINT_PREVIEW_CONFIG.LABEL_GRID_CONFIG[format as keyof typeof PRINT_PREVIEW_CONFIG.LABEL_GRID_CONFIG],
+    minHeight:
+      PRINT_PREVIEW_CONFIG.PREVIEW_MIN_HEIGHTS[
+        format as keyof typeof PRINT_PREVIEW_CONFIG.PREVIEW_MIN_HEIGHTS
+      ] || '40px',
+    padding:
+      PRINT_PREVIEW_CONFIG.PREVIEW_PADDING[
+        format as keyof typeof PRINT_PREVIEW_CONFIG.PREVIEW_PADDING
+      ] || '6px',
+    gridConfig:
+      PRINT_PREVIEW_CONFIG.LABEL_GRID_CONFIG[
+        format as keyof typeof PRINT_PREVIEW_CONFIG.LABEL_GRID_CONFIG
+      ],
   }
 }
 
 // Fonction pour déterminer le type de preview à utiliser
-export function getPreviewType(format: PrintFormat): 'labels' | 'compact' | 'list' | 'roll' | 'csv' {
+export function getPreviewType(
+  format: PrintFormat
+): 'labels' | 'compact' | 'list' | 'roll' | 'csv' {
   if (format === 'CSV_EXPORT') return 'csv'
   if (format === 'ROLL_57x32') return 'roll'
   if (format === 'A4_COMPACT') return 'compact'

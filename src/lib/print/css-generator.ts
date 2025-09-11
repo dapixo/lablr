@@ -78,7 +78,7 @@ const CSS_MIXINS: CSSMixins = {
         grid-template-columns: repeat(${columns}, 1fr);
         gap: 0;
       }`
-    
+
     if (rows && width && height) {
       const totalWidth = parseFloat(width) * columns
       const totalHeight = parseFloat(height) * rows
@@ -91,7 +91,7 @@ const CSS_MIXINS: CSSMixins = {
         width: ${totalWidth}mm;
       }`
     }
-    
+
     return css
   },
 
@@ -174,7 +174,7 @@ const CSS_MIXINS: CSSMixins = {
   pageBreaks: (itemsPerPage) => `
     .address-item:nth-child(${itemsPerPage}n) {
       page-break-after: always;
-    }`
+    }`,
 }
 
 // Générateur CSS principal
@@ -184,7 +184,7 @@ export function generatePrintCSS(format: PrintFormat): string {
 
   // CSS de base commun
   let css = ''
-  
+
   // Gestion spéciale pour le format rouleau
   if (layout.type === 'roll' && styling.dimensions) {
     css += CSS_MIXINS.rollLayout(styling.dimensions.width, styling.dimensions.height)
@@ -203,9 +203,9 @@ export function generatePrintCSS(format: PrintFormat): string {
     case 'grid':
       if (styling.dimensions && layout.columns && layout.rows) {
         css += CSS_MIXINS.gridLayout(
-          layout.columns, 
-          layout.rows, 
-          styling.dimensions.width, 
+          layout.columns,
+          layout.rows,
+          styling.dimensions.width,
           styling.dimensions.height
         )
         css += CSS_MIXINS.labelItem(

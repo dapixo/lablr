@@ -30,7 +30,7 @@ export default function Home() {
     const elementPosition = element.offsetTop - offset
     window.scrollTo({
       top: Math.max(0, elementPosition), // Prevent negative scroll
-      behavior: 'smooth'
+      behavior: 'smooth',
     })
   }, [])
 
@@ -50,7 +50,7 @@ export default function Home() {
     setErrors(result.errors)
     setFileName(filename)
     setParseResult(result)
-    
+
     // Déclencher l'auto-scroll seulement lors de l'import de fichier
     if (cleanedAddresses.length > 0) {
       setShouldAutoScroll(true)
@@ -83,7 +83,7 @@ export default function Home() {
       rejectLabel: 'Annuler',
       accept: () => {
         setAddresses((prev) => prev.filter((addr) => addr.id !== addressId))
-      }
+      },
     })
   }
 
@@ -128,9 +128,7 @@ export default function Home() {
             </div>
 
             {/* Navigation/Actions - Empty for now */}
-            <div className="flex items-center gap-3">
-              {/* Future navigation items */}
-            </div>
+            <div className="flex items-center gap-3">{/* Future navigation items */}</div>
           </div>
         </div>
       </header>
@@ -143,22 +141,23 @@ export default function Home() {
             <div className="bg-white rounded-xl shadow-sm p-8 mb-8 text-center">
               <div className="mb-6">
                 <i className="pi pi-cloud-upload text-6xl text-blue-500 mb-4 block"></i>
-                <h2 className="text-3xl font-bold text-gray-900 mb-3">
-                  Bienvenue sur Lablr
-                </h2>
+                <h2 className="text-3xl font-bold text-gray-900 mb-3">Bienvenue sur Lablr</h2>
                 <p className="text-gray-600 text-lg leading-relaxed max-w-2xl mx-auto">
-                  Importez vos données de n&apos;importe quelle plateforme e-commerce et transformez-les 
-                  en étiquettes d&apos;expédition professionnelles en quelques clics.
+                  Importez vos données de n&apos;importe quelle plateforme e-commerce et
+                  transformez-les en étiquettes d&apos;expédition professionnelles en quelques
+                  clics.
                 </p>
               </div>
-              
+
               <div className="grid md:grid-cols-3 gap-6 mt-8">
                 <div className="text-center">
                   <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-4">
                     <i className="pi pi-upload text-blue-500 text-2xl"></i>
                   </div>
                   <h3 className="font-semibold text-gray-900 mb-2 text-lg">1. Importez</h3>
-                  <p className="text-gray-600 text-sm">Glissez votre fichier d&apos;adresses (Amazon, Shopify, eBay...)</p>
+                  <p className="text-gray-600 text-sm">
+                    Glissez votre fichier d&apos;adresses (Amazon, Shopify, eBay...)
+                  </p>
                 </div>
                 <div className="text-center">
                   <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-4">
@@ -172,7 +171,9 @@ export default function Home() {
                     <i className="pi pi-print text-orange-500 text-2xl"></i>
                   </div>
                   <h3 className="font-semibold text-gray-900 mb-2 text-lg">3. Imprimez</h3>
-                  <p className="text-gray-600 text-sm">Obtenez vos étiquettes parfaitement formatées</p>
+                  <p className="text-gray-600 text-sm">
+                    Obtenez vos étiquettes parfaitement formatées
+                  </p>
                 </div>
               </div>
             </div>
@@ -215,7 +216,10 @@ export default function Home() {
                   {addresses.length > 0 && (
                     <div className="text-right">
                       <p className="text-3xl font-bold text-blue-500 mb-1">{addresses.length}</p>
-                      <p className="text-sm text-gray-600">adresse{addresses.length > 1 ? 's' : ''} extraite{addresses.length > 1 ? 's' : ''}</p>
+                      <p className="text-sm text-gray-600">
+                        adresse{addresses.length > 1 ? 's' : ''} extraite
+                        {addresses.length > 1 ? 's' : ''}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -239,7 +243,7 @@ export default function Home() {
                 <span className="text-xl font-bold text-gray-900">Lablr</span>
               </div>
               <p className="text-gray-600 leading-relaxed pr-4">
-                Solution professionnelle pour l&apos;extraction et l&apos;impression 
+                Solution professionnelle pour l&apos;extraction et l&apos;impression
                 d&apos;étiquettes à partir de toutes vos plateformes e-commerce.
               </p>
             </div>
@@ -290,9 +294,7 @@ export default function Home() {
           {/* Copyright Bar */}
           <div className="border-t border-gray-200 py-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <p className="text-gray-600 text-sm">
-                © 2024 Lablr. Tous droits réservés.
-              </p>
+              <p className="text-gray-600 text-sm">© 2024 Lablr. Tous droits réservés.</p>
               <div className="flex items-center gap-6">
                 <div className="flex items-center gap-2 text-xs text-gray-500">
                   <span className="uppercase font-semibold tracking-wider">Version</span>

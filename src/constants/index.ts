@@ -13,17 +13,16 @@ export const PRINT_DELAY_MS = 250
 export const PREVIEW_MAX_PAGES = 1
 export const PREVIEW_MAX_LABELS_ROLL = 8
 
-
 // Constantes pour l'aperçu (en pixels)
 export const PREVIEW_DIMENSIONS = {
   A4_SHEET: {
     height: 600,
-    ratio: 210 / 297 // A4 ratio
+    ratio: 210 / 297, // A4 ratio
   },
   ROLL_LABEL: {
     height: 120,
-    ratio: 57 / 32 // Roll ratio
-  }
+    ratio: 57 / 32, // Roll ratio
+  },
 } as const
 
 // Messages d'erreur
@@ -39,7 +38,7 @@ export const ERROR_MESSAGES = {
 // Pays supportés
 export const SUPPORTED_COUNTRIES = [
   'France',
-  'Belgique', 
+  'Belgique',
   'Suisse',
   'Canada',
   'États-Unis',
@@ -47,7 +46,7 @@ export const SUPPORTED_COUNTRIES = [
   'Italie',
   'Espagne',
   'Royaume-Uni',
-  'Pays-Bas'
+  'Pays-Bas',
 ] as const
 
 export const DEFAULT_COUNTRY = 'France'
