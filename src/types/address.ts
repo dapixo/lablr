@@ -18,6 +18,8 @@ export type PrintFormat =
   | 'A4' 
   | 'A4_LABELS_10' 
   | 'ROLL_57x32'
+  | 'A4_LABELS_14'
+  | 'A4_LABELS_16'
   | 'A4_LABELS_21'
   | 'A4_COMPACT'
   | 'CSV_EXPORT'

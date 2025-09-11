@@ -160,6 +160,8 @@ const PrintPreviewSheet = React.memo<PrintPreviewSheetProps>(function PrintPrevi
     let perPage: number
     switch (format) {
       case 'A4_LABELS_10': perPage = 10; break
+      case 'A4_LABELS_14': perPage = 14; break
+      case 'A4_LABELS_16': perPage = 16; break
       case 'A4_LABELS_21': perPage = 21; break
       case 'A4_COMPACT': perPage = 20; break // 2 colonnes de 10
       default: perPage = 15; break
@@ -202,6 +204,10 @@ const PrintPreviewSheet = React.memo<PrintPreviewSheetProps>(function PrintPrevi
             >
               {format === 'A4_LABELS_10' ? (
                 <PrintPreviewLabels addresses={pageAddresses} gridCols={2} />
+              ) : format === 'A4_LABELS_14' ? (
+                <PrintPreviewLabels addresses={pageAddresses} gridCols={2} gridRows={7} />
+              ) : format === 'A4_LABELS_16' ? (
+                <PrintPreviewLabels addresses={pageAddresses} gridCols={2} gridRows={8} />
               ) : format === 'A4_LABELS_21' ? (
                 <PrintPreviewLabels addresses={pageAddresses} gridCols={3} />
               ) : format === 'A4_COMPACT' ? (
@@ -230,9 +236,9 @@ const PrintPreviewSheet = React.memo<PrintPreviewSheetProps>(function PrintPrevi
   )
 })
 
-const PrintPreviewLabels = React.memo<{ addresses: Address[], gridCols: number }>(function PrintPreviewLabels({ addresses, gridCols }) {
-  const totalLabels = gridCols === 2 ? 10 : 21
-  const labelHeight = gridCols === 2 ? '19%' : '13%'
+const PrintPreviewLabels = React.memo<{ addresses: Address[], gridCols: number, gridRows?: number }>(function PrintPreviewLabels({ addresses, gridCols, gridRows }) {
+  const totalLabels = gridRows ? gridCols * gridRows : (gridCols === 2 ? 10 : 21)
+  const labelHeight = gridRows === 8 ? '12.5%' : gridRows === 7 ? '14.3%' : (gridCols === 2 ? '19%' : '13%')
   
   return (
     <div className={`grid gap-2 h-full`} style={{ gridTemplateColumns: `repeat(${gridCols}, 1fr)` }}>
@@ -244,9 +250,9 @@ const PrintPreviewLabels = React.memo<{ addresses: Address[], gridCols: number }
             className="border border-gray-400 rounded-sm bg-white flex flex-col justify-center items-center overflow-hidden"
             style={{
               height: labelHeight,
-              minHeight: gridCols === 2 ? '80px' : '55px',
-              padding: gridCols === 2 ? '6px' : '4px',
-              fontSize: gridCols === 2 ? '7px' : '6px',
+              minHeight: gridRows === 8 ? '55px' : gridRows === 7 ? '60px' : (gridCols === 2 ? '80px' : '55px'),
+              padding: gridRows === 8 ? '4px' : gridRows === 7 ? '5px' : (gridCols === 2 ? '6px' : '4px'),
+              fontSize: gridRows === 8 ? '6px' : gridRows === 7 ? '6.5px' : (gridCols === 2 ? '7px' : '6px'),
               lineHeight: '1.2',
               textAlign: 'center',
             }}
@@ -502,6 +508,10 @@ function getFormatDescription(format: PrintFormat): string {
       return '10 étiquettes de 105×57mm par page'
     case 'ROLL_57x32':
       return 'Une étiquette 57×32mm par adresse'
+    case 'A4_LABELS_14':
+      return '14 étiquettes Avery 99.1×38.1mm par page (format L7163)'
+    case 'A4_LABELS_16':
+      return '16 étiquettes Avery 99.1×33.9mm par page (format L7162)'
     case 'A4_LABELS_21':
       return '21 étiquettes Avery 70×42.3mm par page (format L7160)'
     case 'A4_COMPACT':
@@ -521,6 +531,10 @@ function getFormatIcon(format: PrintFormat): string {
       return '🏷️'
     case 'ROLL_57x32':
       return '🎞️'
+    case 'A4_LABELS_14':
+      return '🏛️'
+    case 'A4_LABELS_16':
+      return '🗂️'
     case 'A4_LABELS_21':
       return '📇'
     case 'A4_COMPACT':
@@ -537,6 +551,8 @@ function getOrderedFormats(): PrintFormat[] {
     'A4',              // Formats A4 groupés
     'A4_COMPACT', 
     'A4_LABELS_10',
+    'A4_LABELS_14',
+    'A4_LABELS_16',
     'A4_LABELS_21',
     'ROLL_57x32',      // Formats rouleau
     'CSV_EXPORT'       // Export

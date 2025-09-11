@@ -1,72 +1,14 @@
 import { PRINT_DELAY_MS } from '@/constants'
 import type { Address, PrintFormat } from '@/types/address'
+import { generateAddressesHTML as generateHTML } from '@/lib/print/html-generator'
+import { generateCSV } from '@/lib/print-formats'
 
 /**
  * Génère le HTML pour l'impression des adresses selon le format spécifié
+ * @deprecated Utiliser generateHTML depuis html-generator.ts
  */
 export function generateAddressesHTML(addresses: Address[], format: PrintFormat): string {
-  if (format === 'A4_LABELS_10') {
-    return `
-      <div class="labels-grid">
-        ${addresses
-          .map(
-            (address) => `
-          <div class="address-item">
-            <div class="address-name">${escapeHtml(address.firstName)} ${escapeHtml(address.lastName)}</div>
-            <div class="address-line">${escapeHtml(address.addressLine1)}</div>
-            ${address.addressLine2 ? `<div class="address-line">${escapeHtml(address.addressLine2)}</div>` : ''}
-            <div class="address-line">${escapeHtml(address.postalCode)} ${escapeHtml(address.city)}</div>
-            <div class="address-country">${escapeHtml(address.country)}</div>
-          </div>
-        `
-          )
-          .join('')}
-      </div>
-    `
-  }
-
-  if (format === 'ROLL_57x32') {
-    return addresses
-      .map(
-        (address) => `
-        <div class="address-item">
-          <div class="address-name">${escapeHtml(address.firstName)} ${escapeHtml(address.lastName)}</div>
-          <div class="address-line">${escapeHtml(address.addressLine1)}</div>
-          ${address.addressLine2 ? `<div class="address-line">${escapeHtml(address.addressLine2)}</div>` : ''}
-          <div class="address-line">${escapeHtml(address.postalCode)} ${escapeHtml(address.city)}</div>
-          <div class="address-country">${escapeHtml(address.country)}</div>
-        </div>
-      `
-      )
-      .join('')
-  }
-
-  // Format A4 par défaut
-  return addresses
-    .map(
-      (address) => `
-      <div class="address-item">
-        <div><strong>${escapeHtml(address.firstName)} ${escapeHtml(address.lastName)}</strong></div>
-        <div>${escapeHtml(address.addressLine1)}</div>
-        ${address.addressLine2 ? `<div>${escapeHtml(address.addressLine2)}</div>` : ''}
-        <div>${escapeHtml(address.postalCode)} ${escapeHtml(address.city)}</div>
-        <div>${escapeHtml(address.country)}</div>
-      </div>
-    `
-    )
-    .join('')
-}
-
-/**
- * Échappe les caractères HTML pour éviter les injections XSS
- */
-function escapeHtml(unsafe: string): string {
-  return unsafe
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;')
+  return generateHTML(addresses, format)
 }
 
 /**
@@ -168,3 +110,19 @@ export function printAddresses(
   }, PRINT_DELAY_MS)
 }
 
+// Fonction pour télécharger le CSV
+export function downloadCSV(addresses: Address[], filename: string = 'addresses.csv'): void {
+  const csvContent = generateCSV(addresses)
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+  const link = document.createElement('a')
+  
+  if (link.download !== undefined) {
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', filename)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+}
