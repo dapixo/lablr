@@ -1,9 +1,9 @@
 'use client'
 
 import { FileText, Upload } from 'lucide-react'
-import { useCallback, useState } from 'react'
-import { Panel } from 'primereact/panel'
 import { Message } from 'primereact/message'
+import { Panel } from 'primereact/panel'
+import { useCallback, useState } from 'react'
 import { ACCEPTED_FILE_TYPES, ERROR_MESSAGES, MAX_FILE_SIZE_BYTES } from '@/constants'
 import { cn } from '@/lib/utils'
 

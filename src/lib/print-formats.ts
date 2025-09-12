@@ -1,9 +1,9 @@
 // Re-export des nouvelles configurations pour compatibilité
 export {
   PRINT_CONFIGS as PRINT_FORMATS,
-  PRINT_FORMAT_LABELS,
   PRINT_FORMAT_DESCRIPTIONS,
   PRINT_FORMAT_ICONS,
+  PRINT_FORMAT_LABELS,
   PRINT_FORMAT_ORDER,
 } from '@/lib/print/config'
 

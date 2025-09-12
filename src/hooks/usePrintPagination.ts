@@ -1,7 +1,6 @@
 import { useMemo } from 'react'
+import { getPreviewConfig, PREVIEW_LIMITS } from '@/constants/print-preview'
 import type { Address, PrintFormat } from '@/types/address'
-import { PREVIEW_LIMITS } from '@/constants/print-preview'
-import { getPreviewConfig } from '@/constants/print-preview'
 
 /**
  * Hook personnalisé pour les calculs de pagination d'impression

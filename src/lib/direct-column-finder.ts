@@ -121,7 +121,7 @@ function findColumnMatch(headers: string[], patterns: string[]): number {
   // Chercher correspondance exacte d'abord
   for (const pattern of patterns) {
     const normalizedPattern = normalizeColumnName(pattern)
-    const exactIndex = normalizedHeaders.findIndex((h) => h === normalizedPattern)
+    const exactIndex = normalizedHeaders.indexOf(normalizedPattern)
     if (exactIndex !== -1) {
       return exactIndex
     }

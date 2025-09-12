@@ -1,7 +1,7 @@
 import { PRINT_DELAY_MS } from '@/constants'
-import type { Address, PrintFormat } from '@/types/address'
 import { generateAddressesHTML as generateHTML } from '@/lib/print/html-generator'
 import { generateCSV } from '@/lib/print-formats'
+import type { Address, PrintFormat } from '@/types/address'
 
 /**
  * Génère le HTML pour l'impression des adresses selon le format spécifié

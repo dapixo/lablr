@@ -1,12 +1,13 @@
 'use client'
 
 import { Eye, Settings } from 'lucide-react'
-import React, { useCallback, useMemo } from 'react'
 import { Button } from 'primereact/button'
 import { Panel } from 'primereact/panel'
-
+import React, { useCallback, useMemo, useState } from 'react'
+import { AuthModal } from '@/components/auth/AuthModal'
 import { PREVIEW_DIMENSIONS, PREVIEW_MAX_LABELS_ROLL, PREVIEW_MAX_PAGES } from '@/constants'
-import { getPrintCSS, PRINT_FORMAT_LABELS, downloadCSV } from '@/lib/print-formats'
+import { useAuth } from '@/hooks/useAuth'
+import { downloadCSV, getPrintCSS, PRINT_FORMAT_LABELS } from '@/lib/print-formats'
 import { printAddresses } from '@/lib/print-utils'
 import { STORAGE_KEYS, useCollapsiblePanel, usePersistedSelection } from '@/lib/storage'
 import { cn } from '@/lib/utils'
@@ -18,6 +19,11 @@ interface PrintPreviewProps {
 }
 
 export function PrintPreview({ addresses, className }: PrintPreviewProps) {
+  // États d'authentification
+  const { user } = useAuth()
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [pendingPrintAction, setPendingPrintAction] = useState<(() => void) | null>(null)
+
   // Fonction de validation pour les formats
   const isValidFormat = useCallback((value: string): value is PrintFormat => {
     return getOrderedFormats().includes(value as PrintFormat)
@@ -31,7 +37,7 @@ export function PrintPreview({ addresses, className }: PrintPreviewProps) {
   )
   const printPanel = useCollapsiblePanel(STORAGE_KEYS.PRINT_PANEL_COLLAPSED, false)
 
-  const handlePrint = () => {
+  const executePrint = useCallback(() => {
     if (selectedFormat.value === 'CSV_EXPORT') {
       downloadCSV(addresses, 'adresses-lablr.csv')
       return
@@ -39,7 +45,34 @@ export function PrintPreview({ addresses, className }: PrintPreviewProps) {
 
     const printCSS = getPrintCSS(selectedFormat.value)
     printAddresses(addresses, selectedFormat.value, printCSS)
-  }
+  }, [addresses, selectedFormat.value])
+
+  const handlePrint = useCallback(() => {
+    // Vérifier si l'utilisateur est connecté
+    if (!user) {
+      // Stocker l'action d'impression en attente
+      setPendingPrintAction(() => executePrint)
+      // Ouvrir la modal d'authentification
+      setShowAuthModal(true)
+      return
+    }
+
+    // Utilisateur connecté, exécuter directement l'impression
+    executePrint()
+  }, [user, executePrint])
+
+  const handleAuthSuccess = useCallback(() => {
+    // Exécuter l'action d'impression en attente
+    if (pendingPrintAction) {
+      pendingPrintAction()
+      setPendingPrintAction(null)
+    }
+  }, [pendingPrintAction])
+
+  const handleAuthModalHide = useCallback(() => {
+    setShowAuthModal(false)
+    setPendingPrintAction(null)
+  }, [])
 
   if (addresses.length === 0) {
     return null
@@ -135,6 +168,13 @@ export function PrintPreview({ addresses, className }: PrintPreviewProps) {
           </div>
         )}
       </Panel>
+
+      {/* Modal d'authentification */}
+      <AuthModal
+        visible={showAuthModal}
+        onHide={handleAuthModalHide}
+        onSuccess={handleAuthSuccess}
+      />
     </div>
   )
 }

@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
+import { getPreviewType } from '@/constants/print-preview'
+import { STORAGE_KEYS, useCollapsiblePanel } from '@/lib/storage'
 import type { Address, PrintFormat } from '@/types/address'
 import { useFormatSelection } from './useFormatSelection'
 import { usePrintPagination, useRollPreview } from './usePrintPagination'
-import { STORAGE_KEYS, useCollapsiblePanel } from '@/lib/storage'
-import { getPreviewType } from '@/constants/print-preview'
 
 /**
  * Hook principal pour la gestion de l'aperçu d'impression

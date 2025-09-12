@@ -1,0 +1,53 @@
+export interface FAQItem {
+  id: string
+  question: string
+  answer: string
+}
+
+export const FAQ_DATA: FAQItem[] = [
+  {
+    id: 'security',
+    question: 'Mes données sont-elles sécurisées ?',
+    answer: `Absolument ! Vos données sont traitées à 100% localement dans votre navigateur. 
+    Aucun fichier n'est envoyé sur nos serveurs - tout le traitement se fait directement sur votre appareil. 
+    Vos adresses et commandes restent entièrement privées et sécurisées.`,
+  },
+  {
+    id: 'files',
+    question: "Que faites-vous de mes fichiers d'import ?",
+    answer: `Rien du tout ! Vos fichiers CSV/TSV ne quittent jamais votre navigateur. 
+    Ils sont traités localement pour extraire les adresses, puis immédiatement supprimés de la mémoire. 
+    Nous ne conservons, ne sauvegardons ni ne transmettons aucun de vos fichiers ou données personnelles.`,
+  },
+  {
+    id: 'account',
+    question: 'Pourquoi dois-je créer un compte ?',
+    answer: `Le compte nous permet uniquement de compter le nombre d'utilisateurs actifs 
+    pour améliorer le service et justifier le maintien de l'application gratuite. 
+    Nous ne collectons que votre email - aucune donnée commerciale, aucune adresse client, 
+    aucun fichier n'est lié à votre compte.`,
+  },
+  {
+    id: 'free',
+    question: 'Lablr est-il vraiment gratuit ?',
+    answer: `Oui, 100% gratuit ! Aucun coût caché, aucune limite sur le nombre d'étiquettes, 
+    aucune version premium. Lablr est conçu pour aider les vendeurs en ligne sans contrainte financière. 
+    L'application restera gratuite et accessible à tous.`,
+  },
+  {
+    id: 'platforms',
+    question: 'Quelles plateformes sont supportées ?',
+    answer: `Lablr supporte automatiquement Amazon Seller Central, Shopify, eBay, 
+    ainsi que tous les fichiers CSV génériques. Notre système détecte automatiquement 
+    le format de votre fichier et extrait les bonnes colonnes d'adresses. 
+    Vous pouvez aussi importer n'importe quel CSV avec des colonnes d'adresses.`,
+  },
+  {
+    id: 'formats',
+    question: "Quels formats d'impression sont disponibles ?",
+    answer: `Nous proposons plusieurs formats : A4 standard et compact, 
+    étiquettes autocollantes Avery (L7160, L7162, L7163) avec 14, 16 ou 21 étiquettes par page, 
+    étiquettes 10 unités (105×57mm), rouleaux 57×32mm pour imprimantes thermiques, 
+    et export CSV. Tous les formats incluent un aperçu en temps réel.`,
+  },
+] as const

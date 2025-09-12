@@ -2,7 +2,9 @@
 
 ## Vue d'ensemble
 
-**Lablr** est une solution professionnelle permettant aux vendeurs Amazon de générer et imprimer facilement des étiquettes d'adresse à partir de leurs rapports Amazon Seller au format TSV. Interface moderne et intuitive avec design responsive pour tous les appareils.
+**Lablr** est une solution professionnelle permettant aux vendeurs Amazon de générer et imprimer facilement des étiquettes d'adresse à partir de leurs rapports Amazon Seller au format TSV. Interface moderne et intuitive avec design responsive pour tous les appareils. 
+
+**V3.0** : Désormais avec authentification Supabase pour le suivi d'usage et FAQ interactive pour rassurer les utilisateurs sur la sécurité et la confidentialité.
 
 ## Architecture Technique
 
@@ -13,6 +15,8 @@
 - **UI Components** : PrimeReact v10.9.7 (Lara Light Blue theme)
 - **Icons** : PrimeIcons + Lucide React
 - **Build Tool** : Turbopack pour développement rapide
+- **Authentification** : Supabase Auth avec SSR
+- **Base de données** : Supabase (pour gestion utilisateurs uniquement)
 
 ### Structure du Projet (Architecture Refactorisée)
 ```
@@ -22,21 +26,34 @@ src/
 │   ├── layout.tsx         # Layout avec PrimeReact Provider
 │   └── page.tsx           # Page principale avec header/footer professionnels
 ├── components/
-│   ├── file-upload.tsx    # Upload drag & drop avec PrimeReact
-│   ├── address-list.tsx   # Liste avec pagination (15 par page) et recherche
-│   ├── address-editor.tsx # Éditeur modal avec PrimeReact Dialog
-│   └── print-preview.tsx  # Aperçu intégré et impression
+│   ├── auth/
+│   │   ├── AuthModal.tsx      # 🆕 Modal d'authentification professionnelle
+│   │   └── UserMenu.tsx       # 🆕 Menu utilisateur simplifié
+│   ├── FAQ.tsx                # 🆕 FAQ avec accordion optimisée
+│   ├── file-upload.tsx        # Upload drag & drop avec PrimeReact
+│   ├── address-list.tsx       # Liste avec pagination (15 par page) et recherche
+│   ├── address-editor.tsx     # Éditeur modal avec PrimeReact Dialog
+│   └── print-preview.tsx      # Aperçu intégré et impression (avec protection auth)
 ├── lib/
+│   ├── supabase/
+│   │   ├── client.ts          # 🆕 Client Supabase navigateur
+│   │   ├── server.ts          # 🆕 Client Supabase serveur 
+│   │   └── middleware.ts      # 🆕 Middleware gestion session
 │   ├── utils.ts              # Utilitaires (cn)
 │   ├── universal-parser.ts   # 🆕 Parser universel multi-plateformes
 │   ├── direct-column-finder.ts # 🆕 Détection directe des colonnes
 │   ├── column-detector.ts    # Détection de plateforme (legacy)
 │   ├── address-parser.ts     # Parser Amazon Seller (legacy)
 │   └── print-formats.ts      # Formats d'impression optimisés
+├── contexts/
+│   └── AuthContext.tsx       # 🆕 Contexte d'authentification React
+├── hooks/
+│   └── useAuth.ts            # 🆕 Hook d'authentification
 ├── constants/
-│   └── index.ts           # Constantes globales et messages d'erreur
+│   ├── index.ts              # Constantes globales et messages d'erreur
+│   └── faq.ts                # 🆕 Données FAQ structurées
 └── types/
-    └── address.ts         # Types TypeScript stricts
+    └── address.ts            # Types TypeScript stricts
 ```
 
 ## Fonctionnalités Principales
@@ -82,6 +99,22 @@ src/
 - **ROLL_57x32** : Rouleaux d'étiquettes 57×32mm (une par adresse)
 - **CSV_EXPORT** : Export des données au format CSV pour tableur
 
+### 6. Système d'Authentification (🆕 V3.0)
+- **Protection d'impression** : Authentification requise avant impression
+- **Modal professionnelle** : Interface élégante avec messages rassurants
+- **Connexion automatique** : Inscription → Connexion → Impression directe
+- **Session management** : Gestion SSR avec Supabase Auth
+- **UX optimisée** : Interface header simplifiée avec avatar utilisateur
+- **Sécurité privacy-first** : Seul l'email est collecté, aucune donnée commerciale
+- **Gratuité garantie** : Messages clairs sur l'utilisation 100% gratuite
+
+### 7. FAQ Interactive (🆕 V3.0)
+- **Accordion optimisé** : Interface PrimeReact avec animations fluides
+- **6 questions principales** : Sécurité, confidentialité, gratuité, plateformes
+- **Composants mémorisés** : Performance optimisée avec React.memo
+- **Design cohérent** : Style uniforme avec le reste de l'application
+- **Réponses rassurantes** : Messages clairs sur la sécurité et la confidentialité
+
 ## Commandes de Développement
 
 ```bash
@@ -115,7 +148,9 @@ pnpm run type-check
   "primereact": "10.9.7",
   "primeicons": "7.0.0",
   "tailwindcss": "latest",
-  "lucide-react": "latest"
+  "lucide-react": "latest",
+  "@supabase/supabase-js": "2.57.4",
+  "@supabase/ssr": "0.7.0"
 }
 ```
 
@@ -306,19 +341,29 @@ const FormatCard = React.memo(function FormatCard({...}))
 - **Rétrocompatibilité** : Re-exports maintiennent la compatibilité
 - **Tests de régression** : Formats d'impression validés
 
-## Évolutions Récentes (✅ V2.0)
+## Évolutions Récentes (✅ V3.0)
 
-### Améliorations UX Majeures
-- ✅ **Aperçu intégré** : Plus de panel séparé, interface unifiée
-- ✅ **Une page d'aperçu** : Performance et simplicité améliorées
-- ✅ **Bouton repositionné** : Actions au-dessus pour moins de scroll
-- ✅ **Nouveaux formats Avery** : L7162 (16 étiquettes) et L7163 (14 étiquettes)
+### 🔐 Système d'Authentification Intégré
+- ✅ **Protection d'impression** : Modal d'auth avant impression
+- ✅ **Supabase Auth** : SSR avec Next.js App Router complet
+- ✅ **Modal professionnelle** : Design cohérent avec messages rassurants
+- ✅ **UX optimisée** : Inscription → Connexion automatique → Impression
+- ✅ **Interface header simplifiée** : Avatar + nom d'utilisateur + déconnexion directe
+- ✅ **Gratuité mise en avant** : Messages clairs sur l'utilisation 100% gratuite
 
-### Refactorisation Architecturale
-- ✅ **Code modulaire** : -300 lignes de duplication éliminées
-- ✅ **CSS Mixins** : Styles réutilisables et maintenables
-- ✅ **Configuration unifiée** : Formats centralisés et typés
-- ✅ **Grid CSS fixé** : Problème 3×7 colonnes résolu
+### 📋 FAQ Interactive et Optimisée
+- ✅ **Accordion PrimeReact** : 6 questions principales avec animations fluides  
+- ✅ **Composants optimisés** : React.memo + useMemo pour performances
+- ✅ **Architecture modulaire** : Séparation données/composants/styles
+- ✅ **Réponses rassurantes** : Focus sur sécurité, confidentialité, gratuité
+- ✅ **Design cohérent** : Style uniforme avec l'application
+
+### 🏗️ Améliorations Techniques
+- ✅ **Clean Code** : Refactorisation FAQ avec sous-composants
+- ✅ **DRY Principle** : Élimination duplications, constants externes
+- ✅ **Performance** : Mémorisation composants + callbacks optimisés
+- ✅ **TypeScript strict** : Types FAQ + interfaces d'auth
+- ✅ **Sécurité** : Validation inputs + traitement local garanti
 
 ## Évolutions Futures
 

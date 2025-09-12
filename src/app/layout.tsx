@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { PrimeReactProvider } from 'primereact/api'
+import { AuthProvider } from '@/contexts/AuthContext'
 import './globals.css'
 import 'primereact/resources/themes/lara-light-blue/theme.css'
 import 'primereact/resources/primereact.min.css'
@@ -30,7 +31,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <PrimeReactProvider>{children}</PrimeReactProvider>
+        <PrimeReactProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </PrimeReactProvider>
       </body>
     </html>
   )

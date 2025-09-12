@@ -1,8 +1,7 @@
-import type { Address, ParsedAddresses } from '@/types/address'
-import { type ColumnMapping, type DetectionResult } from './column-detector'
-import { findAddressColumns } from './direct-column-finder'
-import { detectSeparator } from './column-detector'
 import { ERROR_MESSAGES } from '@/constants'
+import type { Address, ParsedAddresses } from '@/types/address'
+import { type ColumnMapping, type DetectionResult, detectSeparator } from './column-detector'
+import { findAddressColumns } from './direct-column-finder'
 
 export interface UniversalParseResult extends ParsedAddresses {
   detection: DetectionResult
@@ -153,7 +152,7 @@ function extractAddressFromColumns(
       rawAddress2 && cleanAddressField(rawAddress2) !== data.addressLine1
         ? cleanAddressField(rawAddress2)
         : undefined
-  } else if (rawAddress1 && rawAddress1.includes('"') && rawAddress2) {
+  } else if (rawAddress1?.includes('"') && rawAddress2) {
     // Cas de fragmentation: recombiner Address1 et Address2
     const cleanAddr1 = cleanAddressField(rawAddress1)
     const cleanAddr2 = cleanAddressField(rawAddress2)
@@ -347,4 +346,4 @@ function parseCSVLine(line: string, separator: string): string[] {
 }
 
 // Export des fonctions utilitaires
-export type { DetectionResult, ColumnMapping } from './column-detector'
+export type { ColumnMapping, DetectionResult } from './column-detector'

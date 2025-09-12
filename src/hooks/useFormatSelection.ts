@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
-import type { PrintFormat } from '@/types/address'
-import { STORAGE_KEYS, usePersistedSelection } from '@/lib/storage'
-import { getFormatConfig, isValidFormat } from '@/lib/print/config'
 import { getPreviewConfig } from '@/constants/print-preview'
+import { getFormatConfig, isValidFormat } from '@/lib/print/config'
+import { STORAGE_KEYS, usePersistedSelection } from '@/lib/storage'
+import type { PrintFormat } from '@/types/address'
 
 /**
  * Hook personnalisé pour la gestion de la sélection de format d'impression

@@ -1,12 +1,14 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
-import { ConfirmDialog } from 'primereact/confirmdialog'
-import { confirmDialog } from 'primereact/confirmdialog'
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { AddressEditor } from '@/components/address-editor'
 import { AddressList } from '@/components/address-list'
+import { UserMenu } from '@/components/auth/UserMenu'
+import { FAQ } from '@/components/FAQ'
 import { FileUpload } from '@/components/file-upload'
 import { PrintPreview } from '@/components/print-preview'
+import { useAuth } from '@/hooks/useAuth'
 import { cleanAddressData } from '@/lib/address-parser'
 import { parseUniversalFile, type UniversalParseResult } from '@/lib/universal-parser'
 import type { Address } from '@/types/address'
@@ -16,6 +18,7 @@ const HEADER_HEIGHT = 80 // px - Height of sticky header
 const SCROLL_DELAY = 100 // ms - Delay to ensure component rendering
 
 export default function Home() {
+  const { user, loading } = useAuth()
   const [addresses, setAddresses] = useState<Address[]>([])
   const [errors, setErrors] = useState<string[]>([])
   const [fileName, setFileName] = useState<string>('')
@@ -127,8 +130,21 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Navigation/Actions - Empty for now */}
-            <div className="flex items-center gap-3">{/* Future navigation items */}</div>
+            {/* Navigation/Actions */}
+            <div className="flex items-center gap-3">
+              {!loading &&
+                (user ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                      <i className="pi pi-user text-blue-600 text-sm"></i>
+                    </div>
+                    <span className="text-sm font-medium text-gray-700 hidden sm:inline">
+                      {user.email?.split('@')[0]}
+                    </span>
+                    <UserMenu />
+                  </div>
+                ) : null)}
+            </div>
           </div>
         </div>
       </header>
@@ -228,6 +244,9 @@ export default function Home() {
           </div>
         </div>
       </main>
+
+      {/* FAQ Section */}
+      <FAQ />
 
       {/* Professional Footer */}
       <footer className="bg-white border-t border-gray-200 mt-8">
