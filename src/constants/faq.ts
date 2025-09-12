@@ -23,16 +23,9 @@ export const FAQ_DATA: FAQItem[] = [
     id: 'account',
     question: 'Pourquoi dois-je créer un compte ?',
     answer: `Le compte nous permet uniquement de compter le nombre d'utilisateurs actifs 
-    pour améliorer le service et justifier le maintien de l'application gratuite. 
+    pour améliorer le service. 
     Nous ne collectons que votre email - aucune donnée commerciale, aucune adresse client, 
     aucun fichier n'est lié à votre compte.`,
-  },
-  {
-    id: 'free',
-    question: 'Lablr est-il vraiment gratuit ?',
-    answer: `Oui, 100% gratuit ! Aucun coût caché, aucune limite sur le nombre d'étiquettes, 
-    aucune version premium. Lablr est conçu pour aider les vendeurs en ligne sans contrainte financière. 
-    L'application restera gratuite et accessible à tous.`,
   },
   {
     id: 'platforms',

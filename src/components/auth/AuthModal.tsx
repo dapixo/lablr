@@ -7,7 +7,7 @@ import { Divider } from 'primereact/divider'
 import { InputText } from 'primereact/inputtext'
 import { Message } from 'primereact/message'
 import { Password } from 'primereact/password'
-import { useState } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 
 interface AuthModalProps {
@@ -25,7 +25,7 @@ export function AuthModal({ visible, onHide, onSuccess }: AuthModalProps) {
 
   const { signIn, signUp } = useAuth()
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
@@ -47,26 +47,26 @@ export function AuthModal({ visible, onHide, onSuccess }: AuthModalProps) {
     }
 
     setLoading(false)
-  }
+  }, [email, password, isSignUp, signIn, signUp, onSuccess, onHide])
 
-  const resetForm = () => {
+  const resetForm = useCallback(() => {
     setEmail('')
     setPassword('')
     setError(null)
     setLoading(false)
-  }
+  }, [])
 
-  const handleHide = () => {
+  const handleHide = useCallback(() => {
     resetForm()
     onHide()
-  }
+  }, [resetForm, onHide])
 
-  const toggleMode = () => {
+  const toggleMode = useCallback(() => {
     setIsSignUp(!isSignUp)
     resetForm()
-  }
+  }, [isSignUp, resetForm])
 
-  const headerContent = (
+  const headerContent = useMemo(() => (
     <div className="flex items-center gap-3">
       <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
         <i className="pi pi-tag text-white text-sm"></i>
@@ -78,9 +78,9 @@ export function AuthModal({ visible, onHide, onSuccess }: AuthModalProps) {
         <p className="text-xs text-gray-500 mt-0">Lablr - Générateur d&apos;étiquettes</p>
       </div>
     </div>
-  )
+  ), [isSignUp])
 
-  const footerContent = (
+  const footerContent = useMemo(() => (
     <div className="flex gap-2">
       <Button 
         label="Annuler" 
@@ -105,7 +105,7 @@ export function AuthModal({ visible, onHide, onSuccess }: AuthModalProps) {
         form="auth-form"
       />
     </div>
-  )
+  ), [loading, isSignUp, handleHide])
 
   return (
     <>

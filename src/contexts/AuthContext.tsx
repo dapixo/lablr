@@ -10,6 +10,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
   signUp: (email: string, password: string) => Promise<{ error: AuthError | null }>
   signOut: () => Promise<{ error: AuthError | null }>
+  deleteAccount: () => Promise<{ error: AuthError | null }>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -63,12 +64,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error }
   }
 
+  const deleteAccount = async () => {
+    if (!user?.id) {
+      return { error: new Error('No user logged in') as AuthError }
+    }
+
+    try {
+      // Call our API route to delete the account
+      const response = await fetch('/api/auth/delete-account', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Failed to delete account' }))
+        return { 
+          error: {
+            message: errorData.message || 'Failed to delete account',
+            status: response.status
+          } as AuthError 
+        }
+      }
+
+      // Clear local auth state since account is deleted server-side
+      setUser(null)
+      return { error: null }
+    } catch (error) {
+      console.error('Delete account error:', error)
+      return { 
+        error: {
+          message: error instanceof Error ? error.message : 'Network error occurred',
+          status: 0
+        } as AuthError 
+      }
+    }
+  }
+
   const value = {
     user,
     loading,
     signIn,
     signUp,
     signOut,
+    deleteAccount,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
