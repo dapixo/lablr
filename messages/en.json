@@ -259,6 +259,7 @@
       "period": "/month",
       "periodAnnual": "/year",
       "periodAnnualBilling": "/month (billed annually)",
+      "perMonth": "/month",
       "description": "Unlimited labels",
       "features": [
         "Unlimited labels",
@@ -272,9 +273,16 @@
     },
     "limits": {
       "dailyLimit": "Daily limit reached",
+      "limitSoon": "Only {count} free label{plural} left",
       "upgradeMessage": "You've used your 10 free labels today. Upgrade to Premium to continue.",
-      "resetTime": "Your free labels reset tomorrow.",
-      "remainingToday": "You have {count} free label(s) remaining today"
+      "upgradeSoonMessage": "Upgrade to Premium for unlimited labels.",
+      "resetTime": "Your free labels reset tomorrow at midnight.",
+      "remainingToday": "You have {count} free label(s) remaining today",
+      "addressesDetected": "{count} addresses detected",
+      "labelsRemaining": "You have **{count} free label{plural}** remaining today. You can print the first {count} addresses.",
+      "noLabelsLeft": "Your free labels reset tomorrow.",
+      "printLimited": "Print {count} label{plural}",
+      "resetTomorrow": "Your 10 free labels reset tomorrow at midnight"
     },
     "page": {
       "title": "Choose your plan",
@@ -343,7 +351,7 @@
       },
       "pricing": {
         "question": "How does the freemium model work?",
-        "answer": "Lalabel gives you 10 free labels every day, automatically renewed. Perfect for small shipments. If you need more, our Premium plan at €5/month (or €50/year) gives you unlimited labels with priority support."
+        "answer": "Lalabel gives you 10 free labels every day, automatically renewed. Perfect for small shipments. If you need more, our Premium plan at €5/month (or €48/year) gives you unlimited labels with priority support."
       }
     }
   },
@@ -442,5 +450,9 @@
     "deleteAccountFailed": "Failed to delete account",
     "accountDeletedSuccess": "Account deleted successfully",
     "internalServerError": "Internal server error"
+  },
+  "common": {
+    "or": "or",
+    "cancel": "Cancel"
   }
 }

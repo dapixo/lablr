@@ -1,12 +1,15 @@
 'use client'
 
-import { Eye, Settings } from 'lucide-react'
+import { Eye, Settings, Crown } from 'lucide-react'
 import { Button } from 'primereact/button'
 import { Panel } from 'primereact/panel'
+import { Tag } from 'primereact/tag'
 import React, { useCallback, useMemo, useState } from 'react'
 import { AuthModal } from '@/components/auth/AuthModal'
+import { UpgradeModal } from '@/components/UpgradeModal'
 import { PREVIEW_DIMENSIONS, PREVIEW_MAX_LABELS_ROLL, PREVIEW_MAX_PAGES } from '@/constants'
 import { useAuth } from '@/hooks/useAuth'
+import { useUsageTracking } from '@/hooks/useUsageTracking'
 import { downloadCSV, getPrintCSS } from '@/lib/print-formats'
 import { printAddresses } from '@/lib/print-utils'
 import { STORAGE_KEYS, useCollapsiblePanel, usePersistedSelection } from '@/lib/storage'
@@ -32,9 +35,18 @@ interface PrintPreviewProps {
 }
 
 export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
-  // États d'authentification
+  // États d'authentification et usage tracking
   const { user } = useAuth()
+  const {
+    remainingLabels,
+    canPrintLabels,
+    getMaxPrintableLabels,
+    trackLabelUsage,
+    loading: usageLoading
+  } = useUsageTracking()
+
   const [showAuthModal, setShowAuthModal] = useState(false)
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [pendingPrintAction, setPendingPrintAction] = useState<(() => void) | null>(null)
 
   // Fonction de validation pour les formats
@@ -50,37 +62,67 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
   )
   const printPanel = useCollapsiblePanel(STORAGE_KEYS.PRINT_PANEL_COLLAPSED, false)
 
-  const executePrint = useCallback(() => {
+  const executePrint = useCallback(async (addressesToPrint: Address[] = addresses) => {
     if (selectedFormat.value === 'CSV_EXPORT') {
-      downloadCSV(addresses, 'adresses-lablr.csv')
+      downloadCSV(addressesToPrint, 'adresses-lablr.csv')
+      // Track usage pour CSV aussi
+      if (user) {
+        await trackLabelUsage(addressesToPrint.length)
+      }
       return
     }
 
     const printCSS = getPrintCSS(selectedFormat.value)
-    printAddresses(addresses, selectedFormat.value, printCSS)
-  }, [addresses, selectedFormat.value])
+    printAddresses(addressesToPrint, selectedFormat.value, printCSS)
+
+    // Track l'usage après impression réussie
+    if (user) {
+      await trackLabelUsage(addressesToPrint.length)
+    }
+  }, [addresses, selectedFormat.value, user, trackLabelUsage])
 
   const handlePrint = useCallback(() => {
     // Vérifier si l'utilisateur est connecté
     if (!user) {
       // Stocker l'action d'impression en attente
-      setPendingPrintAction(() => executePrint)
+      setPendingPrintAction(() => () => executePrint())
       // Ouvrir la modal d'authentification
       setShowAuthModal(true)
       return
     }
 
-    // Utilisateur connecté, exécuter directement l'impression
+    // Vérifier les limites freemium
+    if (!canPrintLabels(addresses.length)) {
+      // L'utilisateur dépasse ses limites, ouvrir la modal d'upgrade
+      setShowUpgradeModal(true)
+      return
+    }
+
+    // Utilisateur connecté et dans les limites, exécuter directement l'impression
     executePrint()
-  }, [user, executePrint])
+  }, [user, addresses.length, canPrintLabels, executePrint])
+
+  const handlePrintLimited = useCallback(() => {
+    // Imprimer seulement le nombre d'adresses autorisées
+    const maxPrintable = getMaxPrintableLabels(addresses.length)
+    const limitedAddresses = addresses.slice(0, maxPrintable)
+    executePrint(limitedAddresses)
+  }, [addresses, getMaxPrintableLabels, executePrint])
 
   const handleAuthSuccess = useCallback(() => {
-    // Exécuter l'action d'impression en attente
+    // Après authentification réussie, vérifier les limites freemium
     if (pendingPrintAction) {
-      pendingPrintAction()
+      // Maintenant que l'utilisateur est connecté, vérifier ses limites
+      if (!canPrintLabels(addresses.length)) {
+        // Dépasse les limites → afficher modal d'upgrade
+        setShowUpgradeModal(true)
+      } else {
+        // Dans les limites → exécuter l'impression
+        pendingPrintAction()
+      }
       setPendingPrintAction(null)
     }
-  }, [pendingPrintAction])
+  }, [pendingPrintAction, canPrintLabels, addresses.length])
 
   const handleAuthModalHide = useCallback(() => {
     setShowAuthModal(false)
@@ -193,6 +235,16 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
         onHide={handleAuthModalHide}
         onSuccess={handleAuthSuccess}
         t={t}
+      />
+
+      {/* Modal d'upgrade freemium */}
+      <UpgradeModal
+        visible={showUpgradeModal}
+        onHide={() => setShowUpgradeModal(false)}
+        onPrintLimited={handlePrintLimited}
+        t={t}
+        totalAddresses={addresses.length}
+        remainingLabels={remainingLabels}
       />
     </div>
   )

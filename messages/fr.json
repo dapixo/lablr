@@ -259,6 +259,7 @@
       "period": "/mois",
       "periodAnnual": "/an",
       "periodAnnualBilling": "/mois (facturation annuelle)",
+      "perMonth": "/mois",
       "description": "Étiquettes illimitées",
       "features": [
         "Étiquettes illimitées",
@@ -272,9 +273,16 @@
     },
     "limits": {
       "dailyLimit": "Limite quotidienne atteinte",
+      "limitSoon": "Plus que {count} étiquette{plural} gratuite{plural}",
       "upgradeMessage": "Vous avez utilisé vos 10 étiquettes gratuites aujourd'hui. Passez à Premium pour continuer.",
-      "resetTime": "Vos étiquettes gratuites se renouvellent demain.",
-      "remainingToday": "Il vous reste {count} étiquette(s) gratuite(s) aujourd'hui"
+      "upgradeSoonMessage": "Passez à Premium pour des étiquettes illimitées.",
+      "resetTime": "Vos étiquettes gratuites se renouvellent demain à minuit.",
+      "remainingToday": "Il vous reste {count} étiquette(s) gratuite(s) aujourd'hui",
+      "addressesDetected": "{count} adresses détectées",
+      "labelsRemaining": "Il vous reste **{count} étiquette{plural} gratuite{plural}** aujourd'hui. Vous pouvez imprimer les {count} premières adresses.",
+      "noLabelsLeft": "Vos étiquettes gratuites se rechargent demain.",
+      "printLimited": "Imprimer {count} étiquette{plural}",
+      "resetTomorrow": "Vos 10 étiquettes gratuites se rechargent demain à minuit"
     },
     "page": {
       "title": "Choisissez votre plan",
@@ -343,7 +351,7 @@
       },
       "pricing": {
         "question": "Comment fonctionne le modèle freemium ?",
-        "answer": "Lalabel vous offre 10 étiquettes gratuites chaque jour, renouvelées automatiquement. C'est parfait pour les petites expéditions. Si vous avez besoin de plus, notre plan Premium à 5€/mois (ou 50€/an) vous donne accès à des étiquettes illimitées avec support prioritaire."
+        "answer": "Lalabel vous offre 10 étiquettes gratuites chaque jour, renouvelées automatiquement. C'est parfait pour les petites expéditions. Si vous avez besoin de plus, notre plan Premium à 5€/mois (ou 48€/an) vous donne accès à des étiquettes illimitées avec support prioritaire."
       }
     }
   },
@@ -442,5 +450,9 @@
     "deleteAccountFailed": "Failed to delete account",
     "accountDeletedSuccess": "Account deleted successfully",
     "internalServerError": "Internal server error"
+  },
+  "common": {
+    "or": "ou",
+    "cancel": "Annuler"
   }
 }

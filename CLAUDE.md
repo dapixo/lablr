@@ -4,7 +4,7 @@
 
 **Lablr** est une solution professionnelle permettant aux vendeurs Amazon de générer et imprimer facilement des étiquettes d'adresse à partir de leurs rapports Amazon Seller au format TSV. Interface moderne et intuitive avec design responsive pour tous les appareils. 
 
-**V3.2** : Modèle freemium avec page pricing professionnelle, optimisations SEO et architecture clean code avec principes DRY.
+**V3.3** : Système freemium complet avec modal d'upgrade, sécurité renforcée, helpers i18n et optimisations Clean Code/DRY.
 
 ## Architecture Technique
 
@@ -36,6 +36,7 @@ src/
 │   ├── Footer.tsx             # 🆕 Footer réutilisable (DRY)
 │   ├── LanguageSelector.tsx   # 🆕 Sélecteur langue optimisé avec navigation
 │   ├── PricingPage.tsx        # 🆕 Page pricing avec modèle freemium
+│   ├── UpgradeModal.tsx       # 🆕 Modal d'upgrade freemium avec toggle mensuel/annuel
 │   ├── file-upload.tsx        # Upload drag & drop avec PrimeReact
 │   ├── address-list.tsx       # Liste avec pagination (15 par page) et recherche
 │   ├── address-editor.tsx     # Éditeur modal avec PrimeReact Dialog
@@ -50,12 +51,14 @@ src/
 │   ├── direct-column-finder.ts # 🆕 Détection directe des colonnes
 │   ├── column-detector.ts    # Détection de plateforme (legacy)
 │   ├── address-parser.ts     # Parser Amazon Seller (legacy)
+│   ├── i18n-helpers.ts       # 🆕 Helpers i18n (pluriel, markdown→HTML)
 │   └── print-formats.ts      # Formats d'impression optimisés
 ├── contexts/
 │   └── AuthContext.tsx       # 🆕 Contexte d'authentification React
 ├── hooks/
 │   ├── useAuth.ts            # 🆕 Hook d'authentification
-│   └── useTranslations.ts    # 🆕 Hook d'internationalisation
+│   ├── useUsageTracking.ts   # 🆕 Hook freemium avec limites quotidiennes
+│   └── useTranslations.ts    # 🆕 Hook i18n avec interpolation variables
 ├── constants/
 │   ├── index.ts              # Constantes globales et messages d'erreur
 │   └── faq.ts                # 🆕 Données FAQ structurées
@@ -136,13 +139,15 @@ src/
 - **Types sûrs** : Interface TypeScript stricte pour les traductions
 - **Performance optimisée** : Mémorisation avec `useMemo` et chargement à la demande
 
-### 9. Modèle Freemium et Pricing (🆕 V3.2)
-- **Modèle économique** : 10 étiquettes gratuites par jour, Premium €5/mois ou €40/an
-- **Page pricing dédiée** : `/pricing` avec comparaison Free vs Premium
-- **Toggle annuel/mensuel** : Économie 33% affichée avec badge discount animé
-- **Auth conditionnelle** : Boutons contextuels selon statut utilisateur
-- **Design professionnel** : Cards uniformes, tableau comparatif, hero section
-- **SEO optimisé** : Métadonnées et Schema.org pour référencement
+### 9. Système Freemium Complet (🆕 V3.3)
+- **Modèle économique** : 10 étiquettes gratuites par jour, Premium €5/mois ou €48/an
+- **Modal d'upgrade intelligente** : Affichage conditionnel selon étiquettes restantes
+- **Messages contextuels** : "Plus que X étiquettes" vs "Limite atteinte"
+- **Toggle mensuel/annuel** : Prix adaptatif (€5/mois vs €4/mois facturé annuellement)
+- **Sécurité renforcée** : Vérification des limites après authentification
+- **Base de données** : Table `daily_usage` avec reset automatique à minuit
+- **Hook optimisé** : `useUsageTracking` avec API calls minimales
+- **UX premium** : Interface encourageante sans frustration utilisateur
 
 ## Commandes de Développement
 
@@ -452,6 +457,16 @@ const FormatCard = React.memo(function FormatCard({...}))
 - ✅ **CSS-in-JS organisé** : Styles groupés par composant dans objects structurés
 - ✅ **Error handling** : Validation routes, gestion des fallbacks de traduction
 - ✅ **Build optimisé** : Pas d'erreurs TypeScript/ESLint, bundle size contrôlé
+
+### 🎯 Optimisations Clean Code V3.3 (🆕)
+- ✅ **Sécurité freemium bulletproof** : Fix bypass auth avec vérification post-connexion
+- ✅ **Types partagés** : `TranslationVariables` exporté, interfaces cohérentes
+- ✅ **Helpers DRY** : `getPluralVariables()`, `markdownToHtml()`, `createInnerHTML()`
+- ✅ **Hook optimisé** : `useUsageTracking` simplifié, dépendances strictes
+- ✅ **Interpolation i18n** : Support variables avec typage TypeScript fort
+- ✅ **Code maintenable** : Logique métier extractée, architecture modulaire
+- ✅ **Pas de duplication** : Élimination code répété (pluriels, HTML conversion)
+- ✅ **Performance** : Fonctions pures, mémorisation optimisée, API calls minimales
 
 ## Évolutions Futures
 
