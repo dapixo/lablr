@@ -7,6 +7,7 @@ import { AddressEditor } from '@/components/address-editor'
 import { AddressList } from '@/components/address-list'
 import { UserMenu } from '@/components/auth/UserMenu'
 import { FAQ } from '@/components/FAQ'
+import FeedbackSection from '@/components/FeedbackSection'
 import { FileUpload } from '@/components/file-upload'
 import { LanguageSelector } from '@/components/LanguageSelector'
 import { PrintPreview } from '@/components/print-preview'
@@ -237,8 +238,11 @@ export default function Home() {
       {/* FAQ Section */}
       <FAQ t={t} />
 
+      {/* Feedback Section */}
+      <FeedbackSection t={t} />
+
       {/* Professional Footer */}
-      <footer className="bg-white border-t border-gray-200 mt-8">
+      <footer className="bg-white border-t border-gray-200">
         <div className="container mx-auto px-4">
           {/* Main Footer Content */}
           <div className="grid md:grid-cols-3 gap-8 py-12">

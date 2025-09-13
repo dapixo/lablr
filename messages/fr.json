@@ -1,14 +1,14 @@
 {
   "app": {
-    "title": "Lablr - Extracteur d'adresses Amazon Seller",
+    "title": "Lalabel - Extracteur d'adresses Amazon Seller",
     "description": "Micro SaaS pour extraire et imprimer les adresses de vos rapports Amazon Seller au format TSV."
   },
   "brand": {
-    "name": "Lablr",
+    "name": "Lalabel",
     "tagline": "Solution professionnelle d'extraction d'adresses"
   },
   "header": {
-    "welcome": "Bienvenue sur Lablr",
+    "welcome": "Bienvenue sur Lalabel",
     "description": "Importez vos données de n'importe quelle plateforme e-commerce et transformez-les en étiquettes d'expédition professionnelles en quelques clics."
   },
   "steps": {
@@ -152,10 +152,10 @@
       "description": "Visualisation réaliste du rendu d'impression (échelle réduite)",
       "csvTitle": "Aperçu - Export CSV",
       "csvDescription": "Prévisualisation des données qui seront exportées",
-      "rollDescription": "Aperçu du rouleau d'étiquettes 57×32mm (une étiquette par adresse)",
-      "pagination": "... et {count} page{s} supplémentaire{s} ({total} adresses au total)",
-      "rollPagination": "... et {count} étiquette{s} supplémentaire{s}",
-      "csvPagination": "... et {count} ligne{s} supplémentaire{s} ({total} adresses au total)",
+      "rollDescription": "Aperçu du rouleau d'étiquettes (une étiquette par adresse)",
+      "pagination": "... et {count} page{s} supplémentaires ({total} adresses au total)",
+      "rollPagination": "... et {count} étiquette{s} supplémentaires",
+      "csvPagination": "... et {count} ligne{s} supplémentaires ({total} adresses au total)",
       "emptyLabel": "Étiquette vide"
     }
   },
@@ -165,31 +165,31 @@
       "description": "Une adresse par ligne, format classique"
     },
     "A4_COMPACT": {
-      "label": "A4 - Format compact (2 colonnes)",
+      "label": "A4 - Format compact",
       "description": "Format compact 2 colonnes, économise le papier"
     },
     "A4_LABELS_10": {
-      "label": "A4 - 10 étiquettes autocollantes (105×57mm)",
-      "description": "10 étiquettes de 105×57mm par page"
+      "label": "A4 - 10 étiquettes autocollantes",
+      "description": "10 étiquettes par page"
     },
     "A4_LABELS_14": {
-      "label": "A4 - 14 étiquettes Avery (99.1×38.1mm)",
-      "description": "14 étiquettes Avery 99.1×38.1mm par page (format L7163)"
+      "label": "A4 - 14 étiquettes autocollantes",
+      "description": "14 étiquettes par page"
     },
     "A4_LABELS_16": {
-      "label": "A4 - 16 étiquettes Avery (99.1×33.9mm)",
-      "description": "16 étiquettes Avery 99.1×33.9mm par page (format L7162)"
+      "label": "A4 - 16 étiquettes autocollantes",
+      "description": "16 étiquettes par page"
     },
     "A4_LABELS_21": {
-      "label": "A4 - 21 étiquettes Avery (70×42.3mm)",
-      "description": "21 étiquettes Avery 70×42.3mm par page (format L7160)"
+      "label": "A4 - 21 étiquettes autocollantes",
+      "description": "21 étiquettes par page"
     },
     "ROLL_57x32": {
-      "label": "Rouleau - Étiquettes 57×32mm",
-      "description": "Une étiquette 57×32mm par adresse"
+      "label": "Rouleau - Étiquettes",
+      "description": "Une étiquette par adresse"
     },
     "CSV_EXPORT": {
-      "label": "Export CSV - Données tabulaires",
+      "label": "Export CSV",
       "description": "Export des données au format CSV pour tableur"
     }
   },
@@ -198,9 +198,9 @@
       "signIn": "Se connecter",
       "signUp": "Créer un compte"
     },
-    "tagline": "Lablr - Générateur d'étiquettes",
+    "tagline": "Lalabel - Générateur d'étiquettes",
     "welcome": {
-      "title": "🎉 Utilisez Lablr gratuitement",
+      "title": "🎉 Utilisez Lalabel gratuitement",
       "description": "Une simple connexion vous permet d'accéder à toutes les fonctionnalités d'impression d'étiquettes sans aucun coût.",
       "privacy": "Vos données d'import ne sont jamais conservées"
     },
@@ -220,7 +220,7 @@
       "loading": "Connexion..."
     },
     "toggle": {
-      "toSignUp": "→ Nouveau sur Lablr ? Créer un compte",
+      "toSignUp": "→ Nouveau sur Lalabel ? Créer un compte",
       "toSignIn": "← Vous avez déjà un compte ? Se connecter"
     },
     "guarantees": {
@@ -239,10 +239,11 @@
   },
   "faq": {
     "title": "Questions fréquentes",
-    "subtitle": "Tout ce que vous devez savoir sur Lablr, la sécurité de vos données et l'utilisation de l'application.",
+    "subtitle": "Tout ce que vous devez savoir sur Lalabel, la sécurité de vos données et l'utilisation de l'application.",
     "cta": {
       "title": "Une autre question ?",
-      "description": "N'hésitez pas à nous contacter si vous ne trouvez pas la réponse à votre question."
+      "description": "N'hésitez pas à nous contacter à contact@lalabel.app si vous ne trouvez pas la réponse à votre question.",
+      "emailSubject": "[Lalabel] Question sur l'application"
     },
     "questions": {
       "security": {
@@ -259,12 +260,51 @@
       },
       "platforms": {
         "question": "Quelles plateformes sont supportées ?",
-        "answer": "Lablr supporte automatiquement Amazon Seller Central, Shopify, eBay, ainsi que tous les fichiers CSV génériques. Notre système détecte automatiquement le format de votre fichier et extrait les bonnes colonnes d'adresses. Vous pouvez aussi importer n'importe quel CSV avec des colonnes d'adresses."
+        "answer": "Lalabel supporte automatiquement Amazon Seller Central, Shopify, eBay, ainsi que tous les fichiers CSV génériques. Notre système détecte automatiquement le format de votre fichier et extrait les bonnes colonnes d'adresses. Vous pouvez aussi importer n'importe quel CSV avec des colonnes d'adresses."
       },
       "formats": {
         "question": "Quels formats d'impression sont disponibles ?",
-        "answer": "Nous proposons plusieurs formats : A4 standard et compact, étiquettes autocollantes Avery (L7160, L7162, L7163) avec 14, 16 ou 21 étiquettes par page, étiquettes 10 unités (105×57mm), rouleaux 57×32mm pour imprimantes thermiques, et export CSV. Tous les formats incluent un aperçu en temps réel."
+        "answer": "Nous proposons plusieurs formats : A4 standard et compact, étiquettes autocollantes avec 10, 14, 16 ou 21 étiquettes par page, rouleaux d'étiquettes pour imprimantes thermiques, et export CSV. Tous les formats incluent un aperçu en temps réel."
       }
+    }
+  },
+  "feedback": {
+    "title": "Aidez-nous à améliorer Lalabel",
+    "subtitle": "Votre avis compte pour nous ! Proposez de nouveaux formats, signalez des bugs ou suggérez des améliorations.",
+    "benefits": {
+      "responsive": "Réponse rapide",
+      "responsiveDesc": "Nous répondons généralement sous 24h",
+      "implementation": "Développement agile",
+      "implementationDesc": "Les bonnes idées sont intégrées rapidement",
+      "community": "Écoute active",
+      "communityDesc": "Chaque suggestion est étudiée avec attention"
+    },
+    "suggestions": {
+      "title": "Qu'aimeriez-vous voir dans Lalabel ?",
+      "formats": "Nouveaux formats d'étiquettes",
+      "features": "Fonctionnalités supplémentaires",
+      "improvements": "Améliorations de l'interface",
+      "integrations": "Intégrations avec d'autres plateformes"
+    },
+    "cta": {
+      "title": "Partagez vos idées !",
+      "description": "Contactez-nous pour toute suggestion, demande de format ou amélioration. Votre retour nous aide à créer la meilleure solution d'étiquettes possible.",
+      "button": "Envoyer un feedback"
+    },
+    "email": {
+      "subject": "[Lalabel] Suggestion d'amélioration",
+      "greeting": "Bonjour,",
+      "intro": "J'aimerais suggérer une amélioration pour Lalabel :",
+      "placeholder": "[ Décrivez votre idée ici ]",
+      "typeTitle": "Type de suggestion :",
+      "types": {
+        "formats": "Nouveau format d'étiquettes",
+        "features": "Fonctionnalité supplémentaire",
+        "ui": "Amélioration de l'interface",
+        "integration": "Intégration avec une plateforme",
+        "other": "Autre"
+      },
+      "thanks": "Merci pour votre excellent travail !"
     }
   },
   "footer": {
@@ -284,7 +324,7 @@
       "speed": "Interface moderne et rapide",
       "compatibility": "Compatible tous appareils"
     },
-    "copyright": "© 2024 Lablr. Tous droits réservés.",
+    "copyright": "© 2024 Lalabel. Tous droits réservés.",
     "version": {
       "label": "Version"
     }
@@ -311,7 +351,7 @@
     "addressExtracted": "adresse extraite",
     "addressesExtracted": "adresses extraites",
     "pageNumber": "Page {number}",
-    "printTitle": "Impression des adresses - Lablr"
+    "printTitle": "Impression des adresses - Lalabel"
   },
   "csv": {
     "headers": {

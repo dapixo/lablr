@@ -30,17 +30,17 @@ export const FAQ_DATA: FAQItem[] = [
   {
     id: 'platforms',
     question: 'Quelles plateformes sont supportées ?',
-    answer: `Lablr supporte automatiquement Amazon Seller Central, Shopify, eBay, 
-    ainsi que tous les fichiers CSV génériques. Notre système détecte automatiquement 
-    le format de votre fichier et extrait les bonnes colonnes d'adresses. 
+    answer: `Lalabel supporte automatiquement Amazon Seller Central, Shopify, eBay,
+    ainsi que tous les fichiers CSV génériques. Notre système détecte automatiquement
+    le format de votre fichier et extrait les bonnes colonnes d'adresses.
     Vous pouvez aussi importer n'importe quel CSV avec des colonnes d'adresses.`,
   },
   {
     id: 'formats',
     question: "Quels formats d'impression sont disponibles ?",
-    answer: `Nous proposons plusieurs formats : A4 standard et compact, 
-    étiquettes autocollantes Avery (L7160, L7162, L7163) avec 14, 16 ou 21 étiquettes par page, 
-    étiquettes 10 unités (105×57mm), rouleaux 57×32mm pour imprimantes thermiques, 
+    answer: `Nous proposons plusieurs formats : A4 standard et compact,
+    étiquettes autocollantes avec 10, 14, 16 ou 21 étiquettes par page,
+    rouleaux d'étiquettes pour imprimantes thermiques,
     et export CSV. Tous les formats incluent un aperçu en temps réel.`,
   },
 ] as const

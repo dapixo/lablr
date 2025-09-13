@@ -23,10 +23,33 @@ const FAQHeader = React.memo(function FAQHeader({ t }: { t: (key: string) => str
 })
 
 const FAQCallToAction = React.memo(function FAQCallToAction({ t }: { t: (key: string) => string }) {
+  const renderDescription = () => {
+    const description = t('faq.cta.description')
+    const emailMatch = description.match(/contact@lalabel\.app/)
+
+    if (emailMatch) {
+      const parts = description.split('contact@lalabel.app')
+      return (
+        <>
+          {parts[0]}
+          <a
+            href={`mailto:contact@lalabel.app?subject=${encodeURIComponent(t('faq.cta.emailSubject') || 'Question sur Lalabel')}`}
+            className="text-blue-600 hover:text-blue-800 font-medium underline transition-colors"
+          >
+            contact@lalabel.app
+          </a>
+          {parts[1]}
+        </>
+      )
+    }
+
+    return description
+  }
+
   return (
     <div className="text-center mt-12 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border-l-4 border-blue-500">
       <h3 className="font-semibold text-gray-900 mb-2">{t('faq.cta.title')}</h3>
-      <p className="text-gray-600 text-sm">{t('faq.cta.description')}</p>
+      <p className="text-gray-600 text-sm">{renderDescription()}</p>
     </div>
   )
 })

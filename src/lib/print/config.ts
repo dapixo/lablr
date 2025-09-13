@@ -98,23 +98,23 @@ export const PRINT_CONFIGS: Record<PrintFormat, FormatConfig> = {
 // Labels et descriptions des formats
 export const PRINT_FORMAT_LABELS: Record<PrintFormat, string> = {
   A4: 'A4 - Format standard',
-  A4_LABELS_10: 'A4 - 10 étiquettes autocollantes (105×57mm)',
-  ROLL_57x32: 'Rouleau - Étiquettes 57×32mm',
-  A4_LABELS_14: 'A4 - 14 étiquettes Avery (99.1×38.1mm)',
-  A4_LABELS_16: 'A4 - 16 étiquettes Avery (99.1×33.9mm)',
-  A4_LABELS_21: 'A4 - 21 étiquettes Avery (70×42.3mm)',
-  A4_COMPACT: 'A4 - Format compact (2 colonnes)',
-  CSV_EXPORT: 'Export CSV - Données tabulaires',
+  A4_LABELS_10: 'A4 - 10 étiquettes autocollantes',
+  ROLL_57x32: 'Rouleau - Étiquettes',
+  A4_LABELS_14: 'A4 - 14 étiquettes autocollantes',
+  A4_LABELS_16: 'A4 - 16 étiquettes autocollantes',
+  A4_LABELS_21: 'A4 - 21 étiquettes autocollantes',
+  A4_COMPACT: 'A4 - Format compact',
+  CSV_EXPORT: 'Export CSV',
 }
 
 // Descriptions détaillées pour l'interface
 export const PRINT_FORMAT_DESCRIPTIONS: Record<PrintFormat, string> = {
   A4: 'Une adresse par ligne, format classique',
-  A4_LABELS_10: '10 étiquettes de 105×57mm par page',
-  ROLL_57x32: 'Une étiquette 57×32mm par adresse',
-  A4_LABELS_14: '14 étiquettes Avery 99.1×38.1mm par page (format L7163)',
-  A4_LABELS_16: '16 étiquettes Avery 99.1×33.9mm par page (format L7162)',
-  A4_LABELS_21: '21 étiquettes Avery 70×42.3mm par page (format L7160)',
+  A4_LABELS_10: '10 étiquettes par page',
+  ROLL_57x32: 'Une étiquette par adresse',
+  A4_LABELS_14: '14 étiquettes par page',
+  A4_LABELS_16: '16 étiquettes par page',
+  A4_LABELS_21: '21 étiquettes par page',
   A4_COMPACT: 'Format compact 2 colonnes, économise le papier',
   CSV_EXPORT: 'Export des données au format CSV pour tableur',
 }

@@ -1,14 +1,14 @@
 {
   "app": {
-    "title": "Lablr - Amazon Seller Address Extractor",
+    "title": "Lalabel - Amazon Seller Address Extractor",
     "description": "Micro SaaS to extract and print addresses from your Amazon Seller TSV reports."
   },
   "brand": {
-    "name": "Lablr",
+    "name": "Lalabel",
     "tagline": "Professional address extraction solution"
   },
   "header": {
-    "welcome": "Welcome to Lablr",
+    "welcome": "Welcome to Lalabel",
     "description": "Import your data from any e-commerce platform and transform them into professional shipping labels in just a few clicks."
   },
   "steps": {
@@ -152,7 +152,7 @@
       "description": "Realistic visualization of print rendering (reduced scale)",
       "csvTitle": "Preview - CSV Export",
       "csvDescription": "Preview of data to be exported",
-      "rollDescription": "Preview of 57×32mm label roll (one label per address)",
+      "rollDescription": "Preview of label roll (one label per address)",
       "pagination": "... and {count} more page{s} ({total} addresses total)",
       "rollPagination": "... and {count} more label{s}",
       "csvPagination": "... and {count} more line{s} ({total} addresses total)",
@@ -165,31 +165,31 @@
       "description": "One address per line, classic format"
     },
     "A4_COMPACT": {
-      "label": "A4 - Compact format (2 columns)",
+      "label": "A4 - Compact format",
       "description": "Compact 2-column format, saves paper"
     },
     "A4_LABELS_10": {
-      "label": "A4 - 10 adhesive labels (105×57mm)",
-      "description": "10 labels of 105×57mm per page"
+      "label": "A4 - 10 adhesive labels",
+      "description": "10 labels per page"
     },
     "A4_LABELS_14": {
-      "label": "A4 - 14 Avery labels (99.1×38.1mm)",
-      "description": "14 Avery 99.1×38.1mm labels per page (L7163 format)"
+      "label": "A4 - 14 adhesive labels",
+      "description": "14 labels per page"
     },
     "A4_LABELS_16": {
-      "label": "A4 - 16 Avery labels (99.1×33.9mm)",
-      "description": "16 Avery 99.1×33.9mm labels per page (L7162 format)"
+      "label": "A4 - 16 adhesive labels",
+      "description": "16 labels per page"
     },
     "A4_LABELS_21": {
-      "label": "A4 - 21 Avery labels (70×42.3mm)",
-      "description": "21 Avery 70×42.3mm labels per page (L7160 format)"
+      "label": "A4 - 21 adhesive labels",
+      "description": "21 labels per page"
     },
     "ROLL_57x32": {
-      "label": "Roll - 57×32mm labels",
-      "description": "One 57×32mm label per address"
+      "label": "Roll - Labels",
+      "description": "One label per address"
     },
     "CSV_EXPORT": {
-      "label": "CSV Export - Tabular data",
+      "label": "CSV Export",
       "description": "Export data in CSV format for spreadsheet"
     }
   },
@@ -198,9 +198,9 @@
       "signIn": "Sign in",
       "signUp": "Create account"
     },
-    "tagline": "Lablr - Label Generator",
+    "tagline": "Lalabel - Label Generator",
     "welcome": {
-      "title": "🎉 Use Lablr for free",
+      "title": "🎉 Use Lalabel for free",
       "description": "A simple login gives you access to all label printing features at no cost.",
       "privacy": "Your import data is never stored"
     },
@@ -220,7 +220,7 @@
       "loading": "Signing in..."
     },
     "toggle": {
-      "toSignUp": "→ New to Lablr? Create account",
+      "toSignUp": "→ New to Lalabel? Create account",
       "toSignIn": "← Already have an account? Sign in"
     },
     "guarantees": {
@@ -239,10 +239,11 @@
   },
   "faq": {
     "title": "Frequently asked questions",
-    "subtitle": "Everything you need to know about Lablr, your data security, and using the application.",
+    "subtitle": "Everything you need to know about Lalabel, your data security, and using the application.",
     "cta": {
       "title": "Another question?",
-      "description": "Feel free to contact us if you can't find the answer to your question."
+      "description": "Feel free to contact us at contact@lalabel.app if you can't find the answer to your question.",
+      "emailSubject": "[Lalabel] Question about the app"
     },
     "questions": {
       "security": {
@@ -259,12 +260,51 @@
       },
       "platforms": {
         "question": "Which platforms are supported?",
-        "answer": "Lablr automatically supports Amazon Seller Central, Shopify, eBay, as well as all generic CSV files. Our system automatically detects your file format and extracts the right address columns. You can also import any CSV with address columns."
+        "answer": "Lalabel automatically supports Amazon Seller Central, Shopify, eBay, as well as all generic CSV files. Our system automatically detects your file format and extracts the right address columns. You can also import any CSV with address columns."
       },
       "formats": {
         "question": "Which print formats are available?",
-        "answer": "We offer several formats: standard and compact A4, Avery adhesive labels (L7160, L7162, L7163) with 14, 16 or 21 labels per page, 10-unit labels (105×57mm), 57×32mm rolls for thermal printers, and CSV export. All formats include real-time preview."
+        "answer": "We offer several formats: standard and compact A4, adhesive labels with 10, 14, 16 or 21 labels per page, label rolls for thermal printers, and CSV export. All formats include real-time preview."
       }
+    }
+  },
+  "feedback": {
+    "title": "Help us improve Lalabel",
+    "subtitle": "Your feedback matters! Suggest new formats, report bugs, or propose improvements.",
+    "benefits": {
+      "responsive": "Quick response",
+      "responsiveDesc": "We typically respond within 24h",
+      "implementation": "Agile development",
+      "implementationDesc": "Good ideas are implemented quickly",
+      "community": "Active listening",
+      "communityDesc": "Every suggestion is carefully considered"
+    },
+    "suggestions": {
+      "title": "What would you like to see in Lalabel?",
+      "formats": "New label formats",
+      "features": "Additional features",
+      "improvements": "Interface improvements",
+      "integrations": "Integrations with other platforms"
+    },
+    "cta": {
+      "title": "Share your ideas!",
+      "description": "Contact us for any suggestion, format request, or improvement. Your feedback helps us create the best label solution possible.",
+      "button": "Send feedback"
+    },
+    "email": {
+      "subject": "[Lalabel] Feature Suggestion",
+      "greeting": "Hello,",
+      "intro": "I would like to suggest an improvement for Lalabel:",
+      "placeholder": "[ Describe your idea here ]",
+      "typeTitle": "Suggestion type:",
+      "types": {
+        "formats": "New label format",
+        "features": "Additional feature",
+        "ui": "Interface improvement",
+        "integration": "Platform integration",
+        "other": "Other"
+      },
+      "thanks": "Thank you for your excellent work!"
     }
   },
   "footer": {
@@ -284,7 +324,7 @@
       "speed": "Modern and fast interface",
       "compatibility": "Compatible with all devices"
     },
-    "copyright": "© 2024 Lablr. All rights reserved.",
+    "copyright": "© 2024 Lalabel. All rights reserved.",
     "version": {
       "label": "Version"
     }
@@ -311,7 +351,7 @@
     "addressExtracted": "address extracted",
     "addressesExtracted": "addresses extracted",
     "pageNumber": "Page {number}",
-    "printTitle": "Address printing - Lablr"
+    "printTitle": "Address printing - Lalabel"
   },
   "csv": {
     "headers": {

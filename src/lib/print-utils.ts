@@ -68,7 +68,7 @@ export function printAddresses(addresses: Address[], format: PrintFormat, printC
   `
 
   // Changer le titre de la page
-  document.title = 'Impression des adresses - Lablr'
+  document.title = 'Impression des adresses - Lalabel'
 
   // Créer le conteneur d'impression (invisible sur l'écran)
   const printContainer = document.createElement('div')

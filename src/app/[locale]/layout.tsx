@@ -30,13 +30,13 @@ export async function generateMetadata({
   // Simple metadata based on locale
   if (locale === 'fr') {
     return {
-      title: "Lablr - Extracteur d'adresses Amazon Seller",
+      title: "Lalabel - Extracteur d'adresses Amazon Seller",
       description:
         'Micro SaaS pour extraire et imprimer les adresses de vos rapports Amazon Seller au format TSV.',
     }
   } else {
     return {
-      title: 'Lablr - Amazon Seller Address Extractor',
+      title: 'Lalabel - Amazon Seller Address Extractor',
       description: 'Micro SaaS to extract and print addresses from your Amazon Seller TSV reports.',
     }
   }
