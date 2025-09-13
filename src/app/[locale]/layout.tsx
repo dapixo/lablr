@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import { notFound } from 'next/navigation'
 import { PrimeReactProvider } from 'primereact/api'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { StructuredData } from '@/components/SEO/StructuredData'
 import { locales } from '@/i18n/config'
 import '../globals.css'
 import 'primereact/resources/themes/lara-light-blue/theme.css'
@@ -27,17 +28,41 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params
 
-  // Simple metadata based on locale
+  // SEO optimized metadata based on locale
   if (locale === 'fr') {
     return {
-      title: "Lalabel - Extracteur d'adresses Amazon Seller",
+      title: "Lalabel - Générateur d'Étiquettes d'Expédition | Impression Amazon, Shopify, eBay",
       description:
-        'Micro SaaS pour extraire et imprimer les adresses de vos rapports Amazon Seller au format TSV.',
+        "Créez et imprimez vos étiquettes d'expédition en quelques clics. Compatible Amazon Seller, Shopify, eBay. Formats Avery, A4, rouleaux thermiques. Gratuit et sécurisé.",
+      keywords: 'impression étiquettes expédition, générateur étiquettes, imprimer étiquettes adresse, Amazon Seller, Shopify, eBay, étiquettes Avery, A4, gratuit',
+      openGraph: {
+        title: "Lalabel - Générateur d'Étiquettes d'Expédition Gratuit",
+        description: "Créez et imprimez vos étiquettes d'expédition depuis Amazon, Shopify, eBay. Tous formats : Avery, A4, rouleaux. 100% gratuit.",
+        type: 'website',
+        locale: 'fr_FR',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: "Lalabel - Générateur d'Étiquettes d'Expédition",
+        description: "Créez et imprimez vos étiquettes d'expédition depuis Amazon, Shopify, eBay. Gratuit et sécurisé.",
+      },
     }
   } else {
     return {
-      title: 'Lalabel - Amazon Seller Address Extractor',
-      description: 'Micro SaaS to extract and print addresses from your Amazon Seller TSV reports.',
+      title: 'Lalabel - Shipping Label Generator | Print Amazon, Shopify, eBay Labels',
+      description: 'Create and print shipping labels in seconds. Compatible with Amazon Seller, Shopify, eBay. Avery formats, A4, thermal rolls. Free and secure.',
+      keywords: 'shipping label generator, print shipping labels, address labels, Amazon Seller, Shopify, eBay, Avery labels, A4, free',
+      openGraph: {
+        title: 'Lalabel - Free Shipping Label Generator',
+        description: 'Create and print shipping labels from Amazon, Shopify, eBay. All formats: Avery, A4, thermal rolls. 100% free.',
+        type: 'website',
+        locale: 'en_US',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: 'Lalabel - Shipping Label Generator',
+        description: 'Create and print shipping labels from Amazon, Shopify, eBay. Free and secure.',
+      },
     }
   }
 }
@@ -63,6 +88,9 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale}>
+      <head>
+        <StructuredData locale={locale} />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <PrimeReactProvider>
           <AuthProvider>{children}</AuthProvider>

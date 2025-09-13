@@ -8,8 +8,8 @@
     "tagline": "Professional address extraction solution"
   },
   "header": {
-    "welcome": "Welcome to Lalabel",
-    "description": "Import your data from any e-commerce platform and transform them into professional shipping labels in just a few clicks."
+    "welcome": "Free Shipping Label Generator",
+    "description": "Create and print professional shipping labels from Amazon Seller, Shopify, eBay. All formats: Avery, A4, thermal rolls. 100% free and secure."
   },
   "steps": {
     "1": {
@@ -336,14 +336,6 @@
     "invalidFormat": "Invalid file format",
     "lowConfidence": "Unrecognized file format - insufficient confidence",
     "noAddresses": "No valid addresses found in the file"
-  },
-  "confirm": {
-    "deleteAddress": {
-      "message": "Are you sure you want to delete this address?",
-      "title": "Delete confirmation",
-      "accept": "Delete",
-      "reject": "Cancel"
-    }
   },
   "status": {
     "processing": "Processing...",

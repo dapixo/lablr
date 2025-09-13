@@ -8,8 +8,8 @@
     "tagline": "Solution professionnelle d'extraction d'adresses"
   },
   "header": {
-    "welcome": "Bienvenue sur Lalabel",
-    "description": "Importez vos données de n'importe quelle plateforme e-commerce et transformez-les en étiquettes d'expédition professionnelles en quelques clics."
+    "welcome": "Générateur d'Étiquettes d'Expédition Gratuit",
+    "description": "Créez et imprimez vos étiquettes d'expédition professionnelles depuis Amazon Seller, Shopify, eBay. Tous formats : Avery, A4, rouleaux thermiques. 100% gratuit et sécurisé."
   },
   "steps": {
     "1": {
@@ -336,14 +336,6 @@
     "invalidFormat": "Format de fichier invalide",
     "lowConfidence": "Format de fichier non reconnu - confiance insuffisante",
     "noAddresses": "Aucune adresse valide trouvée dans le fichier"
-  },
-  "confirm": {
-    "deleteAddress": {
-      "message": "Êtes-vous sûr de vouloir supprimer cette adresse ?",
-      "title": "Confirmation de suppression",
-      "accept": "Supprimer",
-      "reject": "Annuler"
-    }
   },
   "status": {
     "processing": "Traitement en cours...",

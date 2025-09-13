@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Allow all search engines to crawl the site
+Allow: /fr/
+Allow: /en/
+
+# Block private pages
+Disallow: /api/
+Disallow: /_next/
+
+# Sitemap location
+Sitemap: https://lalabel.app/sitemap.xml
