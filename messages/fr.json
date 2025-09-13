@@ -1,0 +1,335 @@
+{
+  "app": {
+    "title": "Lablr - Extracteur d'adresses Amazon Seller",
+    "description": "Micro SaaS pour extraire et imprimer les adresses de vos rapports Amazon Seller au format TSV."
+  },
+  "brand": {
+    "name": "Lablr",
+    "tagline": "Solution professionnelle d'extraction d'adresses"
+  },
+  "header": {
+    "welcome": "Bienvenue sur Lablr",
+    "description": "Importez vos données de n'importe quelle plateforme e-commerce et transformez-les en étiquettes d'expédition professionnelles en quelques clics."
+  },
+  "steps": {
+    "1": {
+      "title": "1. Importez",
+      "description": "Glissez votre fichier d'adresses (Amazon, Shopify, eBay...)"
+    },
+    "2": {
+      "title": "2. Configurez",
+      "description": "Choisissez votre format d'impression"
+    },
+    "3": {
+      "title": "3. Imprimez",
+      "description": "Obtenez vos étiquettes parfaitement formatées"
+    }
+  },
+  "upload": {
+    "header": "Import de fichier d'adresses",
+    "title": "Import de fichier d'adresses",
+    "description": "Glissez-déposez ou sélectionnez votre fichier d'adresses (.txt, .csv - Amazon Seller, Shopify, eBay, etc.)",
+    "drag": "Glissez votre fichier ici",
+    "dragText": "Glissez votre fichier ici",
+    "browse": "ou cliquez pour parcourir vos fichiers",
+    "clickText": "ou cliquez pour parcourir vos fichiers",
+    "processing": "Traitement en cours...",
+    "error": {
+      "reading": "Erreur lors de la lecture du fichier"
+    }
+  },
+  "addresses": {
+    "title": "Adresses extraites ({count})",
+    "totalFormat": "({filtered} sur {total})",
+    "pageInfo": "Page {current} sur {total}",
+    "addButton": "Ajouter une adresse",
+    "search": {
+      "placeholder": "Rechercher par nom, adresse, ville, pays..."
+    },
+    "pagination": {
+      "template": "Affichage de {first} à {last} sur {totalRecords} adresses"
+    },
+    "errors": {
+      "title": "Erreurs de parsing ({count})"
+    },
+    "noResults": {
+      "title": "Aucun résultat trouvé",
+      "description": "Essayez avec d'autres mots-clés ou vérifiez l'orthographe"
+    }
+  },
+  "editor": {
+    "title": {
+      "edit": "Éditer l'adresse",
+      "add": "Ajouter une adresse"
+    },
+    "firstName": "Prénom *",
+    "lastName": "Nom",
+    "address1": "Adresse *",
+    "address2": "Complément d'adresse",
+    "postalCode": "Code postal *",
+    "city": "Ville *",
+    "country": "Pays *",
+    "placeholders": {
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "address1": "123 rue de la Paix",
+      "address2": "Bât A, Appt 12",
+      "postalCode": "75001",
+      "city": "Paris",
+      "country": "Sélectionner un pays"
+    },
+    "buttons": {
+      "cancel": "Annuler",
+      "save": "Sauvegarder"
+    }
+  },
+  "userMenu": {
+    "tooltip": "Menu utilisateur ({email})",
+    "ariaLabel": "Menu utilisateur",
+    "signOut": "Se déconnecter",
+    "deleteAccount": "Supprimer le compte",
+    "confirmDelete": {
+      "message": "Êtes-vous absolument sûr de vouloir supprimer votre compte ? Cette action est irréversible.",
+      "header": "Supprimer le compte",
+      "accept": "Supprimer définitivement",
+      "reject": "Annuler"
+    },
+    "toast": {
+      "signOutError": {
+        "summary": "Erreur",
+        "detail": "Impossible de se déconnecter"
+      },
+      "deleteError": {
+        "summary": "Erreur",
+        "detail": "Impossible de supprimer le compte"
+      },
+      "deleteSuccess": {
+        "summary": "Succès",
+        "detail": "Compte supprimé avec succès"
+      },
+      "unexpectedError": {
+        "summary": "Erreur",
+        "detail": "Une erreur inattendue s'est produite"
+      }
+    }
+  },
+  "confirm": {
+    "deleteAddress": {
+      "title": "Supprimer l'adresse",
+      "message": "Êtes-vous sûr de vouloir supprimer cette adresse ? Cette action est irréversible.",
+      "accept": "Supprimer",
+      "reject": "Annuler"
+    }
+  },
+  "validation": {
+    "firstName": {
+      "required": "Le prénom est obligatoire"
+    },
+    "address1": {
+      "required": "L'adresse est obligatoire"
+    },
+    "postalCode": {
+      "required": "Le code postal est obligatoire"
+    },
+    "city": {
+      "required": "La ville est obligatoire"
+    },
+    "country": {
+      "required": "Le pays est obligatoire"
+    }
+  },
+  "print": {
+    "title": "Options d'impression",
+    "description": "Choisissez le format d'impression pour vos {count} adresses",
+    "formatTitle": "Format d'impression",
+    "formatAriaLabel": "Choisir un format d'impression",
+    "buttons": {
+      "print": "Imprimer",
+      "download": "Télécharger CSV"
+    },
+    "preview": {
+      "title": "Aperçu - {format}",
+      "description": "Visualisation réaliste du rendu d'impression (échelle réduite)",
+      "csvTitle": "Aperçu - Export CSV",
+      "csvDescription": "Prévisualisation des données qui seront exportées",
+      "rollDescription": "Aperçu du rouleau d'étiquettes 57×32mm (une étiquette par adresse)",
+      "pagination": "... et {count} page{s} supplémentaire{s} ({total} adresses au total)",
+      "rollPagination": "... et {count} étiquette{s} supplémentaire{s}",
+      "csvPagination": "... et {count} ligne{s} supplémentaire{s} ({total} adresses au total)",
+      "emptyLabel": "Étiquette vide"
+    }
+  },
+  "formats": {
+    "A4": {
+      "label": "A4 - Format standard",
+      "description": "Une adresse par ligne, format classique"
+    },
+    "A4_COMPACT": {
+      "label": "A4 - Format compact (2 colonnes)",
+      "description": "Format compact 2 colonnes, économise le papier"
+    },
+    "A4_LABELS_10": {
+      "label": "A4 - 10 étiquettes autocollantes (105×57mm)",
+      "description": "10 étiquettes de 105×57mm par page"
+    },
+    "A4_LABELS_14": {
+      "label": "A4 - 14 étiquettes Avery (99.1×38.1mm)",
+      "description": "14 étiquettes Avery 99.1×38.1mm par page (format L7163)"
+    },
+    "A4_LABELS_16": {
+      "label": "A4 - 16 étiquettes Avery (99.1×33.9mm)",
+      "description": "16 étiquettes Avery 99.1×33.9mm par page (format L7162)"
+    },
+    "A4_LABELS_21": {
+      "label": "A4 - 21 étiquettes Avery (70×42.3mm)",
+      "description": "21 étiquettes Avery 70×42.3mm par page (format L7160)"
+    },
+    "ROLL_57x32": {
+      "label": "Rouleau - Étiquettes 57×32mm",
+      "description": "Une étiquette 57×32mm par adresse"
+    },
+    "CSV_EXPORT": {
+      "label": "Export CSV - Données tabulaires",
+      "description": "Export des données au format CSV pour tableur"
+    }
+  },
+  "auth": {
+    "title": {
+      "signIn": "Se connecter",
+      "signUp": "Créer un compte"
+    },
+    "tagline": "Lablr - Générateur d'étiquettes",
+    "welcome": {
+      "title": "🎉 Utilisez Lablr gratuitement",
+      "description": "Une simple connexion vous permet d'accéder à toutes les fonctionnalités d'impression d'étiquettes sans aucun coût.",
+      "privacy": "Vos données d'import ne sont jamais conservées"
+    },
+    "form": {
+      "email": "Adresse email",
+      "password": "Mot de passe",
+      "emailPlaceholder": "votre@email.com",
+      "passwordPlaceholder": {
+        "signUp": "Choisissez un mot de passe sécurisé",
+        "signIn": "Votre mot de passe"
+      }
+    },
+    "buttons": {
+      "cancel": "Annuler",
+      "signIn": "Se connecter",
+      "signUp": "Créer un compte",
+      "loading": "Connexion..."
+    },
+    "toggle": {
+      "toSignUp": "→ Nouveau sur Lablr ? Créer un compte",
+      "toSignIn": "← Vous avez déjà un compte ? Se connecter"
+    },
+    "guarantees": {
+      "free": "100% Gratuit",
+      "secure": "Données sécurisées",
+      "noStorage": "Aucune conservation"
+    },
+    "errors": {
+      "invalidCredentials": "Email ou mot de passe incorrect",
+      "emailNotConfirmed": "Veuillez confirmer votre email avant de vous connecter",
+      "passwordTooShort": "Le mot de passe doit contenir au moins 6 caractères",
+      "invalidEmail": "Adresse email invalide",
+      "userExists": "Un compte existe déjà avec cette adresse email",
+      "unexpected": "Une erreur inattendue s'est produite"
+    }
+  },
+  "faq": {
+    "title": "Questions fréquentes",
+    "subtitle": "Tout ce que vous devez savoir sur Lablr, la sécurité de vos données et l'utilisation de l'application.",
+    "cta": {
+      "title": "Une autre question ?",
+      "description": "N'hésitez pas à nous contacter si vous ne trouvez pas la réponse à votre question."
+    },
+    "questions": {
+      "security": {
+        "question": "Mes données sont-elles sécurisées ?",
+        "answer": "Absolument ! Vos données sont traitées à 100% localement dans votre navigateur. Aucun fichier n'est envoyé sur nos serveurs - tout le traitement se fait directement sur votre appareil. Vos adresses et commandes restent entièrement privées et sécurisées."
+      },
+      "files": {
+        "question": "Que faites-vous de mes fichiers d'import ?",
+        "answer": "Rien du tout ! Vos fichiers CSV/TSV ne quittent jamais votre navigateur. Ils sont traités localement pour extraire les adresses, puis immédiatement supprimés de la mémoire. Nous ne conservons, ne sauvegardons ni ne transmettons aucun de vos fichiers ou données personnelles."
+      },
+      "account": {
+        "question": "Pourquoi dois-je créer un compte ?",
+        "answer": "Le compte nous permet uniquement de compter le nombre d'utilisateurs actifs pour améliorer le service. Nous ne collectons que votre email - aucune donnée commerciale, aucune adresse client, aucun fichier n'est lié à votre compte."
+      },
+      "platforms": {
+        "question": "Quelles plateformes sont supportées ?",
+        "answer": "Lablr supporte automatiquement Amazon Seller Central, Shopify, eBay, ainsi que tous les fichiers CSV génériques. Notre système détecte automatiquement le format de votre fichier et extrait les bonnes colonnes d'adresses. Vous pouvez aussi importer n'importe quel CSV avec des colonnes d'adresses."
+      },
+      "formats": {
+        "question": "Quels formats d'impression sont disponibles ?",
+        "answer": "Nous proposons plusieurs formats : A4 standard et compact, étiquettes autocollantes Avery (L7160, L7162, L7163) avec 14, 16 ou 21 étiquettes par page, étiquettes 10 unités (105×57mm), rouleaux 57×32mm pour imprimantes thermiques, et export CSV. Tous les formats incluent un aperçu en temps réel."
+      }
+    }
+  },
+  "footer": {
+    "brand": {
+      "description": "Solution professionnelle pour l'extraction et l'impression d'étiquettes à partir de toutes vos plateformes e-commerce."
+    },
+    "features": {
+      "title": "Fonctionnalités",
+      "multiPlatform": "Import multi-plateformes (Amazon, Shopify, eBay...)",
+      "formats": "Formats A4 et étiquettes",
+      "editing": "Édition des adresses",
+      "detection": "Détection automatique des formats"
+    },
+    "advantages": {
+      "title": "Avantages",
+      "security": "Traitement local sécurisé",
+      "speed": "Interface moderne et rapide",
+      "compatibility": "Compatible tous appareils"
+    },
+    "copyright": "© 2024 Lablr. Tous droits réservés.",
+    "version": {
+      "label": "Version"
+    }
+  },
+  "errors": {
+    "fileTooLarge": "Le fichier est trop volumineux (max 10MB)",
+    "fileEmpty": "Le fichier est vide",
+    "invalidFileType": "Seuls les fichiers .txt, .csv sont acceptés",
+    "invalidFormat": "Format de fichier invalide",
+    "lowConfidence": "Format de fichier non reconnu - confiance insuffisante",
+    "noAddresses": "Aucune adresse valide trouvée dans le fichier"
+  },
+  "confirm": {
+    "deleteAddress": {
+      "message": "Êtes-vous sûr de vouloir supprimer cette adresse ?",
+      "title": "Confirmation de suppression",
+      "accept": "Supprimer",
+      "reject": "Annuler"
+    }
+  },
+  "status": {
+    "processing": "Traitement en cours...",
+    "fileProcessed": "Fichier traité avec succès",
+    "addressExtracted": "adresse extraite",
+    "addressesExtracted": "adresses extraites",
+    "pageNumber": "Page {number}",
+    "printTitle": "Impression des adresses - Lablr"
+  },
+  "csv": {
+    "headers": {
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "address1": "Adresse 1",
+      "address2": "Adresse 2",
+      "postalCode": "Code Postal",
+      "city": "Ville",
+      "country": "Pays"
+    }
+  },
+  "api": {
+    "methodNotAllowed": "Method not allowed",
+    "unauthorized": "Unauthorized",
+    "invalidUserData": "Invalid user data",
+    "deleteAccountFailed": "Failed to delete account",
+    "accountDeletedSuccess": "Account deleted successfully",
+    "internalServerError": "Internal server error"
+  }
+}

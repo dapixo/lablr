@@ -4,7 +4,7 @@
 
 **Lablr** est une solution professionnelle permettant aux vendeurs Amazon de générer et imprimer facilement des étiquettes d'adresse à partir de leurs rapports Amazon Seller au format TSV. Interface moderne et intuitive avec design responsive pour tous les appareils. 
 
-**V3.0** : Désormais avec authentification Supabase pour le suivi d'usage et FAQ interactive pour rassurer les utilisateurs sur la sécurité et la confidentialité.
+**V3.1** : Système d'internationalisation complet (FR/EN) avec authentification Supabase, FAQ interactive et code optimisé pour la production.
 
 ## Architecture Technique
 
@@ -17,6 +17,7 @@
 - **Build Tool** : Turbopack pour développement rapide
 - **Authentification** : Supabase Auth avec SSR
 - **Base de données** : Supabase (pour gestion utilisateurs uniquement)
+- **Internationalisation** : Système i18n personnalisé (FR/EN) avec routing dynamique
 
 ### Structure du Projet (Architecture Refactorisée)
 ```
@@ -48,12 +49,18 @@ src/
 ├── contexts/
 │   └── AuthContext.tsx       # 🆕 Contexte d'authentification React
 ├── hooks/
-│   └── useAuth.ts            # 🆕 Hook d'authentification
+│   ├── useAuth.ts            # 🆕 Hook d'authentification
+│   └── useTranslations.ts    # 🆕 Hook d'internationalisation
 ├── constants/
 │   ├── index.ts              # Constantes globales et messages d'erreur
 │   └── faq.ts                # 🆕 Données FAQ structurées
-└── types/
-    └── address.ts            # Types TypeScript stricts
+├── types/
+│   └── address.ts            # Types TypeScript stricts
+├── i18n/
+│   └── config.ts             # 🆕 Configuration internationalisation
+└── messages/
+    ├── fr.json               # 🆕 Traductions françaises
+    └── en.json               # 🆕 Traductions anglaises
 ```
 
 ## Fonctionnalités Principales
@@ -115,6 +122,14 @@ src/
 - **Composants mémorisés** : Performance optimisée avec React.memo
 - **Design cohérent** : Style uniforme avec le reste de l'application
 - **Réponses rassurantes** : Messages clairs sur la sécurité et la confidentialité
+
+### 8. Système d'Internationalisation (🆕 V3.1)
+- **Routing dynamique** : URLs avec préfixe locale `/fr` et `/en`
+- **Hook personnalisé** : `useTranslations` avec gestion des clés imbriquées
+- **Traductions complètes** : Tous les composants UI traduits (400+ clés)
+- **Détection automatique** : Locale basée sur l'URL avec fallback vers français
+- **Types sûrs** : Interface TypeScript stricte pour les traductions
+- **Performance optimisée** : Mémorisation avec `useMemo` et chargement à la demande
 
 ## Commandes de Développement
 
@@ -342,9 +357,24 @@ const FormatCard = React.memo(function FormatCard({...}))
 - **Rétrocompatibilité** : Re-exports maintiennent la compatibilité
 - **Tests de régression** : Formats d'impression validés
 
-## Évolutions Récentes (✅ V3.0)
+## Évolutions Récentes (✅ V3.1)
 
-### 🔐 Système d'Authentification Intégré
+### 🌍 Système d'Internationalisation Complet (🆕 V3.1)
+- ✅ **Routing dynamique** : Support complet FR/EN avec `[locale]` routing
+- ✅ **Hook personnalisé** : `useTranslations` avec gestion des clés imbriquées  
+- ✅ **Traductions exhaustives** : 400+ clés traduites dans tous les composants
+- ✅ **Architecture i18n** : Structure JSON optimisée avec validation TypeScript
+- ✅ **Performance** : Mémorisation et chargement optimisé des traductions
+- ✅ **UX multilingue** : Détection locale automatique et fallback intelligent
+
+### 🏗️ Optimisations Code et Build (🆕 V3.1)
+- ✅ **TypeScript strict** : Élimination des types `any`, interfaces optimisées
+- ✅ **ESLint/Biome conformité** : Code qualité avec linting automatisé
+- ✅ **Performance React** : `React.memo` avec displayName, interfaces partagées
+- ✅ **Bundle optimisé** : Build production sans erreurs (172kB main bundle)
+- ✅ **Architecture DRY** : Réduction duplications, composants modulaires
+
+### 🔐 Système d'Authentification Intégré (V3.0)
 - ✅ **Protection d'impression** : Modal d'auth avant impression
 - ✅ **Supabase Auth** : SSR avec Next.js App Router complet
 - ✅ **Modal professionnelle** : Design cohérent avec messages rassurants

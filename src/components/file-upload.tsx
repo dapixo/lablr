@@ -10,9 +10,10 @@ import { cn } from '@/lib/utils'
 interface FileUploadProps {
   onFileContent: (content: string, filename: string) => void
   className?: string
+  t: (key: string) => string
 }
 
-export function FileUpload({ onFileContent, className }: FileUploadProps) {
+export function FileUpload({ onFileContent, className, t }: FileUploadProps) {
   const [isDragOver, setIsDragOver] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -41,13 +42,13 @@ export function FileUpload({ onFileContent, className }: FileUploadProps) {
 
         onFileContent(content, file.name)
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Erreur lors de la lecture du fichier'
+        const message = err instanceof Error ? err.message : t('upload.error.reading')
         setError(message)
       } finally {
         setIsLoading(false)
       }
     },
-    [onFileContent]
+    [onFileContent, t]
   )
 
   const handleDrop = useCallback(
@@ -80,15 +81,12 @@ export function FileUpload({ onFileContent, className }: FileUploadProps) {
       header={
         <div className="flex items-center gap-2">
           <FileText className="h-1rem w-1rem" />
-          <span className="font-semibold text-900">Import de fichier d&apos;adresses</span>
+          <span className="font-semibold text-900">{t('upload.header')}</span>
         </div>
       }
       className={cn('w-full', className)}
     >
-      <div className="mb-3 text-600 text-sm">
-        Glissez-déposez ou sélectionnez votre fichier d&apos;adresses (.txt, .csv - Amazon Seller,
-        Shopify, eBay, etc.)
-      </div>
+      <div className="mb-3 text-600 text-sm">{t('upload.description')}</div>
       <div
         role="button"
         tabIndex={0}
@@ -119,9 +117,9 @@ export function FileUpload({ onFileContent, className }: FileUploadProps) {
 
           <div className="space-y-2">
             <p className="text-lg font-medium">
-              {isLoading ? 'Traitement en cours...' : 'Glissez votre fichier ici'}
+              {isLoading ? t('upload.processing') : t('upload.drag')}
             </p>
-            <p className="text-sm text-muted-foreground">ou cliquez pour parcourir vos fichiers</p>
+            <p className="text-sm text-muted-foreground">{t('upload.browse')}</p>
           </div>
         </div>
       </div>

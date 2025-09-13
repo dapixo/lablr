@@ -79,12 +79,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: 'Failed to delete account' }))
-        return { 
+        const errorData = await response
+          .json()
+          .catch(() => ({ message: 'Failed to delete account' }))
+        return {
           error: {
             message: errorData.message || 'Failed to delete account',
-            status: response.status
-          } as AuthError 
+            status: response.status,
+          } as AuthError,
         }
       }
 
@@ -93,11 +95,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { error: null }
     } catch (error) {
       console.error('Delete account error:', error)
-      return { 
+      return {
         error: {
           message: error instanceof Error ? error.message : 'Network error occurred',
-          status: 0
-        } as AuthError 
+          status: 0,
+        } as AuthError,
       }
     }
   }

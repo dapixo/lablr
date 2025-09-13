@@ -1,17 +1,38 @@
 'use client'
 
 import { Button } from 'primereact/button'
-import { Menu } from 'primereact/menu'
 import { confirmDialog } from 'primereact/confirmdialog'
+import { Menu } from 'primereact/menu'
 import { Toast } from 'primereact/toast'
-import { useRef, useState, useCallback } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
+import { useTranslations } from '@/hooks/useTranslations'
 
 export function UserMenu() {
   const { user, signOut, deleteAccount } = useAuth()
+  const [locale, setLocale] = useState('fr')
+  const t = useTranslations(locale)
   const menuRef = useRef<Menu>(null)
   const toastRef = useRef<Toast>(null)
   const [loading, setLoading] = useState(false)
+
+  // Récupérer le locale depuis l'URL et écouter les changements
+  useEffect(() => {
+    const updateLocale = () => {
+      if (typeof window !== 'undefined') {
+        const pathLocale = window.location.pathname.split('/')[1]
+        if (pathLocale === 'en' || pathLocale === 'fr') {
+          setLocale(pathLocale)
+        }
+      }
+    }
+
+    updateLocale()
+
+    // Écouter les changements d'URL
+    window.addEventListener('popstate', updateLocale)
+    return () => window.removeEventListener('popstate', updateLocale)
+  }, [])
 
   const handleSignOut = useCallback(async () => {
     try {
@@ -20,22 +41,22 @@ export function UserMenu() {
       console.error('Sign out error:', error)
       toastRef.current?.show({
         severity: 'error',
-        summary: 'Erreur',
-        detail: 'Impossible de se déconnecter',
-        life: 3000
+        summary: t('userMenu.toast.signOutError.summary'),
+        detail: t('userMenu.toast.signOutError.detail'),
+        life: 3000,
       })
     }
-  }, [signOut])
+  }, [signOut, t])
 
   const handleDeleteAccount = useCallback(() => {
     confirmDialog({
-      message: 'Êtes-vous absolument sûr de vouloir supprimer votre compte ? Cette action est irréversible.',
-      header: 'Supprimer le compte',
+      message: t('userMenu.confirmDelete.message'),
+      header: t('userMenu.confirmDelete.header'),
       icon: 'pi pi-exclamation-triangle',
       defaultFocus: 'reject',
       acceptClassName: 'p-button-danger',
-      acceptLabel: 'Supprimer définitivement',
-      rejectLabel: 'Annuler',
+      acceptLabel: t('userMenu.confirmDelete.accept'),
+      rejectLabel: t('userMenu.confirmDelete.reject'),
       accept: async () => {
         setLoading(true)
         try {
@@ -44,32 +65,35 @@ export function UserMenu() {
             console.error('Error deleting account:', error)
             toastRef.current?.show({
               severity: 'error',
-              summary: 'Erreur',
-              detail: typeof error === 'string' ? error : error.message || 'Impossible de supprimer le compte',
-              life: 5000
+              summary: t('userMenu.toast.deleteError.summary'),
+              detail:
+                typeof error === 'string'
+                  ? error
+                  : error.message || t('userMenu.toast.deleteError.detail'),
+              life: 5000,
             })
           } else {
             toastRef.current?.show({
               severity: 'success',
-              summary: 'Succès',
-              detail: 'Compte supprimé avec succès',
-              life: 3000
+              summary: t('userMenu.toast.deleteSuccess.summary'),
+              detail: t('userMenu.toast.deleteSuccess.detail'),
+              life: 3000,
             })
           }
         } catch (error) {
           console.error('Error deleting account:', error)
           toastRef.current?.show({
             severity: 'error',
-            summary: 'Erreur',
-            detail: 'Une erreur inattendue s\'est produite',
-            life: 5000
+            summary: t('userMenu.toast.unexpectedError.summary'),
+            detail: t('userMenu.toast.unexpectedError.detail'),
+            life: 5000,
           })
         } finally {
           setLoading(false)
         }
       },
     })
-  }, [deleteAccount])
+  }, [deleteAccount, t])
 
   if (!user?.email) {
     return null
@@ -77,21 +101,21 @@ export function UserMenu() {
 
   const menuItems = [
     {
-      label: 'Se déconnecter',
+      label: t('userMenu.signOut'),
       icon: 'pi pi-sign-out',
       command: handleSignOut,
-      disabled: loading
+      disabled: loading,
     },
     {
-      separator: true
+      separator: true,
     },
     {
-      label: 'Supprimer le compte',
+      label: t('userMenu.deleteAccount'),
       icon: 'pi pi-trash',
       className: 'text-red-600',
       command: handleDeleteAccount,
-      disabled: loading
-    }
+      disabled: loading,
+    },
   ]
 
   return (
@@ -101,18 +125,13 @@ export function UserMenu() {
         icon="pi pi-user"
         className="p-button-text p-button-sm text-gray-500 hover:text-gray-700"
         onClick={(e) => menuRef.current?.toggle(e)}
-        tooltip={`Menu utilisateur (${user.email})`}
+        tooltip={t('userMenu.tooltip').replace('{email}', user.email)}
         tooltipOptions={{ position: 'bottom' }}
-        aria-label="Menu utilisateur"
+        aria-label={t('userMenu.ariaLabel')}
         loading={loading}
         disabled={loading}
       />
-      <Menu
-        ref={menuRef}
-        model={menuItems}
-        popup
-        className="w-48"
-      />
+      <Menu ref={menuRef} model={menuItems} popup className="w-48" />
     </>
   )
 }

@@ -20,6 +20,7 @@ interface AddressListProps {
   onEditAddress?: (address: Address) => void
   onDeleteAddress?: (addressId: string) => void
   onAddAddress?: () => void
+  t: (key: string) => string
 }
 
 const ADDRESSES_PER_PAGE = 15
@@ -31,6 +32,7 @@ export function AddressList({
   onEditAddress,
   onDeleteAddress,
   onAddAddress,
+  t,
 }: AddressListProps) {
   const [currentPage, setCurrentPage] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
@@ -124,12 +126,16 @@ export function AddressList({
           <div className="flex items-center gap-2">
             <MapPin className="h-4 w-4" />
             <span className="font-semibold text-gray-900">
-              Adresses extraites ({totalAddresses}
-              {addresses.length !== totalAddresses && ` sur ${addresses.length}`})
+              {t('addresses.title').replace('{count}', totalAddresses.toString())}
+              {addresses.length !== totalAddresses &&
+                ` ${t('addresses.totalFormat').replace('{filtered}', totalAddresses.toString()).replace('{total}', addresses.length.toString())}`}
             </span>
             {totalPages > 1 && (
               <span className="text-gray-600 font-normal ml-3 hidden sm:inline">
-                - Page {currentPage + 1} sur {totalPages}
+                -{' '}
+                {t('addresses.pageInfo')
+                  .replace('{current}', (currentPage + 1).toString())
+                  .replace('{total}', totalPages.toString())}
               </span>
             )}
           </div>
@@ -145,12 +151,13 @@ export function AddressList({
               addresses={addresses}
               searchQuery={searchQuery}
               onSearchChange={handleSearchChange}
+              t={t}
             />
           </div>
           {onAddAddress && (
             <Button
               onClick={onAddAddress}
-              label="Ajouter une adresse"
+              label={t('addresses.addButton')}
               icon="pi pi-plus"
               size="small"
               className="flex-shrink-0"
@@ -170,7 +177,9 @@ export function AddressList({
           <div className="mb-3">
             <div className="flex items-center gap-2 mb-2">
               <AlertTriangle className="h-1rem w-1rem" />
-              <span className="font-semibold text-900">Erreurs de parsing ({errors.length})</span>
+              <span className="font-semibold text-900">
+                {t('addresses.errors.title').replace('{count}', errors.length.toString())}
+              </span>
             </div>
             <div className="flex flex-column gap-2">
               {errors.map((error, index) => (
@@ -194,14 +203,14 @@ export function AddressList({
                   totalRecords={totalAddresses}
                   onPageChange={handlePageChange}
                   template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport"
-                  currentPageReportTemplate="Affichage de {first} à {last} sur {totalRecords} adresses"
+                  currentPageReportTemplate={t('addresses.pagination.template')}
                   className="justify-content-center"
                 />
               </div>
             )}
           </>
         ) : searchQuery.trim() && addresses.length > 0 ? (
-          <EmptySearchState />
+          <EmptySearchState t={t} />
         ) : null}
       </Panel>
     </div>
@@ -312,12 +321,14 @@ interface SearchBarProps {
   addresses: Address[]
   searchQuery: string
   onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  t: (key: string) => string
 }
 
 const SearchBar = React.memo<SearchBarProps>(function SearchBar({
   addresses,
   searchQuery,
   onSearchChange,
+  t,
 }) {
   if (addresses.length <= 5) {
     return <div /> // Placeholder vide pour maintenir la structure flex
@@ -331,7 +342,7 @@ const SearchBar = React.memo<SearchBarProps>(function SearchBar({
       <InputText
         value={searchQuery}
         onChange={onSearchChange}
-        placeholder="Rechercher par nom, adresse, ville, pays..."
+        placeholder={t('addresses.search.placeholder')}
         className="w-full"
       />
     </IconField>
@@ -339,14 +350,16 @@ const SearchBar = React.memo<SearchBarProps>(function SearchBar({
 })
 
 // Composant EmptyState pour les recherches sans résultat
-const EmptySearchState = React.memo(function EmptySearchState() {
+const EmptySearchState = React.memo(function EmptySearchState({
+  t,
+}: {
+  t: (key: string) => string
+}) {
   return (
     <div className="text-center py-6">
       <Search className="h-12 w-12 mx-auto text-gray-400 mb-3" />
-      <p className="text-gray-600 text-lg font-medium">Aucun résultat trouvé</p>
-      <p className="text-gray-500 text-sm">
-        Essayez avec d&apos;autres mots-clés ou vérifiez l&apos;orthographe
-      </p>
+      <p className="text-gray-600 text-lg font-medium">{t('addresses.noResults.title')}</p>
+      <p className="text-gray-500 text-sm">{t('addresses.noResults.description')}</p>
     </div>
   )
 })

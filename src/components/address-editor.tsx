@@ -15,15 +15,10 @@ interface AddressEditorProps {
   onSave: (address: Address) => void
   onCancel: () => void
   title?: string
+  t: (key: string) => string
 }
 
-export function AddressEditor({
-  address,
-  isOpen,
-  onSave,
-  onCancel,
-  title = "Éditer l'adresse",
-}: AddressEditorProps) {
+export function AddressEditor({ address, isOpen, onSave, onCancel, title, t }: AddressEditorProps) {
   const [formData, setFormData] = useState<Omit<Address, 'id'>>({
     firstName: '',
     lastName: '',
@@ -117,9 +112,15 @@ export function AddressEditor({
 
   const footerContent = (
     <div className="flex gap-2">
-      <Button label="Annuler" icon="pi pi-times" onClick={onCancel} outlined className="flex-1" />
       <Button
-        label="Sauvegarder"
+        label={t('editor.buttons.cancel')}
+        icon="pi pi-times"
+        onClick={onCancel}
+        outlined
+        className="flex-1"
+      />
+      <Button
+        label={t('editor.buttons.save')}
         icon="pi pi-check"
         onClick={handleSubmit}
         className="flex-1"
@@ -144,13 +145,13 @@ export function AddressEditor({
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-2">
             <label htmlFor="firstName" className="block text-sm font-medium">
-              Prénom *
+              {t('editor.firstName')}
             </label>
             <InputText
               id="firstName"
               value={formData.firstName}
               onChange={(e) => handleInputChange('firstName', e.target.value)}
-              placeholder="Prénom"
+              placeholder={t('editor.placeholders.firstName')}
               className={`w-full ${errors.firstName ? 'p-invalid' : ''}`}
             />
             {errors.firstName && (
@@ -160,13 +161,13 @@ export function AddressEditor({
 
           <div className="space-y-2">
             <label htmlFor="lastName" className="block text-sm font-medium">
-              Nom
+              {t('editor.lastName')}
             </label>
             <InputText
               id="lastName"
               value={formData.lastName}
               onChange={(e) => handleInputChange('lastName', e.target.value)}
-              placeholder="Nom"
+              placeholder={t('editor.placeholders.lastName')}
               className="w-full"
             />
           </div>
@@ -175,13 +176,13 @@ export function AddressEditor({
         {/* Adresse ligne 1 */}
         <div className="space-y-2">
           <label htmlFor="addressLine1" className="block text-sm font-medium">
-            Adresse *
+            {t('editor.address1')}
           </label>
           <InputText
             id="addressLine1"
             value={formData.addressLine1}
             onChange={(e) => handleInputChange('addressLine1', e.target.value)}
-            placeholder="123 rue de la Paix"
+            placeholder={t('editor.placeholders.address1')}
             className={`w-full ${errors.addressLine1 ? 'p-invalid' : ''}`}
           />
           {errors.addressLine1 && (
@@ -192,13 +193,13 @@ export function AddressEditor({
         {/* Adresse ligne 2 */}
         <div className="space-y-2">
           <label htmlFor="addressLine2" className="block text-sm font-medium">
-            Complément d&apos;adresse
+            {t('editor.address2')}
           </label>
           <InputText
             id="addressLine2"
             value={formData.addressLine2}
             onChange={(e) => handleInputChange('addressLine2', e.target.value)}
-            placeholder="Bât A, Appt 12"
+            placeholder={t('editor.placeholders.address2')}
             className="w-full"
           />
         </div>
@@ -207,13 +208,13 @@ export function AddressEditor({
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-2">
             <label htmlFor="postalCode" className="block text-sm font-medium">
-              Code postal *
+              {t('editor.postalCode')}
             </label>
             <InputText
               id="postalCode"
               value={formData.postalCode}
               onChange={(e) => handleInputChange('postalCode', e.target.value)}
-              placeholder="75001"
+              placeholder={t('editor.placeholders.postalCode')}
               className={`w-full ${errors.postalCode ? 'p-invalid' : ''}`}
             />
             {errors.postalCode && (
@@ -223,13 +224,13 @@ export function AddressEditor({
 
           <div className="space-y-2">
             <label htmlFor="city" className="block text-sm font-medium">
-              Ville *
+              {t('editor.city')}
             </label>
             <InputText
               id="city"
               value={formData.city}
               onChange={(e) => handleInputChange('city', e.target.value)}
-              placeholder="Paris"
+              placeholder={t('editor.placeholders.city')}
               className={`w-full ${errors.city ? 'p-invalid' : ''}`}
             />
             {errors.city && <Message severity="error" text={errors.city} className="mt-1" />}
@@ -239,14 +240,14 @@ export function AddressEditor({
         {/* Pays */}
         <div className="space-y-2">
           <label htmlFor="country" className="block text-sm font-medium">
-            Pays *
+            {t('editor.country')}
           </label>
           <Dropdown
             id="country"
             value={formData.country}
             onChange={(e) => handleInputChange('country', e.value)}
             options={countryOptions}
-            placeholder="Sélectionner un pays"
+            placeholder={t('editor.placeholders.country')}
             className={`w-full ${errors.country ? 'p-invalid' : ''}`}
           />
           {errors.country && <Message severity="error" text={errors.country} className="mt-1" />}
