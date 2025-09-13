@@ -1,15 +1,16 @@
 'use client'
 
+import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { AddressEditor } from '@/components/address-editor'
 import { AddressList } from '@/components/address-list'
-import { UserMenu } from '@/components/auth/UserMenu'
 import { FAQ } from '@/components/FAQ'
 import FeedbackSection from '@/components/FeedbackSection'
 import { FileUpload } from '@/components/file-upload'
-import { LanguageSelector } from '@/components/LanguageSelector'
+import { Footer } from '@/components/Footer'
+import { Header } from '@/components/Header'
 import { PrintPreview } from '@/components/print-preview'
 import { HEADER_HEIGHT, SCROLL_DELAY } from '@/constants/ui'
 import { useAuth } from '@/hooks/useAuth'
@@ -22,7 +23,6 @@ export default function Home() {
   const params = useParams()
   const locale = (params?.locale as string) || 'fr'
   const t = useTranslations(locale)
-  const { user, loading } = useAuth()
   const [addresses, setAddresses] = useState<Address[]>([])
   const [errors, setErrors] = useState<string[]>([])
   const [fileName, setFileName] = useState<string>('')
@@ -117,31 +117,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Professional Header */}
-      <header className="bg-white shadow-lg border-b sticky top-0 z-50">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between py-4">
-            {/* Left Section - Brand */}
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
-                <i className="pi pi-tag text-white text-xl"></i>
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 leading-tight">
-                  {t('brand.name')}
-                </h1>
-                <p className="text-sm text-gray-600 font-medium">{t('brand.tagline')}</p>
-              </div>
-            </div>
-
-            {/* Right Section - User Menu + Language Selector */}
-            <div className="flex items-center gap-3">
-              {!loading && user ? <UserMenu /> : null}
-              <LanguageSelector />
-            </div>
-          </div>
-        </div>
-      </header>
+      {/* Header */}
+      <Header t={t} />
 
       {/* Main Content Area */}
       <main className="flex-1 bg-gray-50">
@@ -241,85 +218,8 @@ export default function Home() {
       {/* Feedback Section */}
       <FeedbackSection t={t} />
 
-      {/* Professional Footer */}
-      <footer className="bg-white border-t border-gray-200">
-        <div className="container mx-auto px-4">
-          {/* Main Footer Content */}
-          <div className="grid md:grid-cols-3 gap-8 py-12">
-            {/* Brand Column */}
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center">
-                  <i className="pi pi-tag text-white text-sm"></i>
-                </div>
-                <span className="text-xl font-bold text-gray-900">Lablr</span>
-              </div>
-              <p className="text-gray-600 leading-relaxed pr-4">{t('footer.brand.description')}</p>
-            </div>
-
-            {/* Features Column */}
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-4 text-lg">
-                {t('footer.features.title')}
-              </h4>
-              <ul className="space-y-3 text-gray-600">
-                <li className="flex items-center gap-3">
-                  <i className="pi pi-check text-green-500 text-sm"></i>
-                  <span>{t('footer.features.multiPlatform')}</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <i className="pi pi-check text-green-500 text-sm"></i>
-                  <span>{t('footer.features.formats')}</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <i className="pi pi-check text-green-500 text-sm"></i>
-                  <span>{t('footer.features.editing')}</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <i className="pi pi-check text-green-500 text-sm"></i>
-                  <span>{t('footer.features.detection')}</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* Info Column */}
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-4 text-lg">
-                {t('footer.advantages.title')}
-              </h4>
-              <div className="space-y-3 text-gray-600">
-                <div className="flex items-center gap-3">
-                  <i className="pi pi-shield text-blue-500 text-sm"></i>
-                  <span>{t('footer.advantages.security')}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <i className="pi pi-bolt text-blue-500 text-sm"></i>
-                  <span>{t('footer.advantages.speed')}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <i className="pi pi-mobile text-blue-500 text-sm"></i>
-                  <span>{t('footer.advantages.compatibility')}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Copyright Bar */}
-          <div className="border-t border-gray-200 py-6">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <p className="text-gray-600 text-sm">{t('footer.copyright')}</p>
-              <div className="flex items-center gap-6">
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <span className="uppercase font-semibold tracking-wider">
-                    {t('footer.version.label')}
-                  </span>
-                  <span className="font-medium text-gray-700">2.1.0</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
+      {/* Footer */}
+      <Footer t={t} />
 
       {/* Address Editor Modal */}
       <AddressEditor

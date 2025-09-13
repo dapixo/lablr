@@ -1,55 +1,95 @@
 'use client'
 
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, usePathname, useRouter } from 'next/navigation'
 import { useCallback, useMemo, useTransition } from 'react'
 import { cn } from '@/lib/utils'
 
-const LANGUAGES = [
+type Language = {
+  readonly code: string
+  readonly label: string
+  readonly fullLabel: string
+  readonly flag: string
+}
+
+const LANGUAGES: readonly Language[] = [
   { code: 'fr', label: 'FR', fullLabel: 'Français', flag: '🇫🇷' },
   { code: 'en', label: 'EN', fullLabel: 'English', flag: '🇺🇸' },
 ] as const
 
-const BASE_BUTTON_CLASSES =
-  'flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-sm font-medium transition-all duration-200 disabled:opacity-50'
-const ACTIVE_BUTTON_CLASSES = 'bg-white text-gray-900 shadow-sm'
-const INACTIVE_BUTTON_CLASSES = 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+const BUTTON_STYLES = {
+  base: 'flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-sm font-medium transition-all duration-200 disabled:opacity-50',
+  active: 'bg-white text-gray-900 shadow-sm',
+  inactive: 'text-gray-600 hover:text-gray-900 hover:bg-gray-50',
+} as const
 
+const DEFAULT_LOCALE = 'fr'
+
+/**
+ * Génère le nouveau chemin avec la locale mise à jour
+ */
+function generateNewPath(currentPath: string, oldLocale: string, newLocale: string): string {
+  return currentPath.replace(`/${oldLocale}`, `/${newLocale}`)
+}
+
+/**
+ * Composant de sélection de langue avec préservation du chemin actuel
+ */
 export function LanguageSelector() {
   const params = useParams()
-  const locale = (params?.locale as string) || 'fr'
+  const pathname = usePathname()
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
+  const currentLocale = (params?.locale as string) || DEFAULT_LOCALE
+
   const handleLanguageChange = useCallback(
     (newLocale: string) => {
-      if (newLocale === locale || isPending) return
+      if (newLocale === currentLocale || isPending) return
 
       startTransition(() => {
-        router.push(`/${newLocale}`)
+        const newPath = generateNewPath(pathname, currentLocale, newLocale)
+        router.push(newPath)
       })
     },
-    [locale, router, isPending]
+    [currentLocale, pathname, router, isPending]
   )
 
   const languageButtons = useMemo(
     () =>
-      LANGUAGES.map((lang) => (
-        <button
-          key={lang.code}
-          onClick={() => handleLanguageChange(lang.code)}
-          disabled={isPending}
-          className={cn(
-            BASE_BUTTON_CLASSES,
-            locale === lang.code ? ACTIVE_BUTTON_CLASSES : INACTIVE_BUTTON_CLASSES
-          )}
-          title={lang.fullLabel}
-        >
-          <span className="text-base leading-none">{lang.flag}</span>
-          <span className="hidden sm:inline">{lang.label}</span>
-        </button>
-      )),
-    [locale, isPending, handleLanguageChange]
+      LANGUAGES.map((language) => {
+        const isActive = currentLocale === language.code
+
+        return (
+          <button
+            key={language.code}
+            type="button"
+            onClick={() => handleLanguageChange(language.code)}
+            disabled={isPending}
+            className={cn(
+              BUTTON_STYLES.base,
+              isActive ? BUTTON_STYLES.active : BUTTON_STYLES.inactive
+            )}
+            title={language.fullLabel}
+            aria-label={`Switch to ${language.fullLabel}`}
+            aria-pressed={isActive}
+          >
+            <span className="text-base leading-none" role="img" aria-label={language.fullLabel}>
+              {language.flag}
+            </span>
+            <span className="hidden sm:inline">{language.label}</span>
+          </button>
+        )
+      }),
+    [currentLocale, isPending, handleLanguageChange]
   )
 
-  return <div className="flex items-center bg-gray-100 rounded-lg p-1 gap-1">{languageButtons}</div>
+  return (
+    <div
+      className="flex items-center bg-gray-100 rounded-lg p-1 gap-1"
+      role="group"
+      aria-label="Language selection"
+    >
+      {languageButtons}
+    </div>
+  )
 }

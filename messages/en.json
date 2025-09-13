@@ -7,6 +7,9 @@
     "name": "Lalabel",
     "tagline": "Professional address extraction solution"
   },
+  "navigation": {
+    "pricing": "Pricing"
+  },
   "header": {
     "welcome": "Welcome to Lalabel",
     "description": "Import your data and transform them into professional shipping labels in just a few clicks."
@@ -242,36 +245,71 @@
     "free": {
       "title": "Free",
       "price": "€0",
-      "description": "10 labels per day",
       "features": [
         "10 free labels every day",
-        "All formats (A4, Avery, rolls)",
-        "Import Amazon, Shopify, eBay",
+        "All formats (A4, rolls, CSV)",
+        "Import Amazon, Shopify, ...",
         "No time limit"
       ]
     },
     "premium": {
       "title": "Premium",
       "price": "€5",
-      "priceAnnual": "€50",
+      "priceAnnual": "€40",
       "period": "/month",
       "periodAnnual": "/year",
+      "periodAnnualBilling": "/month (billed annually)",
       "description": "Unlimited labels",
       "features": [
         "Unlimited labels",
-        "All premium formats",
-        "Priority support",
-        "Print history"
+        "All formats (A4, rolls, CSV)",
+        "Import Amazon, Shopify, ...",
+        "Priority support"
       ],
       "popular": "Most popular",
       "cta": "Upgrade to Premium",
-      "savings": "2 months free"
+      "savings": "33% off"
     },
     "limits": {
       "dailyLimit": "Daily limit reached",
       "upgradeMessage": "You've used your 10 free labels today. Upgrade to Premium to continue.",
       "resetTime": "Your free labels reset tomorrow.",
       "remainingToday": "You have {count} free label(s) remaining today"
+    },
+    "page": {
+      "title": "Choose your plan",
+      "subtitle": "Create your shipping labels with the plan that fits your needs",
+      "billingToggle": {
+        "monthly": "Monthly",
+        "annually": "Annually"
+      },
+      "comparison": {
+        "feature": "Feature",
+        "free": "Free",
+        "premium": "Premium",
+        "title": "Detailed comparison",
+        "subtitle": "Discover all features included in each plan"
+      },
+      "cta": {
+        "free": "Start for free",
+        "premium": "Upgrade to Premium",
+        "currentPlan": "Current plan"
+      },
+      "features": {
+        "dailyLabels": "Labels per day",
+        "formats": "Label formats",
+        "platforms": "Supported platforms",
+        "support": "Support",
+        "history": "History"
+      },
+      "values": {
+        "unlimited": "Unlimited",
+        "allFormats": "All formats",
+        "basicSupport": "Standard support",
+        "prioritySupport": "Priority support",
+        "noHistory": "No history",
+        "fullHistory": "Full history"
+      }
     }
   },
   "faq": {

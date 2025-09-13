@@ -7,6 +7,9 @@
     "name": "Lalabel",
     "tagline": "Solution professionnelle d'extraction d'adresses"
   },
+  "navigation": {
+    "pricing": "Tarifs"
+  },
   "header": {
     "welcome": "Bienvenue sur Lalabel",
     "description": "Importez vos données et transformez-les en étiquettes d'expédition professionnelles en quelques clics."
@@ -242,36 +245,71 @@
     "free": {
       "title": "Gratuit",
       "price": "0€",
-      "description": "10 étiquettes par jour",
       "features": [
         "10 étiquettes gratuites chaque jour",
-        "Tous les formats (A4, Avery, rouleaux)",
-        "Import Amazon, Shopify, eBay",
-        "Pas de limite de temps"
+        "Tous les formats (A4, rouleaux, CSV)",
+        "Import Amazon, Shopify, ...",
+        "Support standard"
       ]
     },
     "premium": {
       "title": "Premium",
       "price": "5€",
-      "priceAnnual": "50€",
+      "priceAnnual": "40€",
       "period": "/mois",
       "periodAnnual": "/an",
+      "periodAnnualBilling": "/mois (facturation annuelle)",
       "description": "Étiquettes illimitées",
       "features": [
         "Étiquettes illimitées",
-        "Tous les formats premium",
-        "Support prioritaire",
-        "Historique des impressions"
+        "Tous les formats (A4, rouleaux, CSV)",
+        "Import Amazon, Shopify, ...",
+        "Support prioritaire"
       ],
       "popular": "Le plus populaire",
       "cta": "Passer à Premium",
-      "savings": "2 mois offerts"
+      "savings": "33% de réduction"
     },
     "limits": {
       "dailyLimit": "Limite quotidienne atteinte",
       "upgradeMessage": "Vous avez utilisé vos 10 étiquettes gratuites aujourd'hui. Passez à Premium pour continuer.",
       "resetTime": "Vos étiquettes gratuites se renouvellent demain.",
       "remainingToday": "Il vous reste {count} étiquette(s) gratuite(s) aujourd'hui"
+    },
+    "page": {
+      "title": "Choisissez votre plan",
+      "subtitle": "Créez vos étiquettes d'expédition avec le plan qui vous convient",
+      "billingToggle": {
+        "monthly": "Mensuel",
+        "annually": "Annuel"
+      },
+      "comparison": {
+        "feature": "Fonctionnalité",
+        "free": "Gratuit",
+        "premium": "Premium",
+        "title": "Comparaison détaillée",
+        "subtitle": "Découvrez toutes les fonctionnalités incluses dans chaque plan"
+      },
+      "cta": {
+        "free": "Commencer gratuitement",
+        "premium": "Passer à Premium",
+        "currentPlan": "Plan actuel"
+      },
+      "features": {
+        "dailyLabels": "Étiquettes par jour",
+        "formats": "Formats d'étiquettes",
+        "platforms": "Plateformes supportées",
+        "support": "Support",
+        "history": "Historique"
+      },
+      "values": {
+        "unlimited": "Illimitées",
+        "allFormats": "Tous les formats",
+        "basicSupport": "Support standard",
+        "prioritySupport": "Support prioritaire",
+        "noHistory": "Aucun historique",
+        "fullHistory": "Historique complet"
+      }
     }
   },
   "faq": {

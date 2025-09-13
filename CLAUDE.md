@@ -4,7 +4,7 @@
 
 **Lablr** est une solution professionnelle permettant aux vendeurs Amazon de générer et imprimer facilement des étiquettes d'adresse à partir de leurs rapports Amazon Seller au format TSV. Interface moderne et intuitive avec design responsive pour tous les appareils. 
 
-**V3.1** : Système d'internationalisation complet (FR/EN) avec authentification Supabase, FAQ interactive et code optimisé pour la production.
+**V3.2** : Modèle freemium avec page pricing professionnelle, optimisations SEO et architecture clean code avec principes DRY.
 
 ## Architecture Technique
 
@@ -31,6 +31,11 @@ src/
 │   │   ├── AuthModal.tsx      # 🆕 Modal d'authentification professionnelle
 │   │   └── UserMenu.tsx       # 🆕 Menu utilisateur simplifié
 │   ├── FAQ.tsx                # 🆕 FAQ avec accordion optimisée
+│   ├── FeedbackSection.tsx    # Section feedback avec mailto optimisé
+│   ├── Header.tsx             # 🆕 Header réutilisable (DRY)
+│   ├── Footer.tsx             # 🆕 Footer réutilisable (DRY)
+│   ├── LanguageSelector.tsx   # 🆕 Sélecteur langue optimisé avec navigation
+│   ├── PricingPage.tsx        # 🆕 Page pricing avec modèle freemium
 │   ├── file-upload.tsx        # Upload drag & drop avec PrimeReact
 │   ├── address-list.tsx       # Liste avec pagination (15 par page) et recherche
 │   ├── address-editor.tsx     # Éditeur modal avec PrimeReact Dialog
@@ -114,7 +119,7 @@ src/
 - **UX optimisée** : Interface header simplifiée avec avatar utilisateur + toast notifications
 - **Sécurité renforcée** : API sécurisée, validation stricte, gestion d'erreurs robuste
 - **Performance** : Callbacks mémorisés, contenu optimisé, états loading
-- **Gratuité garantie** : Messages clairs sur l'utilisation 100% gratuite
+- **Modèle freemium** : Messages clairs sur les 10 étiquettes gratuites par jour
 
 ### 7. FAQ Interactive (🆕 V3.0)
 - **Accordion optimisé** : Interface PrimeReact avec animations fluides
@@ -130,6 +135,14 @@ src/
 - **Détection automatique** : Locale basée sur l'URL avec fallback vers français
 - **Types sûrs** : Interface TypeScript stricte pour les traductions
 - **Performance optimisée** : Mémorisation avec `useMemo` et chargement à la demande
+
+### 9. Modèle Freemium et Pricing (🆕 V3.2)
+- **Modèle économique** : 10 étiquettes gratuites par jour, Premium €5/mois ou €40/an
+- **Page pricing dédiée** : `/pricing` avec comparaison Free vs Premium
+- **Toggle annuel/mensuel** : Économie 33% affichée avec badge discount animé
+- **Auth conditionnelle** : Boutons contextuels selon statut utilisateur
+- **Design professionnel** : Cards uniformes, tableau comparatif, hero section
+- **SEO optimisé** : Métadonnées et Schema.org pour référencement
 
 ## Commandes de Développement
 
@@ -401,6 +414,44 @@ const FormatCard = React.memo(function FormatCard({...}))
 - ✅ **Error handling robuste** : Try/catch avec fallbacks, messages utilisateur clairs
 - ✅ **API sécurisée** : Validation stricte, pas d'exposition d'erreurs internes
 - ✅ **UX optimisée** : États loading, tooltips informatifs, feedback toast
+
+## Évolutions Récentes (✅ V3.2)
+
+### 💰 Modèle Freemium et Page Pricing (🆕 V3.2)
+- ✅ **Modèle économique** : 10 étiquettes gratuites/jour, Premium €5/mois ou €40/an (33% d'économie)
+- ✅ **Page pricing professionnelle** : Toggle mensuel/annuel avec discount badge animé
+- ✅ **Design cards optimisé** : Comparaison Free vs Premium avec hauteurs uniformes
+- ✅ **Auth conditionnelle** : Bouton "Commencer gratuitement" uniquement pour non-connectés
+- ✅ **Badge plan actuel** : Indication "Plan actuel" pour utilisateurs connectés sur plan gratuit
+- ✅ **Tableau comparatif** : Fonctionnalités détaillées avec icônes Check visuelles
+- ✅ **Integration routing** : Page `/pricing` avec header/footer réutilisables (DRY)
+- ✅ **Traductions complètes** : Support FR/EN pour tous les éléments pricing
+
+### 🎯 Optimisations SEO et Marketing (🆕 V3.2)
+- ✅ **Métadonnées SEO** : Mots-clés optimisés "étiquettes d'expédition", "impression labels"
+- ✅ **Schema.org** : Données structurées SoftwareApplication avec offers Free/Premium
+- ✅ **Sitemap dynamique** : Pages pricing incluses pour indexation
+- ✅ **Descriptions marketing** : Messages freemium dans headers et descriptions
+- ✅ **Landing pages** : Contenu optimisé pour conversion et référencement naturel
+- ✅ **Footer liens** : Navigation pricing au niveau copyright pour visibilité
+
+### 🏗️ Architecture Clean Code et DRY (🆕 V3.2)
+- ✅ **Composants réutilisables** : Header/Footer extraits et partagés entre pages
+- ✅ **Types TypeScript stricts** : Interfaces PricingPlan, TranslationFunction, constantes typées
+- ✅ **Fonctions utilitaires** : createPricingPlan(), generateNewPath() pour logique métier
+- ✅ **Constants externalisées** : PRICING_CONFIG, CARD_STYLES, BUTTON_STYLES pour maintenir DRY
+- ✅ **JSDoc documentation** : Commentaires professionnels français pour fonctions métier
+- ✅ **Accessibilité renforcée** : ARIA labels, titles descriptifs, navigation clavier optimisée
+- ✅ **Performance React** : useMemo pour plans pricing, useCallback pour handlers
+- ✅ **Navigation préservée** : LanguageSelector maintient la page courante au lieu de rediriger vers home
+
+### 🔧 Améliorations Techniques V3.2
+- ✅ **Code modulaire** : Séparation claire des responsabilités avec helpers functions
+- ✅ **Configuration centralisée** : Prix annuel, pourcentages reduction en constantes
+- ✅ **Gestion d'états optimisée** : useState pour toggle annuel, useMemo pour calculs
+- ✅ **CSS-in-JS organisé** : Styles groupés par composant dans objects structurés
+- ✅ **Error handling** : Validation routes, gestion des fallbacks de traduction
+- ✅ **Build optimisé** : Pas d'erreurs TypeScript/ESLint, bundle size contrôlé
 
 ## Évolutions Futures
 
