@@ -8,8 +8,8 @@
     "tagline": "Professional address extraction solution"
   },
   "header": {
-    "welcome": "Free Shipping Label Generator",
-    "description": "Create and print professional shipping labels from Amazon Seller, Shopify, eBay. All formats: Avery, A4, thermal rolls. 100% free and secure."
+    "welcome": "Welcome to Lalabel",
+    "description": "Import your data and transform them into professional shipping labels in just a few clicks."
   },
   "steps": {
     "1": {
@@ -200,8 +200,8 @@
     },
     "tagline": "Lalabel - Label Generator",
     "welcome": {
-      "title": "🎉 Use Lalabel for free",
-      "description": "A simple login gives you access to all label printing features at no cost.",
+      "title": "🎉 Create 10 free labels every day",
+      "description": "A simple login lets you print up to 10 labels for free every day. Need more? Go Premium for just €4/month.",
       "privacy": "Your import data is never stored"
     },
     "form": {
@@ -224,7 +224,8 @@
       "toSignIn": "← Already have an account? Sign in"
     },
     "guarantees": {
-      "free": "100% Free",
+      "free": "10 labels/day free",
+      "premium": "Premium €5/month",
       "secure": "Secure data",
       "noStorage": "No storage"
     },
@@ -235,6 +236,42 @@
       "invalidEmail": "Invalid email address",
       "userExists": "An account already exists with this email address",
       "unexpected": "An unexpected error occurred"
+    }
+  },
+  "pricing": {
+    "free": {
+      "title": "Free",
+      "price": "€0",
+      "description": "10 labels per day",
+      "features": [
+        "10 free labels every day",
+        "All formats (A4, Avery, rolls)",
+        "Import Amazon, Shopify, eBay",
+        "No time limit"
+      ]
+    },
+    "premium": {
+      "title": "Premium",
+      "price": "€5",
+      "priceAnnual": "€50",
+      "period": "/month",
+      "periodAnnual": "/year",
+      "description": "Unlimited labels",
+      "features": [
+        "Unlimited labels",
+        "All premium formats",
+        "Priority support",
+        "Print history"
+      ],
+      "popular": "Most popular",
+      "cta": "Upgrade to Premium",
+      "savings": "2 months free"
+    },
+    "limits": {
+      "dailyLimit": "Daily limit reached",
+      "upgradeMessage": "You've used your 10 free labels today. Upgrade to Premium to continue.",
+      "resetTime": "Your free labels reset tomorrow.",
+      "remainingToday": "You have {count} free label(s) remaining today"
     }
   },
   "faq": {
@@ -265,6 +302,10 @@
       "formats": {
         "question": "Which print formats are available?",
         "answer": "We offer several formats: standard and compact A4, adhesive labels with 10, 14, 16 or 21 labels per page, label rolls for thermal printers, and CSV export. All formats include real-time preview."
+      },
+      "pricing": {
+        "question": "How does the freemium model work?",
+        "answer": "Lalabel gives you 10 free labels every day, automatically renewed. Perfect for small shipments. If you need more, our Premium plan at €5/month (or €50/year) gives you unlimited labels with priority support."
       }
     }
   },

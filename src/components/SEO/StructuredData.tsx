@@ -15,12 +15,23 @@ export function StructuredData({ locale }: StructuredDataProps) {
     url: 'https://lalabel.app',
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Web Browser',
-    offers: {
-      '@type': 'Offer',
-      price: '0',
-      priceCurrency: locale === 'fr' ? 'EUR' : 'USD',
-      description: locale === 'fr' ? '100% Gratuit' : '100% Free'
-    },
+    offers: [
+      {
+        '@type': 'Offer',
+        name: locale === 'fr' ? 'Plan Gratuit' : 'Free Plan',
+        price: '0',
+        priceCurrency: 'EUR',
+        description: locale === 'fr' ? '10 étiquettes gratuites par jour' : '10 free labels per day'
+      },
+      {
+        '@type': 'Offer',
+        name: locale === 'fr' ? 'Plan Premium' : 'Premium Plan',
+        price: '5',
+        priceCurrency: 'EUR',
+        billingIncrement: 'Month',
+        description: locale === 'fr' ? 'Étiquettes illimitées' : 'Unlimited labels'
+      }
+    ],
     author: {
       '@type': 'Organization',
       name: 'Lalabel'

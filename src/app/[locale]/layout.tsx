@@ -33,11 +33,11 @@ export async function generateMetadata({
     return {
       title: "Lalabel - Générateur d'Étiquettes d'Expédition | Impression Amazon, Shopify, eBay",
       description:
-        "Créez et imprimez vos étiquettes d'expédition en quelques clics. Compatible Amazon Seller, Shopify, eBay. Formats Avery, A4, rouleaux thermiques. Gratuit et sécurisé.",
+        "Créez 10 étiquettes d'expédition gratuites par jour. Compatible Amazon Seller, Shopify, eBay. Premium illimité à 5€/mois. Formats Avery, A4, rouleaux thermiques.",
       keywords: 'impression étiquettes expédition, générateur étiquettes, imprimer étiquettes adresse, Amazon Seller, Shopify, eBay, étiquettes Avery, A4, gratuit',
       openGraph: {
         title: "Lalabel - Générateur d'Étiquettes d'Expédition Gratuit",
-        description: "Créez et imprimez vos étiquettes d'expédition depuis Amazon, Shopify, eBay. Tous formats : Avery, A4, rouleaux. 100% gratuit.",
+        description: "Créez et imprimez vos étiquettes d'expédition depuis Amazon, Shopify, eBay. Tous formats : Avery, A4, rouleaux.",
         type: 'website',
         locale: 'fr_FR',
       },
@@ -50,11 +50,11 @@ export async function generateMetadata({
   } else {
     return {
       title: 'Lalabel - Shipping Label Generator | Print Amazon, Shopify, eBay Labels',
-      description: 'Create and print shipping labels in seconds. Compatible with Amazon Seller, Shopify, eBay. Avery formats, A4, thermal rolls. Free and secure.',
+      description: 'Create 10 free shipping labels daily. Compatible Amazon Seller, Shopify, eBay. Unlimited Premium €5/month. Avery formats, A4, thermal rolls.',
       keywords: 'shipping label generator, print shipping labels, address labels, Amazon Seller, Shopify, eBay, Avery labels, A4, free',
       openGraph: {
         title: 'Lalabel - Free Shipping Label Generator',
-        description: 'Create and print shipping labels from Amazon, Shopify, eBay. All formats: Avery, A4, thermal rolls. 100% free.',
+        description: 'Create and print shipping labels from Amazon, Shopify, eBay. All formats: Avery, A4, thermal rolls.',
         type: 'website',
         locale: 'en_US',
       },

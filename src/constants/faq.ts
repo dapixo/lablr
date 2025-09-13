@@ -43,4 +43,11 @@ export const FAQ_DATA: FAQItem[] = [
     rouleaux d'étiquettes pour imprimantes thermiques,
     et export CSV. Tous les formats incluent un aperçu en temps réel.`,
   },
+  {
+    id: 'pricing',
+    question: 'Comment fonctionne le modèle freemium ?',
+    answer: `Lalabel vous offre 10 étiquettes gratuites chaque jour, renouvelées automatiquement.
+    C'est parfait pour les petites expéditions. Si vous avez besoin de plus, notre plan Premium
+    à 5€/mois (ou 50€/an) vous donne accès à des étiquettes illimitées avec support prioritaire.`,
+  },
 ] as const

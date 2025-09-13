@@ -8,8 +8,8 @@
     "tagline": "Solution professionnelle d'extraction d'adresses"
   },
   "header": {
-    "welcome": "Générateur d'Étiquettes d'Expédition Gratuit",
-    "description": "Créez et imprimez vos étiquettes d'expédition professionnelles depuis Amazon Seller, Shopify, eBay. Tous formats : Avery, A4, rouleaux thermiques. 100% gratuit et sécurisé."
+    "welcome": "Bienvenue sur Lalabel",
+    "description": "Importez vos données et transformez-les en étiquettes d'expédition professionnelles en quelques clics."
   },
   "steps": {
     "1": {
@@ -200,8 +200,8 @@
     },
     "tagline": "Lalabel - Générateur d'étiquettes",
     "welcome": {
-      "title": "🎉 Utilisez Lalabel gratuitement",
-      "description": "Une simple connexion vous permet d'accéder à toutes les fonctionnalités d'impression d'étiquettes sans aucun coût.",
+      "title": "🎉 Créez 10 étiquettes gratuites par jour",
+      "description": "Une simple connexion vous permet d'imprimer jusqu'à 10 étiquettes gratuitement chaque jour. Besoin de plus ? Passez Premium pour seulement 4€/mois.",
       "privacy": "Vos données d'import ne sont jamais conservées"
     },
     "form": {
@@ -224,7 +224,8 @@
       "toSignIn": "← Vous avez déjà un compte ? Se connecter"
     },
     "guarantees": {
-      "free": "100% Gratuit",
+      "free": "10 étiquettes/jour gratuites",
+      "premium": "Premium 5€/mois",
       "secure": "Données sécurisées",
       "noStorage": "Aucune conservation"
     },
@@ -235,6 +236,42 @@
       "invalidEmail": "Adresse email invalide",
       "userExists": "Un compte existe déjà avec cette adresse email",
       "unexpected": "Une erreur inattendue s'est produite"
+    }
+  },
+  "pricing": {
+    "free": {
+      "title": "Gratuit",
+      "price": "0€",
+      "description": "10 étiquettes par jour",
+      "features": [
+        "10 étiquettes gratuites chaque jour",
+        "Tous les formats (A4, Avery, rouleaux)",
+        "Import Amazon, Shopify, eBay",
+        "Pas de limite de temps"
+      ]
+    },
+    "premium": {
+      "title": "Premium",
+      "price": "5€",
+      "priceAnnual": "50€",
+      "period": "/mois",
+      "periodAnnual": "/an",
+      "description": "Étiquettes illimitées",
+      "features": [
+        "Étiquettes illimitées",
+        "Tous les formats premium",
+        "Support prioritaire",
+        "Historique des impressions"
+      ],
+      "popular": "Le plus populaire",
+      "cta": "Passer à Premium",
+      "savings": "2 mois offerts"
+    },
+    "limits": {
+      "dailyLimit": "Limite quotidienne atteinte",
+      "upgradeMessage": "Vous avez utilisé vos 10 étiquettes gratuites aujourd'hui. Passez à Premium pour continuer.",
+      "resetTime": "Vos étiquettes gratuites se renouvellent demain.",
+      "remainingToday": "Il vous reste {count} étiquette(s) gratuite(s) aujourd'hui"
     }
   },
   "faq": {
@@ -265,6 +302,10 @@
       "formats": {
         "question": "Quels formats d'impression sont disponibles ?",
         "answer": "Nous proposons plusieurs formats : A4 standard et compact, étiquettes autocollantes avec 10, 14, 16 ou 21 étiquettes par page, rouleaux d'étiquettes pour imprimantes thermiques, et export CSV. Tous les formats incluent un aperçu en temps réel."
+      },
+      "pricing": {
+        "question": "Comment fonctionne le modèle freemium ?",
+        "answer": "Lalabel vous offre 10 étiquettes gratuites chaque jour, renouvelées automatiquement. C'est parfait pour les petites expéditions. Si vous avez besoin de plus, notre plan Premium à 5€/mois (ou 50€/an) vous donne accès à des étiquettes illimitées avec support prioritaire."
       }
     }
   },
