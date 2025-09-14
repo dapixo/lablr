@@ -243,6 +243,11 @@
     }
   },
   "pricing": {
+    "plans": {
+      "free": {
+        "name": "Free"
+      }
+    },
     "free": {
       "title": "Free",
       "price": "€0",
@@ -458,6 +463,23 @@
   "account": {
     "title": "My Account",
     "description": "Manage your account information and preferences.",
+    "planStatus": {
+      "title": "Account Status",
+      "currentPlan": "Current Plan",
+      "freePlan": "Free Plan",
+      "dailyUsage": "Daily Usage",
+      "labelsUsed": "labels used",
+      "remainingLabels": "{count} label{plural} remaining",
+      "limitReached": "Daily limit reached",
+      "upgradePrompt": "Upgrade to Premium for unlimited labels:",
+      "upgradeToPremium": "Go Premium",
+      "fromPrice": "from €4/month",
+      "premiumFeatures": {
+        "unlimited": "Unlimited labels",
+        "priority": "Priority support",
+        "support": "Early access to new features"
+      }
+    },
     "userInfo": {
       "title": "User Information",
       "fullName": "Full Name",

@@ -243,6 +243,11 @@
     }
   },
   "pricing": {
+    "plans": {
+      "free": {
+        "name": "Gratuit"
+      }
+    },
     "free": {
       "title": "Gratuit",
       "price": "0€",
@@ -458,6 +463,23 @@
   "account": {
     "title": "Mon compte",
     "description": "Gérez les informations de votre compte et vos préférences.",
+    "planStatus": {
+      "title": "Status du compte",
+      "currentPlan": "Plan actuel",
+      "freePlan": "Plan gratuit",
+      "dailyUsage": "Utilisation quotidienne",
+      "labelsUsed": "étiquettes utilisées",
+      "remainingLabels": "{count} étiquette{plural} restante{plural}",
+      "limitReached": "Limite quotidienne atteinte",
+      "upgradePrompt": "Passez au Premium pour des étiquettes illimitées :",
+      "upgradeToPremium": "Passer Premium",
+      "fromPrice": "à partir de 4€/mois",
+      "premiumFeatures": {
+        "unlimited": "Étiquettes illimitées",
+        "priority": "Support prioritaire",
+        "support": "Nouvelles fonctionnalités en avant-première"
+      }
+    },
     "userInfo": {
       "title": "Informations utilisateur",
       "fullName": "Nom complet",

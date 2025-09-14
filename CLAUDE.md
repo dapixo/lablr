@@ -490,6 +490,34 @@ const FormatCard = React.memo(function FormatCard({...}))
 - ✅ **CSS Generator refactorisé** : Mixins réutilisables sans code dupliqué
 - ✅ **Types cohérents** : Interfaces partagées et exports optimisés
 
+## Évolutions Récentes (✅ V3.5)
+
+### 📊 Status du Compte et Proposition d'Upgrade (🆕 V3.5)
+- ✅ **Section status freemium** : Affichage professionnel du plan actuel avec badge "Gratuit"
+- ✅ **Tracking usage en temps réel** : Compteur "X/10 étiquettes utilisées" avec barre de progression
+- ✅ **Codes couleur intelligents** : Vert (sécurisé) → Orange (attention) → Rouge (limite atteinte)
+- ✅ **Proposition d'upgrade contextuelle** : Liste des fonctionnalités Premium avec prix €4/mois
+- ✅ **Design gradient professionnel** : Carte avec gradient bleu et iconographie cohérente
+
+### 🎯 Optimisations UX et Performance (🆕 V3.5)
+- ✅ **Skeleton loader PrimeReact** : Élimination du layout shift sur page Account
+- ✅ **Chargement fluide** : Transition seamless du skeleton vers contenu réel
+- ✅ **API calls optimisés** : Réduction des appels redondants dans useUsageTracking
+- ✅ **Dépendances cleanées** : Hook simplifié sans sur-ingénierie ni cache complexe
+- ✅ **Bundle size contrôlé** : Page Account à 62.5kB avec nouvelles fonctionnalités
+
+### 🌍 Traductions et Accessibilité (🆕 V3.5)
+- ✅ **Support i18n complet** : Nouvelles clés `account.planStatus.*` (FR/EN)
+- ✅ **Gestion des pluriels** : Intégration `getPluralVariables()` pour textes contextuels
+- ✅ **Terminologie cohérente** : Messages professionnels et encourageants pour conversion
+- ✅ **Accessibilité renforcée** : Structure préservée pendant chargement, focus management
+
+### 🏗️ Architecture Clean et Maintenable (🆕 V3.5)
+- ✅ **Composants PrimeReact** : Usage du composant Skeleton officiel avec animations
+- ✅ **State management optimisé** : États de chargement intelligents sans complexity overhead
+- ✅ **Design system cohérent** : Intégration harmonieuse avec le style existant
+- ✅ **Code modulaire** : Séparation claire entre logique métier et présentation
+
 ## Évolutions Futures
 
 ### Fonctionnalités

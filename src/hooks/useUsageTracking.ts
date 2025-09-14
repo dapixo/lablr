@@ -81,7 +81,7 @@ export function useUsageTracking(): UsageTrackingHook {
         error: error instanceof Error ? error.message : 'Unknown error',
       }))
     }
-  }, [user?.id, authLoading, user]) // Remove circular dependency
+  }, [user?.id, authLoading]) // Simple, stable dependencies
 
   /**
    * Incrémente l'usage des étiquettes
@@ -153,7 +153,7 @@ export function useUsageTracking(): UsageTrackingHook {
     if (!authLoading && user) {
       refreshUsage()
     }
-  }, [user?.id, authLoading, refreshUsage, user]) // refreshUsage is stable with useCallback
+  }, [authLoading, refreshUsage, user]) // refreshUsage is stable with useCallback
 
   return {
     ...state,
