@@ -62,7 +62,7 @@ export function parseUniversalFile(content: string): UniversalParseResult {
       const columns = parseCSVLine(line, detection.separator)
 
       // Extraire les données selon le mapping détecté
-      const extractedData = extractAddressFromColumns(columns, detection.mapping)
+      const extractedData = extractAddressFromColumns(columns, detection.mapping, headers)
 
       if (!extractedData) {
         continue // Skip si pas assez de données
@@ -106,7 +106,8 @@ export function parseUniversalFile(content: string): UniversalParseResult {
 // Extraction des données d'adresse à partir des colonnes
 function extractAddressFromColumns(
   columns: string[],
-  mapping: ColumnMapping
+  mapping: ColumnMapping,
+  headers: string[]
 ): Partial<Address> | null {
   const data: Partial<Address> = {}
 
@@ -131,29 +132,42 @@ function extractAddressFromColumns(
     data.lastName = getColumn(mapping.lastName)
   }
 
-  // Extraction de l'adresse avec logique Shopify améliorée
+  // Extraction de l'adresse - traiter directement les colonnes mappées
   const rawAddress1 = getColumn(mapping.addressLine1)
   const rawAddress2 = getColumn(mapping.addressLine2)
 
-  // Pour Shopify, essayer d'abord la colonne "Shipping Street" (une colonne avant Address1)
-  // qui contient souvent l'adresse complète non fragmentée
-  const shippingStreetCol =
-    mapping.addressLine1 !== undefined ? getColumn(mapping.addressLine1 - 1) : ''
+  // Déterminer s'il s'agit d'un fichier Shopify en analysant les headers
+  const isShopify = columns.some((_, idx) =>
+    headers[idx]?.toLowerCase().includes('shipping street') ||
+    headers[idx]?.toLowerCase().includes('shipping name')
+  )
 
-  // Logique d'extraction intelligente
-  if (
-    shippingStreetCol &&
-    shippingStreetCol.length > 10 &&
-    !shippingStreetCol.includes('Payments')
-  ) {
-    // Utiliser Shipping Street si elle contient une adresse complète
-    data.addressLine1 = cleanAddressField(shippingStreetCol)
-    data.addressLine2 =
-      rawAddress2 && cleanAddressField(rawAddress2) !== data.addressLine1
-        ? cleanAddressField(rawAddress2)
-        : undefined
+  // Logique spécifique pour Shopify
+  if (isShopify && mapping.addressLine1 !== undefined) {
+    // Pour Shopify, essayer d'abord la colonne "Shipping Street" (une colonne avant Address1)
+    const shippingStreetCol = getColumn(mapping.addressLine1 - 1)
+
+    if (
+      shippingStreetCol &&
+      shippingStreetCol.length > 10 &&
+      !shippingStreetCol.includes('Payments') &&
+      !shippingStreetCol.includes('Shopify Payments')
+    ) {
+      // Utiliser Shipping Street si elle contient une adresse complète
+      data.addressLine1 = cleanAddressField(shippingStreetCol)
+      data.addressLine2 =
+        rawAddress2 && cleanAddressField(rawAddress2) !== data.addressLine1
+          ? cleanAddressField(rawAddress2)
+          : undefined
+    } else {
+      // Utiliser les colonnes mappées normalement
+      data.addressLine1 = cleanAddressField(rawAddress1)
+      if (rawAddress2) {
+        data.addressLine2 = cleanAddressField(rawAddress2)
+      }
+    }
   } else if (rawAddress1?.includes('"') && rawAddress2) {
-    // Cas de fragmentation: recombiner Address1 et Address2
+    // Cas de fragmentation CSV: recombiner Address1 et Address2
     const cleanAddr1 = cleanAddressField(rawAddress1)
     const cleanAddr2 = cleanAddressField(rawAddress2)
 
@@ -164,7 +178,7 @@ function extractAddressFromColumns(
       data.addressLine1 = cleanAddr1 || cleanAddr2
     }
   } else {
-    // Cas normal
+    // Cas normal (Amazon, eBay, etc.) - utiliser directement les colonnes mappées
     data.addressLine1 = cleanAddressField(rawAddress1)
     if (rawAddress2) {
       data.addressLine2 = cleanAddressField(rawAddress2)

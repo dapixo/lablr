@@ -42,3 +42,7 @@ next-env.d.ts
 
 # SEO strategy and planning documents
 SEO_STRATEGY.md
+
+# Test files
+test-*.txt
+test-*.csv
