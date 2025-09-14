@@ -10,7 +10,12 @@ import type { TranslationVariables } from '@/hooks/useTranslations'
 export function getPluralVariables(count: number): TranslationVariables {
   return {
     count,
-    plural: count > 1 ? 's' : ''
+    plural: count > 1 ? 's' : '',
+    // Pour les adjectifs français féminins (gratuite -> gratuites)
+    pluralFem: count > 1 ? 's' : '',
+    // Pour la phrase "première adresse" vs "3 premières adresses"
+    firstText: count === 1 ? 'la' : 'les',
+    addressText: count === 1 ? 'première' : 'premières',
   }
 }
 

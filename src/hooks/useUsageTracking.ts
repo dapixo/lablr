@@ -1,8 +1,8 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { useAuth } from './useAuth'
+import { useCallback, useEffect, useState } from 'react'
 import type { DailyUsage } from '@/app/api/usage/route'
+import { useAuth } from './useAuth'
 
 interface UsageTrackingState {
   dailyUsage: DailyUsage | null
@@ -34,31 +34,24 @@ export function useUsageTracking(): UsageTrackingHook {
     remainingLabels: FREE_DAILY_LIMIT,
     isLimitReached: false,
     loading: true,
-    error: null
+    error: null,
   })
 
   /**
    * Récupère l'usage quotidien depuis l'API
    */
   const refreshUsage = useCallback(async () => {
-    console.log('🚀 refreshUsage called, conditions:', {
-      hasUser: !!user,
-      authLoading,
-      userId: user?.id
-    })
-
     if (!user || authLoading) {
-      setState(prev => ({ ...prev, loading: false }))
+      setState((prev) => ({ ...prev, loading: false }))
       return
     }
 
     try {
-      setState(prev => ({ ...prev, loading: true, error: null }))
+      setState((prev) => ({ ...prev, loading: true, error: null }))
 
-      console.log('📡 Making GET /api/usage request...')
       const response = await fetch('/api/usage', {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       })
 
       const result = await response.json()
@@ -78,88 +71,95 @@ export function useUsageTracking(): UsageTrackingHook {
         remainingLabels,
         isLimitReached,
         loading: false,
-        error: null
+        error: null,
       })
-
     } catch (error) {
       console.error('Error fetching usage:', error)
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         loading: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       }))
     }
-  }, [user?.id, authLoading]) // Only depend on user.id, not the entire user object
+  }, [user?.id, authLoading, user]) // Remove circular dependency
 
   /**
    * Incrémente l'usage des étiquettes
    */
-  const trackLabelUsage = useCallback(async (labelCount: number): Promise<boolean> => {
-    if (!user) {
-      console.warn('Cannot track usage: user not authenticated')
-      return false
-    }
-
-    if (labelCount <= 0) {
-      console.warn('Invalid label count:', labelCount)
-      return false
-    }
-
-    try {
-      const response = await fetch('/api/usage', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ labelCount })
-      })
-
-      const result = await response.json()
-
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to track usage')
+  const trackLabelUsage = useCallback(
+    async (labelCount: number): Promise<boolean> => {
+      if (!user) {
+        console.warn('Cannot track usage: user not authenticated')
+        return false
       }
 
-      // Mettre à jour l'état local
-      await refreshUsage()
-      return true
+      if (labelCount <= 0) {
+        console.warn('Invalid label count:', labelCount)
+        return false
+      }
 
-    } catch (error) {
-      console.error('Error tracking usage:', error)
-      setState(prev => ({
-        ...prev,
-        error: error instanceof Error ? error.message : 'Failed to track usage'
-      }))
-      return false
-    }
-  }, [user, refreshUsage])
+      try {
+        const response = await fetch('/api/usage', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ labelCount }),
+        })
+
+        const result = await response.json()
+
+        if (!result.success) {
+          throw new Error(result.error || 'Failed to track usage')
+        }
+
+        // Mettre à jour l'état local
+        await refreshUsage()
+        return true
+      } catch (error) {
+        console.error('Error tracking usage:', error)
+        setState((prev) => ({
+          ...prev,
+          error: error instanceof Error ? error.message : 'Failed to track usage',
+        }))
+        return false
+      }
+    },
+    [user, refreshUsage]
+  )
 
   /**
    * Vérifie si l'utilisateur peut imprimer le nombre d'étiquettes demandé
    */
-  const canPrintLabels = useCallback((requestedCount: number): boolean => {
-    if (!user) return false
-    return state.remainingLabels >= requestedCount
-  }, [user, state.remainingLabels])
+  const canPrintLabels = useCallback(
+    (requestedCount: number): boolean => {
+      if (!user) return false
+      return state.remainingLabels >= requestedCount
+    },
+    [user, state.remainingLabels]
+  )
 
   /**
    * Retourne le nombre maximum d'étiquettes imprimables
    */
-  const getMaxPrintableLabels = useCallback((requestedCount: number): number => {
-    if (!user) return 0
-    return Math.min(requestedCount, state.remainingLabels)
-  }, [user, state.remainingLabels])
+  const getMaxPrintableLabels = useCallback(
+    (requestedCount: number): number => {
+      if (!user) return 0
+      return Math.min(requestedCount, state.remainingLabels)
+    },
+    [user, state.remainingLabels]
+  )
 
   // Charger l'usage au montage et quand l'utilisateur change
   useEffect(() => {
     if (!authLoading && user) {
       refreshUsage()
     }
-  }, [user?.id, authLoading, refreshUsage]) // Stable dependencies
+  }, [user?.id, authLoading, refreshUsage, user]) // refreshUsage is stable with useCallback
 
   return {
     ...state,
     refreshUsage,
     trackLabelUsage,
     canPrintLabels,
-    getMaxPrintableLabels
+    getMaxPrintableLabels,
   }
 }

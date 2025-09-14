@@ -16,7 +16,6 @@ const COLUMN_PATTERNS = {
     'nom_complet',
     // Et enfin "name" générique en dernier
     'name',
-    'nom',
   ],
   firstName: [
     'first_name',
@@ -32,6 +31,7 @@ const COLUMN_PATTERNS = {
     'lastname',
     'family_name',
     'surname',
+    'nom',
     'nom_famille',
     'shipping_last_name',
     'billing_last_name',
@@ -40,6 +40,7 @@ const COLUMN_PATTERNS = {
     'address',
     'address1',
     'address_1',
+    'adresse_1',
     'street',
     'street1',
     'adresse',
@@ -54,6 +55,7 @@ const COLUMN_PATTERNS = {
   address2: [
     'address2',
     'address_2',
+    'adresse_2',
     'street2',
     'adresse2',
     'complement_adresse',
@@ -127,12 +129,24 @@ function findColumnMatch(headers: string[], patterns: string[]): number {
     }
   }
 
-  // Chercher correspondance partielle
+  // Chercher correspondance partielle (mais plus stricte pour éviter les faux positifs)
   for (const pattern of patterns) {
     const normalizedPattern = normalizeColumnName(pattern)
-    const partialIndex = normalizedHeaders.findIndex(
-      (h) => h.includes(normalizedPattern) || normalizedPattern.includes(h)
-    )
+    const partialIndex = normalizedHeaders.findIndex((h) => {
+      // Éviter les faux positifs comme "nom_complet" qui contient "nom"
+      const headerInPattern = normalizedPattern.includes(h)
+      const patternInHeader = h.includes(normalizedPattern)
+
+      // Accepter seulement si c'est un vrai sous-ensemble logique
+      // Par exemple: "first_name" contient "name" (OK)
+      // Mais "nom_complet" ne devrait pas matcher "nom" (NOK car trop générique)
+      if (headerInPattern && normalizedPattern.length > h.length + 3) {
+        // Si le pattern est beaucoup plus long, c'est probablement un faux positif
+        return false
+      }
+
+      return headerInPattern || patternInHeader
+    })
     if (partialIndex !== -1) {
       return partialIndex
     }

@@ -468,6 +468,28 @@ const FormatCard = React.memo(function FormatCard({...}))
 - ✅ **Pas de duplication** : Élimination code répété (pluriels, HTML conversion)
 - ✅ **Performance** : Fonctions pures, mémorisation optimisée, API calls minimales
 
+## Évolutions Récentes (✅ V3.4)
+
+### 🎨 Optimisations CSS et Rendu d'Impression (🆕 V3.4)
+- ✅ **Suppression bordures debug** : Élimination de toutes les bordures rouges/colorées de debug
+- ✅ **CSS d'impression propre** : Rendu final sans artefacts visuels pour l'utilisateur
+- ✅ **Bordures subtiles** : Remplacement par bordures grises discrètes (#e5e7eb)
+- ✅ **Styles harmonisés** : Cohérence visuelle entre tous les formats d'impression
+
+### 🔧 Refactorisation Technique V3.4 (🆕)
+- ✅ **JSDoc améliorée** : Documentation professionnelle pour fonctions critiques
+- ✅ **Correction dépendances circulaires** : Fix `useUsageTracking` hook dependencies
+- ✅ **Code maintenable** : Fonctions utilitaires avec types stricts et commentaires français
+- ✅ **Optimisations Biome** : Application des fixes automatiques pour qualité de code
+- ✅ **Build optimisé** : Bundle production 128kB (304kB total) avec 14 pages statiques
+- ✅ **Performance garantie** : TypeScript strict sans erreurs, warnings minimes
+
+### 🏗️ Architecture Modulaire V3.4
+- ✅ **Parser CSV optimisé** : Gestion des guillemets et échappements avec JSDoc
+- ✅ **Helpers i18n** : Fonctions pures pour pluriels et conversion HTML
+- ✅ **CSS Generator refactorisé** : Mixins réutilisables sans code dupliqué
+- ✅ **Types cohérents** : Interfaces partagées et exports optimisés
+
 ## Évolutions Futures
 
 ### Fonctionnalités

@@ -90,6 +90,7 @@
     "tooltip": "Menu utilisateur ({email})",
     "ariaLabel": "Menu utilisateur",
     "signOut": "Se déconnecter",
+    "account": "Mon compte",
     "deleteAccount": "Supprimer le compte",
     "confirmDelete": {
       "message": "Êtes-vous absolument sûr de vouloir supprimer votre compte ? Cette action est irréversible.",
@@ -273,13 +274,13 @@
     },
     "limits": {
       "dailyLimit": "Limite quotidienne atteinte",
-      "limitSoon": "Plus que {count} étiquette{plural} gratuite{plural}",
+      "limitSoon": "Plus que {count} étiquette{plural} gratuite{pluralFem}",
       "upgradeMessage": "Vous avez utilisé vos 10 étiquettes gratuites aujourd'hui. Passez à Premium pour continuer.",
       "upgradeSoonMessage": "Passez à Premium pour des étiquettes illimitées.",
       "resetTime": "Vos étiquettes gratuites se renouvellent demain à minuit.",
       "remainingToday": "Il vous reste {count} étiquette(s) gratuite(s) aujourd'hui",
       "addressesDetected": "{count} adresses détectées",
-      "labelsRemaining": "Il vous reste **{count} étiquette{plural} gratuite{plural}** aujourd'hui. Vous pouvez imprimer les {count} premières adresses.",
+      "labelsRemaining": "Il vous reste **{count} étiquette{plural} gratuite{pluralFem}** aujourd'hui. Vous pouvez imprimer {firstText} {count} {addressText} adresse{plural}.",
       "noLabelsLeft": "Vos étiquettes gratuites se rechargent demain.",
       "printLimited": "Imprimer {count} étiquette{plural}",
       "resetTomorrow": "Vos 10 étiquettes gratuites se rechargent demain à minuit"
@@ -411,6 +412,9 @@
       "speed": "Interface moderne et rapide",
       "compatibility": "Compatible tous appareils"
     },
+    "links": {
+      "account": "Mon compte"
+    },
     "copyright": "© 2024 Lalabel. Tous droits réservés.",
     "version": {
       "label": "Version"
@@ -450,6 +454,21 @@
     "deleteAccountFailed": "Failed to delete account",
     "accountDeletedSuccess": "Account deleted successfully",
     "internalServerError": "Internal server error"
+  },
+  "account": {
+    "title": "Mon compte",
+    "description": "Gérez les informations de votre compte et vos préférences.",
+    "userInfo": {
+      "title": "Informations utilisateur",
+      "fullName": "Nom complet",
+      "email": "Adresse email",
+      "memberSince": "Membre depuis"
+    },
+    "dangerZone": {
+      "title": "Zone de danger",
+      "description": "Cette action est irréversible et supprimera définitivement votre compte et toutes les données associées.",
+      "deleteAccount": "Supprimer mon compte"
+    }
   },
   "common": {
     "or": "ou",

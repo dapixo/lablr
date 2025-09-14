@@ -1,5 +1,5 @@
+import { type NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { NextRequest, NextResponse } from 'next/server'
 
 export interface DailyUsage {
   id: string
@@ -28,38 +28,30 @@ export async function GET(): Promise<NextResponse<UsageResponse>> {
     const supabase = await createClient()
 
     // Vérifier l'authentification
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
     // Récupérer ou créer l'usage quotidien
-    const { data, error } = await supabase
-      .rpc('get_or_create_daily_usage', { user_uuid: user.id })
+    const { data, error } = await supabase.rpc('get_or_create_daily_usage', { user_uuid: user.id })
 
     if (error) {
       console.error('Error fetching daily usage:', error)
-      return NextResponse.json(
-        { success: false, error: 'Failed to fetch usage' },
-        { status: 500 }
-      )
+      return NextResponse.json({ success: false, error: 'Failed to fetch usage' }, { status: 500 })
     }
 
     return NextResponse.json({
       success: true,
-      data: data as DailyUsage
+      data: data as DailyUsage,
     })
-
   } catch (error) {
     console.error('Unexpected error in GET /api/usage:', error)
-    return NextResponse.json(
-      { success: false, error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 })
   }
 }
 
@@ -71,13 +63,13 @@ export async function POST(request: NextRequest): Promise<NextResponse<UsageResp
     const supabase = await createClient()
 
     // Vérifier l'authentification
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
     // Parser le body
@@ -85,10 +77,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<UsageResp
     try {
       body = await request.json()
     } catch {
-      return NextResponse.json(
-        { success: false, error: 'Invalid JSON body' },
-        { status: 400 }
-      )
+      return NextResponse.json({ success: false, error: 'Invalid JSON body' }, { status: 400 })
     }
 
     const { labelCount } = body
@@ -102,30 +91,22 @@ export async function POST(request: NextRequest): Promise<NextResponse<UsageResp
     }
 
     // Incrémenter l'usage
-    const { data, error } = await supabase
-      .rpc('increment_daily_usage', {
-        user_uuid: user.id,
-        label_count: labelCount
-      })
+    const { data, error } = await supabase.rpc('increment_daily_usage', {
+      user_uuid: user.id,
+      label_count: labelCount,
+    })
 
     if (error) {
       console.error('Error incrementing daily usage:', error)
-      return NextResponse.json(
-        { success: false, error: 'Failed to update usage' },
-        { status: 500 }
-      )
+      return NextResponse.json({ success: false, error: 'Failed to update usage' }, { status: 500 })
     }
 
     return NextResponse.json({
       success: true,
-      data: data as DailyUsage
+      data: data as DailyUsage,
     })
-
   } catch (error) {
     console.error('Unexpected error in POST /api/usage:', error)
-    return NextResponse.json(
-      { success: false, error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 })
   }
 }

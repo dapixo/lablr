@@ -68,8 +68,6 @@ export function generateAddressesHTML(addresses: Address[], format: PrintFormat)
 
     case 'roll':
       return addressesContent // Pas de wrapper pour le rouleau
-
-    case 'list':
     default:
       return addressesContent // Pas de wrapper pour les listes
   }

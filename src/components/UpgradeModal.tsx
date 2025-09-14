@@ -1,13 +1,14 @@
 'use client'
 
+import { Check, Crown, Zap } from 'lucide-react'
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { Divider } from 'primereact/divider'
 import { Tag } from 'primereact/tag'
-import { Crown, Zap, Check } from 'lucide-react'
-import React, { useMemo, useState } from 'react'
+import type React from 'react'
+import { useMemo, useState } from 'react'
 import type { TranslationVariables } from '@/hooks/useTranslations'
-import { getPluralVariables, markdownToHtml, createInnerHTML } from '@/lib/i18n-helpers'
+import { createInnerHTML, getPluralVariables, markdownToHtml } from '@/lib/i18n-helpers'
 
 interface UpgradeModalProps {
   visible: boolean
@@ -27,7 +28,7 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
   onPrintLimited,
   t,
   totalAddresses,
-  remainingLabels
+  remainingLabels,
 }) => {
   const [isAnnual, setIsAnnual] = useState(false)
   const headerContent = useMemo(
@@ -40,14 +41,12 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
           <span className="text-xl font-bold text-gray-900">
             {remainingLabels === 0
               ? t('pricing.limits.dailyLimit')
-              : t('pricing.limits.limitSoon', getPluralVariables(remainingLabels))
-            }
+              : t('pricing.limits.limitSoon', getPluralVariables(remainingLabels))}
           </span>
           <p className="text-sm text-gray-500 mt-1">
             {remainingLabels === 0
               ? t('pricing.limits.upgradeMessage')
-              : t('pricing.limits.upgradeSoonMessage')
-            }
+              : t('pricing.limits.upgradeSoonMessage')}
           </p>
         </div>
       </div>
@@ -55,12 +54,15 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
     [t, remainingLabels]
   )
 
-  const premiumFeatures = useMemo(() => [
-    t('pricing.premium.features.0'), // Étiquettes illimitées
-    t('pricing.premium.features.1'), // Tous formats
-    t('pricing.premium.features.2'), // Import toutes plateformes
-    t('pricing.premium.features.3'), // Support prioritaire
-  ], [t])
+  const premiumFeatures = useMemo(
+    () => [
+      t('pricing.premium.features.0'), // Étiquettes illimitées
+      t('pricing.premium.features.1'), // Tous formats
+      t('pricing.premium.features.2'), // Import toutes plateformes
+      t('pricing.premium.features.3'), // Support prioritaire
+    ],
+    [t]
+  )
 
   return (
     <Dialog
@@ -83,17 +85,20 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
               {t('pricing.limits.addressesDetected', getPluralVariables(totalAddresses))}
             </h3>
             <p className="text-sm text-gray-700 mb-3">
-              {remainingLabels === 0
-                ? t('pricing.limits.noLabelsLeft')
-                : <span dangerouslySetInnerHTML={createInnerHTML(markdownToHtml(
-                    t('pricing.limits.labelsRemaining', getPluralVariables(remainingLabels))
-                  ))} />
-              }
+              {remainingLabels === 0 ? (
+                t('pricing.limits.noLabelsLeft')
+              ) : (
+                <span
+                  dangerouslySetInnerHTML={createInnerHTML(
+                    markdownToHtml(
+                      t('pricing.limits.labelsRemaining', getPluralVariables(remainingLabels))
+                    )
+                  )}
+                />
+              )}
             </p>
             {remainingLabels > 0 && (
-              <div className="text-xs text-gray-500">
-                💡 {t('pricing.limits.resetTime')}
-              </div>
+              <div className="text-xs text-gray-500">💡 {t('pricing.limits.resetTime')}</div>
             )}
           </div>
         </div>
@@ -104,16 +109,9 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
         <div className="text-center mb-4">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Crown className="h-6 w-6 text-blue-600" />
-            <h3 className="text-2xl font-bold text-gray-900">
-              {t('pricing.premium.title')}
-            </h3>
+            <h3 className="text-2xl font-bold text-gray-900">{t('pricing.premium.title')}</h3>
             {isAnnual && (
-              <Tag
-                value="-33%"
-                rounded
-                severity="success"
-                className="ml-2 font-bold shadow-sm"
-              />
+              <Tag value="-33%" rounded severity="success" className="ml-2 font-bold shadow-sm" />
             )}
           </div>
 
@@ -122,9 +120,7 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
             <button
               onClick={() => setIsAnnual(false)}
               className={`px-4 py-2 rounded-full font-medium transition-all duration-200 text-sm ${
-                !isAnnual
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+                !isAnnual ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               {t('pricing.page.billingToggle.monthly')}
@@ -132,9 +128,7 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
             <button
               onClick={() => setIsAnnual(true)}
               className={`px-4 py-2 rounded-full font-medium transition-all duration-200 text-sm ${
-                isAnnual
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+                isAnnual ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               {t('pricing.page.billingToggle.annually')}
@@ -142,9 +136,7 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
           </div>
 
           <div className="flex items-baseline justify-center gap-1 mb-2">
-            <span className="text-4xl font-bold text-blue-600">
-              {isAnnual ? '€4' : '€5'}
-            </span>
+            <span className="text-4xl font-bold text-blue-600">{isAnnual ? '€4' : '€5'}</span>
             <span className="text-gray-600">
               {isAnnual ? t('pricing.premium.periodAnnualBilling') : t('pricing.premium.perMonth')}
             </span>
@@ -204,9 +196,7 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
 
       {remainingLabels === 0 && (
         <div className="mt-4 p-3 bg-gray-50 rounded-lg text-center">
-          <p className="text-sm text-gray-600">
-            🕐 {t('pricing.limits.resetTomorrow')}
-          </p>
+          <p className="text-sm text-gray-600">🕐 {t('pricing.limits.resetTomorrow')}</p>
         </div>
       )}
     </Dialog>

@@ -1,9 +1,8 @@
 'use client'
 
-import { Eye, Settings, Crown } from 'lucide-react'
+import { Eye, Settings } from 'lucide-react'
 import { Button } from 'primereact/button'
 import { Panel } from 'primereact/panel'
-import { Tag } from 'primereact/tag'
 import React, { useCallback, useMemo, useState } from 'react'
 import { AuthModal } from '@/components/auth/AuthModal'
 import { UpgradeModal } from '@/components/UpgradeModal'
@@ -16,7 +15,7 @@ import { STORAGE_KEYS, useCollapsiblePanel, usePersistedSelection } from '@/lib/
 import { cn } from '@/lib/utils'
 import type { Address, PrintFormat } from '@/types/address'
 
-// Interface pour les composants qui n'utilisent que les adresses 
+// Interface pour les composants qui n'utilisent que les adresses
 interface PreviewAddressOnlyProps {
   addresses: Address[]
 }
@@ -42,7 +41,7 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
     canPrintLabels,
     getMaxPrintableLabels,
     trackLabelUsage,
-    loading: usageLoading
+    loading: usageLoading,
   } = useUsageTracking()
 
   const [showAuthModal, setShowAuthModal] = useState(false)
@@ -62,24 +61,27 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
   )
   const printPanel = useCollapsiblePanel(STORAGE_KEYS.PRINT_PANEL_COLLAPSED, false)
 
-  const executePrint = useCallback(async (addressesToPrint: Address[] = addresses) => {
-    if (selectedFormat.value === 'CSV_EXPORT') {
-      downloadCSV(addressesToPrint, 'adresses-lablr.csv')
-      // Track usage pour CSV aussi
+  const executePrint = useCallback(
+    async (addressesToPrint: Address[] = addresses) => {
+      if (selectedFormat.value === 'CSV_EXPORT') {
+        downloadCSV(addressesToPrint, 'adresses-lablr.csv')
+        // Track usage pour CSV aussi
+        if (user) {
+          await trackLabelUsage(addressesToPrint.length)
+        }
+        return
+      }
+
+      const printCSS = getPrintCSS(selectedFormat.value)
+      printAddresses(addressesToPrint, selectedFormat.value, printCSS)
+
+      // Track l'usage après impression réussie
       if (user) {
         await trackLabelUsage(addressesToPrint.length)
       }
-      return
-    }
-
-    const printCSS = getPrintCSS(selectedFormat.value)
-    printAddresses(addressesToPrint, selectedFormat.value, printCSS)
-
-    // Track l'usage après impression réussie
-    if (user) {
-      await trackLabelUsage(addressesToPrint.length)
-    }
-  }, [addresses, selectedFormat.value, user, trackLabelUsage])
+    },
+    [addresses, selectedFormat.value, user, trackLabelUsage]
+  )
 
   const handlePrint = useCallback(() => {
     // Vérifier si l'utilisateur est connecté

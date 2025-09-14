@@ -21,7 +21,11 @@ function interpolateMessage(message: string, variables?: TranslationVariables): 
   if (!variables) return message
 
   return message.replace(/\{(\w+)\}/g, (match, key) => {
-    return variables[key]?.toString() || match
+    // Permettre les chaînes vides comme valeurs valides
+    if (key in variables) {
+      return variables[key]?.toString() || ''
+    }
+    return match
   })
 }
 
@@ -35,4 +39,3 @@ export function useTranslations(locale: string) {
     }
   }, [locale])
 }
-

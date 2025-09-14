@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import React from 'react'
+import type React from 'react'
+import { useAuth } from '@/hooks/useAuth'
 
 interface FooterProps {
   t: (key: string) => string
@@ -11,6 +12,7 @@ interface FooterProps {
 export const Footer: React.FC<FooterProps> = ({ t }) => {
   const params = useParams()
   const locale = (params?.locale as string) || 'fr'
+  const { user } = useAuth()
 
   return (
     <footer className="bg-white border-t border-gray-200">
@@ -51,7 +53,6 @@ export const Footer: React.FC<FooterProps> = ({ t }) => {
                 <span>{t('footer.features.detection')}</span>
               </li>
             </ul>
-
           </div>
 
           {/* Info Column */}
@@ -81,12 +82,22 @@ export const Footer: React.FC<FooterProps> = ({ t }) => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex flex-col sm:flex-row items-center gap-4">
               <p className="text-gray-600 text-sm">{t('footer.copyright')}</p>
-              <Link
-                href={`/${locale}/pricing`}
-                className="text-blue-600 hover:text-blue-800 font-medium transition-colors text-sm"
-              >
-                {t('navigation.pricing')}
-              </Link>
+              <div className="flex flex-wrap items-center gap-4">
+                <Link
+                  href={`/${locale}/pricing`}
+                  className="text-blue-600 hover:text-blue-800 font-medium transition-colors text-sm"
+                >
+                  {t('navigation.pricing')}
+                </Link>
+                {user && (
+                  <Link
+                    href={`/${locale}/account`}
+                    className="text-blue-600 hover:text-blue-800 font-medium transition-colors text-sm"
+                  >
+                    {t('footer.links.account')}
+                  </Link>
+                )}
+              </div>
             </div>
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2 text-xs text-gray-500">

@@ -52,9 +52,9 @@ const CSS_MIXINS: CSSMixins = {
       margin: 0.2mm 0;
       line-height: 1.1;
       word-wrap: break-word;
+      overflow-wrap: break-word;
+      hyphens: auto;
       overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
       width: 100%;
     }
     .address-item .address-name {
@@ -100,12 +100,12 @@ const CSS_MIXINS: CSSMixins = {
       width: ${width};
       height: ${height};
       font-size: ${fontSize}px;
-      /* Assurer le centrage */
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       text-align: center;
+      box-sizing: border-box;
     }`,
 
   compactLayout: () => `
@@ -119,9 +119,9 @@ const CSS_MIXINS: CSSMixins = {
       margin-bottom: 5mm;
       border: 1px solid #e5e7eb;
       border-radius: 2mm;
-      background: #fafafa;
       float: left;
       width: calc(50% - 5mm);
+      box-sizing: border-box;
     }
     .address-item:nth-child(odd) {
       margin-right: 10mm;
@@ -158,6 +158,7 @@ const CSS_MIXINS: CSSMixins = {
       height: ${height};
       width: ${width};
       break-after: page;
+      box-sizing: border-box;
     }
     .address-item div {
       margin: 0.3mm 0;
@@ -223,8 +224,6 @@ export function generatePrintCSS(format: PrintFormat): string {
       css += CSS_MIXINS.compactLayout()
       css += CSS_MIXINS.addressItem(pageSettings.fontSize, '5mm')
       break
-
-    case 'list':
     default:
       css += CSS_MIXINS.addressItem(pageSettings.fontSize, '10px')
       css += `

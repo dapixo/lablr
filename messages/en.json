@@ -90,6 +90,7 @@
     "tooltip": "User menu ({email})",
     "ariaLabel": "User menu",
     "signOut": "Sign out",
+    "account": "My account",
     "deleteAccount": "Delete account",
     "confirmDelete": {
       "message": "Are you absolutely sure you want to delete your account? This action is irreversible.",
@@ -279,7 +280,7 @@
       "resetTime": "Your free labels reset tomorrow at midnight.",
       "remainingToday": "You have {count} free label(s) remaining today",
       "addressesDetected": "{count} addresses detected",
-      "labelsRemaining": "You have **{count} free label{plural}** remaining today. You can print the first {count} addresses.",
+      "labelsRemaining": "You have **{count} free label{plural}** remaining today. You can print the first {count} address{plural}.",
       "noLabelsLeft": "Your free labels reset tomorrow.",
       "printLimited": "Print {count} label{plural}",
       "resetTomorrow": "Your 10 free labels reset tomorrow at midnight"
@@ -411,6 +412,9 @@
       "speed": "Modern and fast interface",
       "compatibility": "Compatible with all devices"
     },
+    "links": {
+      "account": "My Account"
+    },
     "copyright": "© 2024 Lalabel. All rights reserved.",
     "version": {
       "label": "Version"
@@ -450,6 +454,21 @@
     "deleteAccountFailed": "Failed to delete account",
     "accountDeletedSuccess": "Account deleted successfully",
     "internalServerError": "Internal server error"
+  },
+  "account": {
+    "title": "My Account",
+    "description": "Manage your account information and preferences.",
+    "userInfo": {
+      "title": "User Information",
+      "fullName": "Full Name",
+      "email": "Email Address",
+      "memberSince": "Member Since"
+    },
+    "dangerZone": {
+      "title": "Danger Zone",
+      "description": "This action is irreversible and will permanently delete your account and all associated data.",
+      "deleteAccount": "Delete My Account"
+    }
   },
   "common": {
     "or": "or",

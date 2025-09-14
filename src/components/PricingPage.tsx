@@ -4,7 +4,8 @@ import { Check, Star, Zap } from 'lucide-react'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 import { Tag } from 'primereact/tag'
-import React, { useMemo, useState } from 'react'
+import type React from 'react'
+import { useMemo, useState } from 'react'
 import { AuthModal } from '@/components/auth/AuthModal'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
@@ -39,7 +40,8 @@ const CARD_STYLES = {
     withUser: 'border-2 border-blue-500',
     withoutUser: 'border border-gray-200',
   },
-  premium: 'p-10 shadow-2xl border-2 border-blue-500 rounded-2xl bg-gradient-to-br from-white to-blue-50 hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-2 relative overflow-hidden h-full',
+  premium:
+    'p-10 shadow-2xl border-2 border-blue-500 rounded-2xl bg-gradient-to-br from-white to-blue-50 hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-2 relative overflow-hidden h-full',
 } as const
 
 /**
@@ -103,9 +105,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({ t }) => {
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/10 backdrop-blur-sm mb-6">
               <Zap className="h-10 w-10 text-white" />
             </div>
-            <h1 className="text-5xl font-bold mb-6">
-              {t('pricing.page.title')}
-            </h1>
+            <h1 className="text-5xl font-bold mb-6">{t('pricing.page.title')}</h1>
             <p className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
               {t('pricing.page.subtitle')}
             </p>
@@ -116,9 +116,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({ t }) => {
             <button
               onClick={() => setIsAnnual(false)}
               className={`px-6 py-3 rounded-full font-medium transition-all duration-200 ${
-                !isAnnual
-                  ? 'bg-white text-blue-600 shadow-lg'
-                  : 'text-blue-100 hover:text-white'
+                !isAnnual ? 'bg-white text-blue-600 shadow-lg' : 'text-blue-100 hover:text-white'
               }`}
             >
               {t('pricing.page.billingToggle.monthly')}
@@ -126,9 +124,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({ t }) => {
             <button
               onClick={() => setIsAnnual(true)}
               className={`px-6 py-3 rounded-full font-medium transition-all duration-200 ${
-                isAnnual
-                  ? 'bg-white text-blue-600 shadow-lg'
-                  : 'text-blue-100 hover:text-white'
+                isAnnual ? 'bg-white text-blue-600 shadow-lg' : 'text-blue-100 hover:text-white'
               }`}
             >
               {t('pricing.page.billingToggle.annually')}
@@ -160,20 +156,18 @@ export const PricingPage: React.FC<PricingPageProps> = ({ t }) => {
                 />
               </div>
             )}
-            <Card className={`${CARD_STYLES.free.base} ${
-              !loading && user ? CARD_STYLES.free.withUser : CARD_STYLES.free.withoutUser
-            }`}>
+            <Card
+              className={`${CARD_STYLES.free.base} ${
+                !loading && user ? CARD_STYLES.free.withUser : CARD_STYLES.free.withoutUser
+              }`}
+            >
               <div className="text-center h-full flex flex-col">
                 <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-6">
                   <Check className="h-8 w-8 text-gray-600" />
                 </div>
-                <h3 className="text-3xl font-bold text-gray-900 mb-3">
-                  {freePlan.title}
-                </h3>
+                <h3 className="text-3xl font-bold text-gray-900 mb-3">{freePlan.title}</h3>
                 <div className="mb-6">
-                  <span className="text-5xl font-bold text-gray-900">
-                    {freePlan.price}
-                  </span>
+                  <span className="text-5xl font-bold text-gray-900">{freePlan.price}</span>
                 </div>
 
                 <div className="flex-1 space-y-4 text-left mb-8">
@@ -225,16 +219,12 @@ export const PricingPage: React.FC<PricingPageProps> = ({ t }) => {
                 <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mx-auto mb-6">
                   <Zap className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-3xl font-bold text-gray-900 mb-3">
-                  {premiumPlan.title}
-                </h3>
+                <h3 className="text-3xl font-bold text-gray-900 mb-3">{premiumPlan.title}</h3>
                 <div className="mb-6">
                   <span className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
                     {premiumPlan.price}
                   </span>
-                  <span className="text-gray-600 ml-2 text-lg">
-                    {premiumPlan.period}
-                  </span>
+                  <span className="text-gray-600 ml-2 text-lg">{premiumPlan.period}</span>
                 </div>
 
                 <div className="flex-1 space-y-4 text-left mb-8">
@@ -248,9 +238,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({ t }) => {
                   ))}
                 </div>
 
-                <Button
-                  className="w-full py-4 text-lg font-semibold bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 justify-center mt-auto"
-                >
+                <Button className="w-full py-4 text-lg font-semibold bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 justify-center mt-auto">
                   {t('pricing.page.cta.premium')}
                 </Button>
               </div>
@@ -291,10 +279,14 @@ export const PricingPage: React.FC<PricingPageProps> = ({ t }) => {
                       {t('pricing.page.features.dailyLabels')}
                     </td>
                     <td className="px-8 py-6 text-center text-gray-700 text-base">
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">10</span>
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                        10
+                      </span>
                     </td>
                     <td className="px-8 py-6 text-center text-blue-600 font-bold text-base">
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">{t('pricing.page.values.unlimited')}</span>
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                        {t('pricing.page.values.unlimited')}
+                      </span>
                     </td>
                   </tr>
                   <tr className="bg-gray-50 hover:bg-gray-100 transition-colors">

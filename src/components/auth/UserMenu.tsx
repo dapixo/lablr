@@ -1,7 +1,7 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { Button } from 'primereact/button'
-import { confirmDialog } from 'primereact/confirmdialog'
 import { Menu } from 'primereact/menu'
 import { Toast } from 'primereact/toast'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -9,12 +9,13 @@ import { useAuth } from '@/hooks/useAuth'
 import { useTranslations } from '@/hooks/useTranslations'
 
 export function UserMenu() {
-  const { user, signOut, deleteAccount } = useAuth()
+  const { user, signOut } = useAuth()
+  const router = useRouter()
   const [locale, setLocale] = useState('fr')
   const t = useTranslations(locale)
   const menuRef = useRef<Menu>(null)
   const toastRef = useRef<Toast>(null)
-  const [loading, setLoading] = useState(false)
+  const [loading, _setLoading] = useState(false)
 
   // Récupérer le locale depuis l'URL et écouter les changements
   useEffect(() => {
@@ -48,52 +49,9 @@ export function UserMenu() {
     }
   }, [signOut, t])
 
-  const handleDeleteAccount = useCallback(() => {
-    confirmDialog({
-      message: t('userMenu.confirmDelete.message'),
-      header: t('userMenu.confirmDelete.header'),
-      icon: 'pi pi-exclamation-triangle',
-      defaultFocus: 'reject',
-      acceptClassName: 'p-button-danger',
-      acceptLabel: t('userMenu.confirmDelete.accept'),
-      rejectLabel: t('userMenu.confirmDelete.reject'),
-      accept: async () => {
-        setLoading(true)
-        try {
-          const { error } = await deleteAccount()
-          if (error) {
-            console.error('Error deleting account:', error)
-            toastRef.current?.show({
-              severity: 'error',
-              summary: t('userMenu.toast.deleteError.summary'),
-              detail:
-                typeof error === 'string'
-                  ? error
-                  : error.message || t('userMenu.toast.deleteError.detail'),
-              life: 5000,
-            })
-          } else {
-            toastRef.current?.show({
-              severity: 'success',
-              summary: t('userMenu.toast.deleteSuccess.summary'),
-              detail: t('userMenu.toast.deleteSuccess.detail'),
-              life: 3000,
-            })
-          }
-        } catch (error) {
-          console.error('Error deleting account:', error)
-          toastRef.current?.show({
-            severity: 'error',
-            summary: t('userMenu.toast.unexpectedError.summary'),
-            detail: t('userMenu.toast.unexpectedError.detail'),
-            life: 5000,
-          })
-        } finally {
-          setLoading(false)
-        }
-      },
-    })
-  }, [deleteAccount, t])
+  const handleAccountClick = useCallback(() => {
+    router.push(`/${locale}/account`)
+  }, [router, locale])
 
   if (!user?.email) {
     return null
@@ -101,19 +59,18 @@ export function UserMenu() {
 
   const menuItems = [
     {
-      label: t('userMenu.signOut'),
-      icon: 'pi pi-sign-out',
-      command: handleSignOut,
+      label: t('userMenu.account'),
+      icon: 'pi pi-user',
+      command: handleAccountClick,
       disabled: loading,
     },
     {
       separator: true,
     },
     {
-      label: t('userMenu.deleteAccount'),
-      icon: 'pi pi-trash',
-      className: 'text-red-600',
-      command: handleDeleteAccount,
+      label: t('userMenu.signOut'),
+      icon: 'pi pi-sign-out',
+      command: handleSignOut,
       disabled: loading,
     },
   ]

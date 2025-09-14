@@ -1,6 +1,6 @@
 'use client'
 
-import { MessageSquareText, Zap, Heart, ArrowRight, Mail } from 'lucide-react'
+import { ArrowRight, Heart, Mail, MessageSquareText, Zap } from 'lucide-react'
 import { Card } from 'primereact/card'
 import React from 'react'
 
@@ -34,27 +34,27 @@ ${t('feedback.email.thanks')}`)
       icon: <Zap className="h-6 w-6" />,
       title: t('feedback.benefits.responsive'),
       description: t('feedback.benefits.responsiveDesc'),
-      color: 'text-blue-600'
+      color: 'text-blue-600',
     },
     {
       icon: <MessageSquareText className="h-6 w-6" />,
       title: t('feedback.benefits.implementation'),
       description: t('feedback.benefits.implementationDesc'),
-      color: 'text-green-600'
+      color: 'text-green-600',
     },
     {
       icon: <Heart className="h-6 w-6" />,
       title: t('feedback.benefits.community'),
       description: t('feedback.benefits.communityDesc'),
-      color: 'text-pink-600'
-    }
+      color: 'text-pink-600',
+    },
   ]
 
   const suggestions = [
     t('feedback.suggestions.formats'),
     t('feedback.suggestions.features'),
     t('feedback.suggestions.improvements'),
-    t('feedback.suggestions.integrations')
+    t('feedback.suggestions.integrations'),
   ]
 
   return (
@@ -62,27 +62,24 @@ ${t('feedback.email.thanks')}`)
       <div className="max-w-6xl mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            {t('feedback.title')}
-          </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            {t('feedback.subtitle')}
-          </p>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('feedback.title')}</h2>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">{t('feedback.subtitle')}</p>
         </div>
 
         {/* Benefits Grid */}
         <div className="grid md:grid-cols-3 gap-8 mb-12">
           {benefits.map((benefit, index) => (
-            <Card key={index} className="text-center p-6 shadow-sm hover:shadow-md transition-shadow">
-              <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-50 mb-4 ${benefit.color}`}>
+            <Card
+              key={index}
+              className="text-center p-6 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <div
+                className={`inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-50 mb-4 ${benefit.color}`}
+              >
                 {benefit.icon}
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                {benefit.title}
-              </h3>
-              <p className="text-gray-600 text-sm">
-                {benefit.description}
-              </p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">{benefit.title}</h3>
+              <p className="text-gray-600 text-sm">{benefit.description}</p>
             </Card>
           ))}
         </div>
@@ -105,9 +102,7 @@ ${t('feedback.email.thanks')}`)
         {/* CTA */}
         <div className="text-center">
           <Card className="p-8 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-            <h3 className="text-2xl font-bold mb-4">
-              {t('feedback.cta.title')}
-            </h3>
+            <h3 className="text-2xl font-bold mb-4">{t('feedback.cta.title')}</h3>
             <p className="text-gray-600 mb-6 max-w-2xl mx-auto font-medium">
               {t('feedback.cta.description')}
             </p>

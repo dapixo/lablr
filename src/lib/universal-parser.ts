@@ -137,9 +137,10 @@ function extractAddressFromColumns(
   const rawAddress2 = getColumn(mapping.addressLine2)
 
   // Déterminer s'il s'agit d'un fichier Shopify en analysant les headers
-  const isShopify = columns.some((_, idx) =>
-    headers[idx]?.toLowerCase().includes('shipping street') ||
-    headers[idx]?.toLowerCase().includes('shipping name')
+  const isShopify = columns.some(
+    (_, idx) =>
+      headers[idx]?.toLowerCase().includes('shipping street') ||
+      headers[idx]?.toLowerCase().includes('shipping name')
   )
 
   // Logique spécifique pour Shopify
@@ -288,7 +289,9 @@ function cleanAddressField(field: string): string {
   return cleaned
 }
 
-// Fonction de compatibilité avec l'ancien parser Amazon
+/**
+ * Fonction de compatibilité avec l'ancien parser Amazon
+ */
 export async function parseAmazonSellerReportUniversal(content: string): Promise<ParsedAddresses> {
   const result = parseUniversalFile(content)
 
@@ -305,19 +308,26 @@ export async function parseAmazonSellerReportUniversal(content: string): Promise
   return parseAmazonSellerReport(content)
 }
 
-// Nettoyage des quotes sur un champ individuel
+/**
+ * Nettoie les guillemets d'un champ CSV
+ */
 function cleanQuotes(field: string): string {
-  let cleaned = field.trim()
-  if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
-    cleaned = cleaned.slice(1, -1)
+  const cleaned = field.trim()
+
+  // Enlever les guillemets doubles ou simples
+  if (
+    (cleaned.startsWith('"') && cleaned.endsWith('"')) ||
+    (cleaned.startsWith("'") && cleaned.endsWith("'"))
+  ) {
+    return cleaned.slice(1, -1)
   }
-  if (cleaned.startsWith("'") && cleaned.endsWith("'")) {
-    cleaned = cleaned.slice(1, -1)
-  }
+
   return cleaned
 }
 
-// Fonction de parsing CSV qui respecte les quotes
+/**
+ * Parse une ligne CSV en respectant les guillemets et échappements
+ */
 function parseCSVLine(line: string, separator: string): string[] {
   const columns: string[] = []
   let current = ''

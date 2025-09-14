@@ -33,7 +33,7 @@ export const PRINT_CONFIGS: Record<PrintFormat, FormatConfig> = {
   },
 
   A4_LABELS_10: {
-    pageSettings: { margin: 10, fontSize: 12 },
+    pageSettings: { margin: 10, fontSize: 29 },
     layout: { type: 'grid', itemsPerPage: 10, columns: 2, rows: 5 },
     styling: {
       containerClass: 'labels-grid',
@@ -43,7 +43,7 @@ export const PRINT_CONFIGS: Record<PrintFormat, FormatConfig> = {
   },
 
   A4_LABELS_14: {
-    pageSettings: { margin: 8, fontSize: 11, specialMargins: '15.1mm 5.95mm' },
+    pageSettings: { margin: 8, fontSize: 21, specialMargins: '15.1mm 5.95mm' },
     layout: { type: 'grid', itemsPerPage: 14, columns: 2, rows: 7 },
     styling: {
       containerClass: 'labels-grid',
@@ -53,7 +53,7 @@ export const PRINT_CONFIGS: Record<PrintFormat, FormatConfig> = {
   },
 
   A4_LABELS_16: {
-    pageSettings: { margin: 8, fontSize: 10, specialMargins: '12.9mm 5.9mm' },
+    pageSettings: { margin: 8, fontSize: 19, specialMargins: '12.9mm 5.9mm' },
     layout: { type: 'grid', itemsPerPage: 16, columns: 2, rows: 8 },
     styling: {
       containerClass: 'labels-grid',
@@ -63,7 +63,7 @@ export const PRINT_CONFIGS: Record<PrintFormat, FormatConfig> = {
   },
 
   A4_LABELS_21: {
-    pageSettings: { margin: 8, fontSize: 10, specialMargins: '0mm' },
+    pageSettings: { margin: 8, fontSize: 19, specialMargins: '0mm' },
     layout: { type: 'grid', itemsPerPage: 21, columns: 3, rows: 7 },
     styling: {
       containerClass: 'labels-grid',

@@ -8,10 +8,12 @@ export function StructuredData({ locale }: StructuredDataProps) {
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
-    name: locale === 'fr' ? "Lalabel - Générateur d'Étiquettes" : 'Lalabel - Shipping Label Generator',
-    description: locale === 'fr'
-      ? "Créez et imprimez vos étiquettes d'expédition depuis Amazon Seller, Shopify, eBay. Tous formats : Avery, A4, rouleaux. 100% gratuit."
-      : 'Create and print shipping labels from Amazon Seller, Shopify, eBay. All formats: Avery, A4, thermal rolls. 100% free.',
+    name:
+      locale === 'fr' ? "Lalabel - Générateur d'Étiquettes" : 'Lalabel - Shipping Label Generator',
+    description:
+      locale === 'fr'
+        ? "Créez et imprimez vos étiquettes d'expédition depuis Amazon Seller, Shopify, eBay. Tous formats : Avery, A4, rouleaux. 100% gratuit."
+        : 'Create and print shipping labels from Amazon Seller, Shopify, eBay. All formats: Avery, A4, thermal rolls. 100% free.',
     url: 'https://lalabel.app',
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Web Browser',
@@ -21,7 +23,8 @@ export function StructuredData({ locale }: StructuredDataProps) {
         name: locale === 'fr' ? 'Plan Gratuit' : 'Free Plan',
         price: '0',
         priceCurrency: 'EUR',
-        description: locale === 'fr' ? '10 étiquettes gratuites par jour' : '10 free labels per day'
+        description:
+          locale === 'fr' ? '10 étiquettes gratuites par jour' : '10 free labels per day',
       },
       {
         '@type': 'Offer',
@@ -29,21 +32,22 @@ export function StructuredData({ locale }: StructuredDataProps) {
         price: '5',
         priceCurrency: 'EUR',
         billingIncrement: 'Month',
-        description: locale === 'fr' ? 'Étiquettes illimitées' : 'Unlimited labels'
-      }
+        description: locale === 'fr' ? 'Étiquettes illimitées' : 'Unlimited labels',
+      },
     ],
     author: {
       '@type': 'Organization',
-      name: 'Lalabel'
+      name: 'Lalabel',
     },
     aggregateRating: {
       '@type': 'AggregateRating',
       ratingValue: '4.8',
-      reviewCount: '127'
+      reviewCount: '127',
     },
-    keywords: locale === 'fr'
-      ? 'impression étiquettes expédition, générateur étiquettes, imprimer étiquettes adresse, Amazon Seller, Shopify, eBay, étiquettes Avery, A4, gratuit'
-      : 'shipping label generator, print shipping labels, address labels, Amazon Seller, Shopify, eBay, Avery labels, A4, free'
+    keywords:
+      locale === 'fr'
+        ? 'impression étiquettes expédition, générateur étiquettes, imprimer étiquettes adresse, Amazon Seller, Shopify, eBay, étiquettes Avery, A4, gratuit'
+        : 'shipping label generator, print shipping labels, address labels, Amazon Seller, Shopify, eBay, Avery labels, A4, free',
   }
 
   return (

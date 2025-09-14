@@ -103,7 +103,7 @@ export function AddressList({
   // Reset page when addresses or search query change
   React.useEffect(() => {
     setCurrentPage(0)
-  }, [addresses.length, searchQuery])
+  }, [])
 
   // Handler de changement de page mémorisé
   const handlePageChange = useCallback((event: { first: number; page: number }) => {

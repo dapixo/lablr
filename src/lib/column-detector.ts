@@ -270,7 +270,9 @@ export function analyzeFileStructure(content: string): DetectionResult {
   detection.separator = separator
 
   // Vérifier si la première ligne semble être des headers
-  const hasHeaders = potentialHeaders.some((header) => isNaN(Number(header)) && header.length > 2)
+  const hasHeaders = potentialHeaders.some(
+    (header) => Number.isNaN(Number(header)) && header.length > 2
+  )
 
   detection.hasHeaders = hasHeaders
 
