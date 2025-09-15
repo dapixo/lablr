@@ -26,7 +26,7 @@ const FREE_DAILY_LIMIT = 10
  * Hook pour gérer le tracking d'usage des étiquettes avec limites freemium
  */
 export function useUsageTracking(): UsageTrackingHook {
-  const { user, loading: authLoading } = useAuth()
+  const { user, userPlan, loading: authLoading } = useAuth()
 
   const [state, setState] = useState<UsageTrackingState>({
     dailyUsage: null,
@@ -43,6 +43,19 @@ export function useUsageTracking(): UsageTrackingHook {
   const refreshUsage = useCallback(async () => {
     if (!user || authLoading) {
       setState((prev) => ({ ...prev, loading: false }))
+      return
+    }
+
+    // Si l'utilisateur est Premium, pas de limite
+    if (userPlan === 'premium') {
+      setState({
+        dailyUsage: null,
+        labelsUsed: 0,
+        remainingLabels: Infinity,
+        isLimitReached: false,
+        loading: false,
+        error: null,
+      })
       return
     }
 
@@ -81,7 +94,7 @@ export function useUsageTracking(): UsageTrackingHook {
         error: error instanceof Error ? error.message : 'Unknown error',
       }))
     }
-  }, [user?.id, authLoading]) // Simple, stable dependencies
+  }, [user?.id, userPlan, authLoading])
 
   /**
    * Incrémente l'usage des étiquettes
@@ -96,6 +109,11 @@ export function useUsageTracking(): UsageTrackingHook {
       if (labelCount <= 0) {
         console.warn('Invalid label count:', labelCount)
         return false
+      }
+
+      // Si l'utilisateur est Premium, toujours retourner true sans tracking
+      if (userPlan === 'premium') {
+        return true
       }
 
       try {
@@ -123,7 +141,7 @@ export function useUsageTracking(): UsageTrackingHook {
         return false
       }
     },
-    [user, refreshUsage]
+    [user, userPlan, refreshUsage]
   )
 
   /**
@@ -132,9 +150,10 @@ export function useUsageTracking(): UsageTrackingHook {
   const canPrintLabels = useCallback(
     (requestedCount: number): boolean => {
       if (!user) return false
+      if (userPlan === 'premium') return true
       return state.remainingLabels >= requestedCount
     },
-    [user, state.remainingLabels]
+    [user, userPlan, state.remainingLabels]
   )
 
   /**
@@ -143,9 +162,10 @@ export function useUsageTracking(): UsageTrackingHook {
   const getMaxPrintableLabels = useCallback(
     (requestedCount: number): number => {
       if (!user) return 0
+      if (userPlan === 'premium') return requestedCount
       return Math.min(requestedCount, state.remainingLabels)
     },
-    [user, state.remainingLabels]
+    [user, userPlan, state.remainingLabels]
   )
 
   // Charger l'usage au montage et quand l'utilisateur change

@@ -17,7 +17,7 @@ import { getPluralVariables } from '@/lib/i18n-helpers'
 export default function AccountPage() {
   const { locale } = useParams()
   const router = useRouter()
-  const { user, deleteAccount } = useAuth()
+  const { user, userPlan, loading: authLoading, deleteAccount } = useAuth()
   const t = useTranslations(locale as string)
   const toast = useRef<Toast>(null)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -106,27 +106,58 @@ export default function AccountPage() {
                 {/* Plan actuel */}
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-200">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
-                        <i className="pi pi-star text-white text-lg"></i>
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900">{t('account.planStatus.currentPlan')}</h3>
-                        <p className="text-sm text-gray-600">{t('account.planStatus.freePlan')}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                        <i className="pi pi-gift mr-2"></i>
-                        {t('pricing.plans.free.name')}
-                      </div>
-                    </div>
+                    {authLoading ? (
+                      /* Skeleton loader pour le plan */
+                      <>
+                        <div className="flex items-center gap-3">
+                          <Skeleton shape="circle" size="2.5rem" />
+                          <div>
+                            <h3 className="font-semibold text-gray-900">{t('account.planStatus.currentPlan')}</h3>
+                            <Skeleton width="6rem" height="1rem" className="mt-1" />
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <Skeleton width="5rem" height="1.5rem" borderRadius="9999px" />
+                        </div>
+                      </>
+                    ) : (
+                      /* Contenu réel */
+                      <>
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
+                            <i className="pi pi-star text-white text-lg"></i>
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-gray-900">{t('account.planStatus.currentPlan')}</h3>
+                            <p className="text-sm text-gray-600">
+                              {userPlan === 'premium'
+                                ? t('pricing.premium.title')
+                                : t('account.planStatus.freePlan')
+                              }
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                            userPlan === 'premium'
+                              ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white'
+                              : 'bg-blue-100 text-blue-800'
+                          }`}>
+                            <i className={`mr-2 ${userPlan === 'premium' ? 'pi pi-star' : 'pi pi-gift'}`}></i>
+                            {userPlan === 'premium'
+                              ? t('pricing.premium.title')
+                              : t('pricing.plans.free.name')
+                            }
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </div>
 
                   {/* Usage quotidien */}
                   <div className="space-y-3">
-                    {usageLoading ? (
-                      /* Skeleton loader */
+                    {authLoading || usageLoading ? (
+                      /* Skeleton loader global */
                       <>
                         <div className="flex justify-between items-center text-sm">
                           <Skeleton width="8rem" height="1rem" />
@@ -137,8 +168,19 @@ export default function AccountPage() {
                         </div>
                         <Skeleton width="10rem" height="1rem" />
                       </>
+                    ) : userPlan === 'premium' ? (
+                      /* Utilisateur Premium */
+                      <div className="text-center py-4">
+                        <div className="inline-flex items-center gap-2 text-blue-600 font-medium">
+                          <i className="pi pi-infinity text-xl"></i>
+                          <span className="text-lg">{t('account.planStatus.premiumStatus.unlimitedLabels')}</span>
+                        </div>
+                        <p className="text-sm text-gray-600 mt-2">
+                          {t('account.planStatus.premiumStatus.description')}
+                        </p>
+                      </div>
                     ) : (
-                      /* Contenu réel */
+                      /* Contenu réel pour utilisateurs gratuits */
                       <>
                         <div className="flex justify-between items-center text-sm">
                           <span className="text-gray-600">{t('account.planStatus.dailyUsage')}</span>
@@ -169,8 +211,9 @@ export default function AccountPage() {
                     )}
                   </div>
 
-                  {/* Call to action upgrade */}
-                  <div className="mt-6 pt-4 border-t border-blue-200">
+                  {/* Call to action upgrade - uniquement pour les utilisateurs gratuits */}
+                  {!authLoading && userPlan === 'free' && (
+                    <div className="mt-6 pt-4 border-t border-blue-200">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                       <div className="flex-1">
                         <p className="text-sm text-gray-700 mb-2">
@@ -196,7 +239,7 @@ export default function AccountPage() {
                           label={t('account.planStatus.upgradeToPremium')}
                           icon="pi pi-star"
                           className="p-button-success"
-                          onClick={() => {/* TODO: Implement upgrade action */}}
+                          onClick={() => router.push(`/${locale}/pricing`)}
                           size="small"
                         />
                         <div className="text-xs text-center text-gray-500">
@@ -204,7 +247,8 @@ export default function AccountPage() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </Card>

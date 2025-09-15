@@ -290,6 +290,20 @@
       "printLimited": "Imprimer {count} étiquette{plural}",
       "resetTomorrow": "Vos 10 étiquettes gratuites se rechargent demain à minuit"
     },
+    "upgrade": {
+      "success": {
+        "title": "Félicitations ! 🎉",
+        "message": "Votre compte a été mis à niveau vers Premium. Vous bénéficiez maintenant d'étiquettes illimitées !"
+      },
+      "error": {
+        "title": "Erreur lors de l'upgrade",
+        "message": "Une erreur s'est produite lors de la mise à niveau. Veuillez réessayer."
+      },
+      "alreadyPremium": {
+        "title": "Déjà Premium",
+        "message": "Votre compte est déjà Premium avec des étiquettes illimitées."
+      }
+    },
     "page": {
       "title": "Choisissez votre plan",
       "subtitle": "Créez vos étiquettes d'expédition avec le plan qui vous convient",
@@ -307,7 +321,8 @@
       "cta": {
         "free": "Commencer gratuitement",
         "premium": "Passer à Premium",
-        "currentPlan": "Plan actuel"
+        "currentPlan": "Plan actuel",
+        "activePlan": "Plan actif"
       },
       "features": {
         "dailyLabels": "Étiquettes par jour",
@@ -478,6 +493,10 @@
         "unlimited": "Étiquettes illimitées",
         "priority": "Support prioritaire",
         "support": "Nouvelles fonctionnalités en avant-première"
+      },
+      "premiumStatus": {
+        "unlimitedLabels": "Étiquettes illimitées",
+        "description": "Imprimez autant d'étiquettes que vous le souhaitez avec votre plan Premium"
       }
     },
     "userInfo": {

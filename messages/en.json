@@ -290,6 +290,20 @@
       "printLimited": "Print {count} label{plural}",
       "resetTomorrow": "Your 10 free labels reset tomorrow at midnight"
     },
+    "upgrade": {
+      "success": {
+        "title": "Congratulations! 🎉",
+        "message": "Your account has been upgraded to Premium. You now have unlimited labels!"
+      },
+      "error": {
+        "title": "Upgrade Error",
+        "message": "An error occurred during the upgrade. Please try again."
+      },
+      "alreadyPremium": {
+        "title": "Already Premium",
+        "message": "Your account is already Premium with unlimited labels."
+      }
+    },
     "page": {
       "title": "Choose your plan",
       "subtitle": "Create your shipping labels with the plan that fits your needs",
@@ -307,7 +321,8 @@
       "cta": {
         "free": "Start for free",
         "premium": "Upgrade to Premium",
-        "currentPlan": "Current plan"
+        "currentPlan": "Current plan",
+        "activePlan": "Active plan"
       },
       "features": {
         "dailyLabels": "Labels per day",
@@ -478,6 +493,10 @@
         "unlimited": "Unlimited labels",
         "priority": "Priority support",
         "support": "Early access to new features"
+      },
+      "premiumStatus": {
+        "unlimitedLabels": "Unlimited labels",
+        "description": "Print as many labels as you want with your Premium plan"
       }
     },
     "userInfo": {

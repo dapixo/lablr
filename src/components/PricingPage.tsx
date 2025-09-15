@@ -4,8 +4,9 @@ import { Check, Star, Zap } from 'lucide-react'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 import { Tag } from 'primereact/tag'
+import { Toast } from 'primereact/toast'
 import type React from 'react'
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { AuthModal } from '@/components/auth/AuthModal'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
@@ -83,7 +84,9 @@ function createPricingPlan(
 export const PricingPage: React.FC<PricingPageProps> = ({ t }) => {
   const [isAnnual, setIsAnnual] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
-  const { user, loading } = useAuth()
+  const [isUpgrading, setIsUpgrading] = useState(false)
+  const { user, userPlan, loading, refreshUserPlan } = useAuth()
+  const toast = useRef<Toast>(null)
 
   const { freePlan, premiumPlan } = useMemo(
     () => ({
@@ -92,6 +95,62 @@ export const PricingPage: React.FC<PricingPageProps> = ({ t }) => {
     }),
     [t, isAnnual]
   )
+
+  /**
+   * Simule un upgrade vers Premium
+   */
+  const handleUpgradeToPremium = useCallback(async () => {
+    if (!user) {
+      setShowAuthModal(true)
+      return
+    }
+
+    if (userPlan === 'premium') {
+      toast.current?.show({
+        severity: 'info',
+        summary: t('pricing.upgrade.alreadyPremium.title'),
+        detail: t('pricing.upgrade.alreadyPremium.message'),
+        life: 3000,
+      })
+      return
+    }
+
+    setIsUpgrading(true)
+
+    try {
+      const response = await fetch('/api/upgrade-to-premium', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      })
+
+      const result = await response.json()
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to upgrade')
+      }
+
+      // Actualiser le plan utilisateur
+      await refreshUserPlan()
+
+      // Afficher le message de succès
+      toast.current?.show({
+        severity: 'success',
+        summary: t('pricing.upgrade.success.title'),
+        detail: t('pricing.upgrade.success.message'),
+        life: 5000,
+      })
+    } catch (error) {
+      console.error('Error upgrading to premium:', error)
+      toast.current?.show({
+        severity: 'error',
+        summary: t('pricing.upgrade.error.title'),
+        detail: t('pricing.upgrade.error.message'),
+        life: 5000,
+      })
+    } finally {
+      setIsUpgrading(false)
+    }
+  }, [user, userPlan, refreshUserPlan, t])
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-blue-50">
@@ -146,7 +205,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({ t }) => {
         <div className="grid lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
           {/* Free Plan */}
           <div className="relative h-full">
-            {!loading && user && (
+            {!loading && user && userPlan === 'free' && (
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
                 <Tag
                   value={t('pricing.page.cta.currentPlan')}
@@ -195,12 +254,21 @@ export const PricingPage: React.FC<PricingPageProps> = ({ t }) => {
 
           {/* Premium Plan */}
           <div className="relative h-full">
-            {/* Popular Badge */}
+            {/* Popular Badge ou Current Plan Badge */}
             <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
-              <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-2 rounded-full text-sm font-bold flex items-center gap-2 shadow-lg">
-                <Star className="h-4 w-4 fill-current" />
-                {premiumPlan.popular}
-              </div>
+              {!loading && user && userPlan === 'premium' ? (
+                <Tag
+                  value={t('pricing.page.cta.currentPlan')}
+                  rounded
+                  severity="success"
+                  className="font-bold shadow-lg"
+                />
+              ) : (
+                <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-2 rounded-full text-sm font-bold flex items-center gap-2 shadow-lg">
+                  <Star className="h-4 w-4 fill-current" />
+                  {premiumPlan.popular}
+                </div>
+              )}
             </div>
 
             <Card className={CARD_STYLES.premium}>
@@ -238,9 +306,22 @@ export const PricingPage: React.FC<PricingPageProps> = ({ t }) => {
                   ))}
                 </div>
 
-                <Button className="w-full py-4 text-lg font-semibold bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 justify-center mt-auto">
-                  {t('pricing.page.cta.premium')}
-                </Button>
+                {!loading && user && userPlan === 'premium' ? (
+                  <Button
+                    disabled
+                    className="w-full py-4 text-lg font-semibold bg-gray-300 text-gray-500 rounded-xl cursor-not-allowed mt-auto justify-center"
+                  >
+                    {t('pricing.page.cta.activePlan')}
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleUpgradeToPremium}
+                    loading={isUpgrading}
+                    className="w-full py-4 text-lg font-semibold bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 justify-center mt-auto"
+                  >
+                    {t('pricing.page.cta.premium')}
+                  </Button>
+                )}
               </div>
             </Card>
           </div>
@@ -347,6 +428,9 @@ export const PricingPage: React.FC<PricingPageProps> = ({ t }) => {
         onSuccess={() => setShowAuthModal(false)}
         t={t}
       />
+
+      {/* Toast pour les notifications */}
+      <Toast ref={toast} />
     </div>
   )
 }

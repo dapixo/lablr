@@ -5,8 +5,10 @@ import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { Divider } from 'primereact/divider'
 import { Tag } from 'primereact/tag'
+import { Toast } from 'primereact/toast'
 import type React from 'react'
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
+import { useAuth } from '@/hooks/useAuth'
 import type { TranslationVariables } from '@/hooks/useTranslations'
 import { createInnerHTML, getPluralVariables, markdownToHtml } from '@/lib/i18n-helpers'
 
@@ -31,6 +33,70 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
   remainingLabels,
 }) => {
   const [isAnnual, setIsAnnual] = useState(false)
+  const [isUpgrading, setIsUpgrading] = useState(false)
+  const { user, userPlan, refreshUserPlan } = useAuth()
+  const toast = useRef<Toast>(null)
+
+  /**
+   * Simule un upgrade vers Premium
+   */
+  const handleUpgradeToPremium = useCallback(async () => {
+    if (!user) {
+      return
+    }
+
+    if (userPlan === 'premium') {
+      toast.current?.show({
+        severity: 'info',
+        summary: t('pricing.upgrade.alreadyPremium.title'),
+        detail: t('pricing.upgrade.alreadyPremium.message'),
+        life: 3000,
+      })
+      return
+    }
+
+    setIsUpgrading(true)
+
+    try {
+      const response = await fetch('/api/upgrade-to-premium', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      })
+
+      const result = await response.json()
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to upgrade')
+      }
+
+      // Actualiser le plan utilisateur
+      await refreshUserPlan()
+
+      // Afficher le message de succès
+      toast.current?.show({
+        severity: 'success',
+        summary: t('pricing.upgrade.success.title'),
+        detail: t('pricing.upgrade.success.message'),
+        life: 5000,
+      })
+
+      // Fermer la modal après un succès
+      setTimeout(() => {
+        onHide()
+      }, 1000)
+    } catch (error) {
+      console.error('Error upgrading to premium:', error)
+      toast.current?.show({
+        severity: 'error',
+        summary: t('pricing.upgrade.error.title'),
+        detail: t('pricing.upgrade.error.message'),
+        life: 5000,
+      })
+    } finally {
+      setIsUpgrading(false)
+    }
+  }, [user, userPlan, refreshUserPlan, t, onHide])
+
   const headerContent = useMemo(
     () => (
       <div className="flex items-center gap-3">
@@ -156,11 +222,9 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
 
         <div className="text-center">
           <Button
+            onClick={handleUpgradeToPremium}
+            loading={isUpgrading}
             className="w-full py-3 text-lg font-semibold bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 justify-center"
-            onClick={() => {
-              // TODO: Rediriger vers la page pricing ou ouvrir Stripe
-              window.location.href = '/pricing'
-            }}
           >
             <Crown className="w-5 h-5 mr-2" />
             {t('pricing.premium.cta')}
@@ -199,6 +263,9 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
           <p className="text-sm text-gray-600">🕐 {t('pricing.limits.resetTomorrow')}</p>
         </div>
       )}
+
+      {/* Toast pour les notifications */}
+      <Toast ref={toast} />
     </Dialog>
   )
 }
