@@ -100,10 +100,8 @@ export function printAddresses(addresses: Address[], format: PrintFormat, printC
   // Écouter la fin de l'impression
   window.addEventListener('afterprint', cleanupPrint)
 
-  // Lancer l'impression après un délai
-  setTimeout(() => {
-    window.print()
-  }, PRINT_DELAY_MS)
+  // Lancer l'impression immédiatement
+  window.print()
 }
 
 // Fonction pour télécharger le CSV

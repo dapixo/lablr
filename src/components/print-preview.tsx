@@ -3,7 +3,7 @@
 import { Eye, Settings } from 'lucide-react'
 import { Button } from 'primereact/button'
 import { Panel } from 'primereact/panel'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AuthModal } from '@/components/auth/AuthModal'
 import { UpgradeModal } from '@/components/UpgradeModal'
 import { PREVIEW_DIMENSIONS, PREVIEW_MAX_LABELS_ROLL, PREVIEW_MAX_PAGES } from '@/constants'
@@ -35,7 +35,7 @@ interface PrintPreviewProps {
 
 export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
   // États d'authentification et usage tracking
-  const { user } = useAuth()
+  const { user, userPlan, loading: authLoading } = useAuth()
   const {
     remainingLabels,
     canPrintLabels,
@@ -47,6 +47,40 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [pendingPrintAction, setPendingPrintAction] = useState<(() => void) | null>(null)
+
+  // Refs pour éviter les appels multiples
+  const hasExecutedPendingActionRef = useRef(false)
+  const printInProgressRef = useRef(false)
+
+  /**
+   * Remet le flag d'impression à false après un délai sécurisé
+   */
+  const resetPrintFlag = useCallback(() => {
+    // Combinaison afterprint + timeout pour plus de robustesse
+    let hasReset = false
+
+    const resetFlag = () => {
+      if (!hasReset) {
+        printInProgressRef.current = false
+        hasReset = true
+      }
+    }
+
+    // Reset par événement (si supporté)
+    const handleAfterPrint = () => {
+      resetFlag()
+      window.removeEventListener('afterprint', handleAfterPrint)
+    }
+    window.addEventListener('afterprint', handleAfterPrint)
+
+    // Reset par timeout en fallback (plus court maintenant)
+    const timeoutId = setTimeout(resetFlag, 1000)
+
+    return () => {
+      clearTimeout(timeoutId)
+      window.removeEventListener('afterprint', handleAfterPrint)
+    }
+  }, [])
 
   // Fonction de validation pour les formats
   const isValidFormat = useCallback((value: string): value is PrintFormat => {
@@ -63,31 +97,47 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
 
   const executePrint = useCallback(
     async (addressesToPrint: Address[] = addresses) => {
-      if (selectedFormat.value === 'CSV_EXPORT') {
-        downloadCSV(addressesToPrint, 'adresses-lablr.csv')
-        // Track usage pour CSV aussi
+      // Protection contre les appels multiples
+      if (printInProgressRef.current) {
+        return
+      }
+      printInProgressRef.current = true
+
+      try {
+        if (selectedFormat.value === 'CSV_EXPORT') {
+          downloadCSV(addressesToPrint, 'adresses-lablr.csv')
+          if (user) {
+            await trackLabelUsage(addressesToPrint.length)
+          }
+          return
+        }
+
+        const printCSS = getPrintCSS(selectedFormat.value)
+
+        // Configurer le reset du flag d'impression
+        resetPrintFlag()
+
+        printAddresses(addressesToPrint, selectedFormat.value, printCSS)
+
+        // Track l'usage après impression réussie
         if (user) {
           await trackLabelUsage(addressesToPrint.length)
         }
-        return
-      }
-
-      const printCSS = getPrintCSS(selectedFormat.value)
-      printAddresses(addressesToPrint, selectedFormat.value, printCSS)
-
-      // Track l'usage après impression réussie
-      if (user) {
-        await trackLabelUsage(addressesToPrint.length)
+      } catch (error) {
+        // En cas d'erreur, reset le flag immédiatement
+        printInProgressRef.current = false
+        throw error
       }
     },
-    [addresses, selectedFormat.value, user, trackLabelUsage]
+    [addresses, selectedFormat.value, user, trackLabelUsage, resetPrintFlag]
   )
 
   const handlePrint = useCallback(() => {
     // Vérifier si l'utilisateur est connecté
     if (!user) {
-      // Stocker l'action d'impression en attente
-      setPendingPrintAction(() => () => executePrint())
+      // Stocker l'action d'impression en attente avec les adresses actuelles
+      hasExecutedPendingActionRef.current = false
+      setPendingPrintAction(() => () => executePrint(addresses))
       // Ouvrir la modal d'authentification
       setShowAuthModal(true)
       return
@@ -111,25 +161,35 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
     executePrint(limitedAddresses)
   }, [addresses, getMaxPrintableLabels, executePrint])
 
-  const handleAuthSuccess = useCallback(() => {
-    // Après authentification réussie, vérifier les limites freemium
-    if (pendingPrintAction) {
-      // Maintenant que l'utilisateur est connecté, vérifier ses limites
-      if (!canPrintLabels(addresses.length)) {
-        // Dépasse les limites → afficher modal d'upgrade
-        setShowUpgradeModal(true)
-      } else {
-        // Dans les limites → exécuter l'impression
-        pendingPrintAction()
-      }
-      setPendingPrintAction(null)
-    }
-  }, [pendingPrintAction, canPrintLabels, addresses.length])
 
   const handleAuthModalHide = useCallback(() => {
     setShowAuthModal(false)
     setPendingPrintAction(null)
+    hasExecutedPendingActionRef.current = false
   }, [])
+
+  /**
+   * Callback vide - la logique d'authentification est maintenant dans useEffect
+   */
+  const handleAuthSuccess = useCallback(() => {
+    // La logique est maintenant gérée directement dans useEffect
+    // Ce callback existe juste pour satisfaire l'interface d'AuthModal
+  }, [])
+
+  // Réagir aux changements d'état auth pour traiter les actions pendantes
+  useEffect(() => {
+    if (!authLoading && user && pendingPrintAction && !hasExecutedPendingActionRef.current) {
+      hasExecutedPendingActionRef.current = true
+
+      // Vérifier les limites freemium et exécuter l'action appropriée
+      const action = canPrintLabels(addresses.length)
+        ? pendingPrintAction
+        : () => setShowUpgradeModal(true)
+
+      action()
+      setPendingPrintAction(null)
+    }
+  }, [authLoading, user, userPlan, pendingPrintAction, canPrintLabels, addresses.length])
 
   if (addresses.length === 0) {
     return null

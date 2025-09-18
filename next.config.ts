@@ -1,7 +1,8 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Désactiver React StrictMode pour éviter les appels doublés
+  reactStrictMode: false,
 }
 
 export default nextConfig

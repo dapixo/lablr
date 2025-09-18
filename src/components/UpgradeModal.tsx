@@ -37,6 +37,7 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
   const { user, userPlan, refreshUserPlan } = useAuth()
   const toast = useRef<Toast>(null)
 
+
   /**
    * Simule un upgrade vers Premium
    */

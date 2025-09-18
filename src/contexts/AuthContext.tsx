@@ -1,7 +1,7 @@
 'use client'
 
-import type { AuthError, User } from '@supabase/supabase-js'
-import { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import type { AuthError, Session, User } from '@supabase/supabase-js'
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { UserPlan } from '@/types/user'
 
@@ -24,52 +24,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
   const supabase = createClient()
 
+  // Ref pour éviter les doubles appels durant l'initialisation
+  const isInitializedRef = useRef(false)
+
   /**
-   * Récupère le plan utilisateur depuis la base de données avec timeout
+   * Récupère le plan utilisateur depuis la base de données
    * @param userId - ID de l'utilisateur
    * @returns Promise<UserPlan> - Plan utilisateur ('free' par défaut)
    */
   const fetchUserPlan = useCallback(async (userId: string): Promise<UserPlan> => {
-    const TIMEOUT_MS = 2000 // 2 secondes - plus raisonnable que 1s
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('plan')
+        .eq('user_id', userId)
+        .single()
 
-    return new Promise((resolve) => {
-      const timeout = setTimeout(() => {
-        console.warn('fetchUserPlan: Timeout après', TIMEOUT_MS, 'ms - plan par défaut: free')
-        resolve('free')
-      }, TIMEOUT_MS)
-
-      const fetchData = async () => {
-        try {
-          const { data, error } = await supabase
-            .from('profiles')
-            .select('plan')
-            .eq('user_id', userId)
-            .single()
-
-          clearTimeout(timeout)
-
-          if (error) {
-            console.error('fetchUserPlan: Erreur lors de la récupération du plan:', error.message)
-            resolve('free')
-            return
-          }
-
-          if (!data?.plan) {
-            console.warn('fetchUserPlan: Aucun profil trouvé pour l\'utilisateur:', userId)
-            resolve('free')
-            return
-          }
-
-          resolve(data.plan as UserPlan)
-        } catch (error: unknown) {
-          clearTimeout(timeout)
-          console.error('fetchUserPlan: Exception:', error instanceof Error ? error.message : 'Unknown error')
-          resolve('free')
-        }
+      if (error) {
+        console.error('Failed to fetch user plan:', error.message)
+        return 'free'
       }
 
-      fetchData()
-    })
+      if (!data?.plan) {
+        // Profil non trouvé, retourner plan gratuit par défaut
+        return 'free'
+      }
+
+      return data.plan as UserPlan
+    } catch (error: unknown) {
+      console.error('Error fetching user plan:', error instanceof Error ? error.message : 'Unknown error')
+      return 'free'
+    }
   }, [supabase])
 
   /**
@@ -85,75 +70,78 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const plan = await fetchUserPlan(user.id)
       setUserPlan(plan)
     } catch (error) {
-      console.error('refreshUserPlan: Erreur lors du rafraîchissement:', error)
+      console.error('Error refreshing user plan:', error)
       setUserPlan('free')
     }
   }, [user?.id, fetchUserPlan])
 
   useEffect(() => {
-    const MAX_LOADING_TIME = 5000 // 5 secondes maximum
-
-    // Timeout de sécurité pour éviter le loading infini
-    const loadingTimeout = setTimeout(() => {
-      console.warn('AuthContext: Timeout de chargement atteint -', MAX_LOADING_TIME, 'ms')
-      setLoading(false)
-    }, MAX_LOADING_TIME)
 
     /**
-     * Récupère la session initiale et configure l'utilisateur
+     * Gère l'état de l'utilisateur et son plan de manière unifiée
+     */
+    const handleAuthState = async (session: Session | null, isInitial = false) => {
+      try {
+        setUser(session?.user ?? null)
+
+        if (session?.user) {
+          const plan = await fetchUserPlan(session.user.id)
+          setUserPlan(plan)
+        } else {
+          setUserPlan('free')
+        }
+      } catch (error) {
+        console.error('Error handling auth state:', error)
+        setUserPlan('free')
+      } finally {
+        if (!isInitializedRef.current) {
+          setLoading(false)
+          isInitializedRef.current = true
+        }
+      }
+    }
+
+    /**
+     * Récupère la session initiale
      */
     const initializeAuth = async () => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession()
 
         if (error) {
-          console.error('AuthContext: Erreur lors de la récupération de session:', error.message)
+          console.error('Error getting session:', error.message)
           setUser(null)
           setUserPlan('free')
+          setLoading(false)
           return
         }
 
-        setUser(session?.user ?? null)
-
-        if (session?.user) {
-          const plan = await fetchUserPlan(session.user.id)
-          setUserPlan(plan)
-        } else {
-          setUserPlan('free')
-        }
+        await handleAuthState(session, true)
       } catch (error) {
-        console.error('AuthContext: Exception lors de l\'initialisation:', error)
+        console.error('Error initializing auth:', error)
         setUser(null)
         setUserPlan('free')
-      } finally {
-        clearTimeout(loadingTimeout)
         setLoading(false)
       }
     }
 
+    // Initialiser avec la session actuelle
     initializeAuth()
 
     // Écouter les changements d'authentification
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      try {
-        setUser(session?.user ?? null)
-
-        if (session?.user) {
-          const plan = await fetchUserPlan(session.user.id)
-          setUserPlan(plan)
-        } else {
-          setUserPlan('free')
-        }
-      } catch (error) {
-        console.error('AuthContext: Erreur lors du changement d\'état:', error)
-        setUserPlan('free')
-      } finally {
-        setLoading(false)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_, session) => {
+      // Éviter le traitement redondant lors de l'initialisation
+      if (!isInitializedRef.current) {
+        return
       }
+
+      // Mettre en loading pendant la mise à jour du plan
+      setLoading(true)
+      await handleAuthState(session, false)
+      setLoading(false)
     })
 
     return () => {
-      clearTimeout(loadingTimeout)
       subscription.unsubscribe()
     }
   }, [supabase.auth, fetchUserPlan])

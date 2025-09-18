@@ -7,7 +7,7 @@ import { Divider } from 'primereact/divider'
 import { InputText } from 'primereact/inputtext'
 import { Message } from 'primereact/message'
 import { Password } from 'primereact/password'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 
 interface AuthModalProps {
@@ -23,8 +23,20 @@ export function AuthModal({ visible, onHide, onSuccess, t }: AuthModalProps) {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [waitingForAuth, setWaitingForAuth] = useState(false)
 
-  const { signIn, signUp } = useAuth()
+  const { signIn, signUp, loading: authLoading, user } = useAuth()
+
+  // Surveiller la fin du loading auth après connexion réussie
+  useEffect(() => {
+    if (waitingForAuth && !authLoading && user) {
+      // Context mis à jour, exécuter l'action et fermer la modal
+      setLoading(false)
+      setWaitingForAuth(false)
+      onSuccess()
+      onHide()
+    }
+  }, [waitingForAuth, authLoading, user, onSuccess, onHide])
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -39,16 +51,16 @@ export function AuthModal({ visible, onHide, onSuccess, t }: AuthModalProps) {
 
         if (authError) {
           setError(getErrorMessage(authError.message, t))
+          setLoading(false)
         } else {
-          // Connexion ou inscription réussie, fermer la modal et exécuter l'action
-          onSuccess()
-          onHide()
+          // Connexion réussie - attendre que le context soit à jour
+          setWaitingForAuth(true)
+          // Le loading reste à true jusqu'à ce que le useEffect se déclenche
         }
       } catch {
         setError(t('auth.errors.unexpected'))
+        setLoading(false)
       }
-
-      setLoading(false)
     },
     [email, password, isSignUp, signIn, signUp, onSuccess, onHide, t]
   )
@@ -58,6 +70,7 @@ export function AuthModal({ visible, onHide, onSuccess, t }: AuthModalProps) {
     setPassword('')
     setError(null)
     setLoading(false)
+    setWaitingForAuth(false)
   }, [])
 
   const handleHide = useCallback(() => {
