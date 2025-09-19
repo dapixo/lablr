@@ -10,6 +10,25 @@ import { Password } from 'primereact/password'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 
+function getErrorMessage(message: string, t: (key: string) => string): string {
+  if (message.includes('Invalid login credentials')) {
+    return t('auth.errors.invalidCredentials')
+  }
+  if (message.includes('Email not confirmed')) {
+    return t('auth.errors.emailNotConfirmed')
+  }
+  if (message.includes('Password should be at least')) {
+    return t('auth.errors.passwordTooShort')
+  }
+  if (message.includes('Unable to validate email address')) {
+    return t('auth.errors.invalidEmail')
+  }
+  if (message.includes('User already registered')) {
+    return t('auth.errors.userExists')
+  }
+  return message
+}
+
 interface AuthModalProps {
   visible: boolean
   onHide: () => void
@@ -269,22 +288,3 @@ export function AuthModal({ visible, onHide, onSuccess, t }: AuthModalProps) {
   )
 }
 
-function getErrorMessage(message: string, t: (key: string) => string): string {
-  // Traduction des messages d'erreur Supabase
-  if (message.includes('Invalid login credentials')) {
-    return t('auth.errors.invalidCredentials')
-  }
-  if (message.includes('Email not confirmed')) {
-    return t('auth.errors.emailNotConfirmed')
-  }
-  if (message.includes('Password should be at least')) {
-    return t('auth.errors.passwordTooShort')
-  }
-  if (message.includes('Unable to validate email address')) {
-    return t('auth.errors.invalidEmail')
-  }
-  if (message.includes('User already registered')) {
-    return t('auth.errors.userExists')
-  }
-  return message
-}

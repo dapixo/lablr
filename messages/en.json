@@ -233,6 +233,29 @@
       "secure": "Secure data",
       "noStorage": "No storage"
     },
+    "page": {
+      "title": "Sign in to Lalabel",
+      "description": "Access your account to generate your shipping labels and enjoy all features."
+    },
+    "benefits": {
+      "freeLabels": {
+        "title": "10 free labels per day",
+        "description": "Create up to 10 labels every day at no cost"
+      },
+      "secure": {
+        "title": "Secure data",
+        "description": "Your files are never stored on our servers"
+      },
+      "instant": {
+        "title": "Instant access",
+        "description": "Sign in and start printing instantly"
+      },
+      "upgrade": {
+        "title": "Premium upgrade",
+        "description": "Easily upgrade to Premium for unlimited labels"
+      }
+    },
+    "loading": "Signing in...",
     "errors": {
       "invalidCredentials": "Incorrect email or password",
       "emailNotConfirmed": "Please confirm your email before signing in",

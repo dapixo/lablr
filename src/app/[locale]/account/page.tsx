@@ -6,7 +6,7 @@ import { Card } from 'primereact/card'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import { Skeleton } from 'primereact/skeleton'
 import { Toast } from 'primereact/toast'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { useAuth } from '@/hooks/useAuth'
@@ -61,19 +61,16 @@ export default function AccountPage() {
     })
   }
 
+  // Redirection si pas d'utilisateur
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push(`/${locale}/login`)
+    }
+  }, [authLoading, user, router, locale])
+
+  // Afficher un loader pendant la redirection ou si pas d'utilisateur
   if (!user) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Header t={t} />
-        <div className="flex-1 bg-gray-50 flex items-center justify-center">
-          <div className="text-center">
-            <i className="pi pi-spinner pi-spin text-4xl text-blue-500 mb-4"></i>
-            <p className="text-gray-600">{t('status.processing')}</p>
-          </div>
-        </div>
-        <Footer t={t} />
-      </div>
-    )
+    return null
   }
 
   return (

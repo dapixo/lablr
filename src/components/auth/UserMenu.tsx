@@ -38,6 +38,8 @@ export function UserMenu() {
   const handleSignOut = useCallback(async () => {
     try {
       await signOut()
+      // Rediriger vers la page de connexion après déconnexion
+      router.push(`/${locale}/login`)
     } catch (error) {
       console.error('Sign out error:', error)
       toastRef.current?.show({
@@ -47,7 +49,7 @@ export function UserMenu() {
         life: 3000,
       })
     }
-  }, [signOut, t])
+  }, [signOut, router, locale, t])
 
   const handleAccountClick = useCallback(() => {
     router.push(`/${locale}/account`)

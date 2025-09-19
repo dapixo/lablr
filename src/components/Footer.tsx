@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import type React from 'react'
+import { useEffect, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 
 interface FooterProps {
@@ -13,6 +14,12 @@ export const Footer: React.FC<FooterProps> = ({ t }) => {
   const params = useParams()
   const locale = (params?.locale as string) || 'fr'
   const { user } = useAuth()
+  const [isHydrated, setIsHydrated] = useState(false)
+
+  // Éviter les erreurs d'hydratation en attendant que le client soit prêt
+  useEffect(() => {
+    setIsHydrated(true)
+  }, [])
 
   return (
     <footer className="bg-white border-t border-gray-200">
@@ -89,13 +96,22 @@ export const Footer: React.FC<FooterProps> = ({ t }) => {
                 >
                   {t('navigation.pricing')}
                 </Link>
-                {user && (
-                  <Link
-                    href={`/${locale}/account`}
-                    className="text-blue-600 hover:text-blue-800 font-medium transition-colors text-sm"
-                  >
-                    {t('footer.links.account')}
-                  </Link>
+                {isHydrated && (
+                  user ? (
+                    <Link
+                      href={`/${locale}/account`}
+                      className="text-blue-600 hover:text-blue-800 font-medium transition-colors text-sm"
+                    >
+                      {t('footer.links.account')}
+                    </Link>
+                  ) : (
+                    <Link
+                      href={`/${locale}/login`}
+                      className="text-blue-600 hover:text-blue-800 font-medium transition-colors text-sm"
+                    >
+                      {t('auth.buttons.signIn')}
+                    </Link>
+                  )
                 )}
               </div>
             </div>

@@ -233,6 +233,29 @@
       "secure": "Données sécurisées",
       "noStorage": "Aucune conservation"
     },
+    "page": {
+      "title": "Connectez-vous à Lalabel",
+      "description": "Accédez à votre compte pour générer vos étiquettes d'expédition et profiter de toutes les fonctionnalités."
+    },
+    "benefits": {
+      "freeLabels": {
+        "title": "10 étiquettes gratuites par jour",
+        "description": "Créez jusqu'à 10 étiquettes chaque jour sans aucun coût"
+      },
+      "secure": {
+        "title": "Données sécurisées",
+        "description": "Vos fichiers ne sont jamais stockés sur nos serveurs"
+      },
+      "instant": {
+        "title": "Accès immédiat",
+        "description": "Connectez-vous et commencez à imprimer instantanément"
+      },
+      "upgrade": {
+        "title": "Upgrade Premium",
+        "description": "Passez facilement à Premium pour des étiquettes illimitées"
+      }
+    },
+    "loading": "Connexion en cours...",
     "errors": {
       "invalidCredentials": "Email ou mot de passe incorrect",
       "emailNotConfirmed": "Veuillez confirmer votre email avant de vous connecter",

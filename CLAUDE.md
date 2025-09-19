@@ -4,7 +4,7 @@
 
 **Lablr** est une solution professionnelle permettant aux vendeurs Amazon de générer et imprimer facilement des étiquettes d'adresse à partir de leurs rapports Amazon Seller au format TSV. Interface moderne et intuitive avec design responsive pour tous les appareils. 
 
-**V3.3** : Système freemium complet avec modal d'upgrade, sécurité renforcée, helpers i18n et optimisations Clean Code/DRY.
+**V3.6** : Optimisations UX du header avec sélecteur de langue simplifié et améliorations de l'interface d'authentification.
 
 ## Architecture Technique
 
@@ -517,6 +517,30 @@ const FormatCard = React.memo(function FormatCard({...}))
 - ✅ **State management optimisé** : États de chargement intelligents sans complexity overhead
 - ✅ **Design system cohérent** : Intégration harmonieuse avec le style existant
 - ✅ **Code modulaire** : Séparation claire entre logique métier et présentation
+
+## Évolutions Récentes (✅ V3.6)
+
+### 🎨 Optimisations UX Header et Interface (🆕 V3.6)
+- ✅ **Sélecteur de langue simplifié** : Remplacement du Dropdown PrimeReact par un select HTML natif
+- ✅ **Labels "Fr/En"** : Texte plus lisible et compact sans problème de troncature
+- ✅ **Bouton connexion discret** : Transformation du gros bouton en lien simple et élégant
+- ✅ **Page login dédiée** : Création d'une page `/login` pour remplacer l'authentification modale
+- ✅ **Navigation optimisée** : Redirection fluide vers la page de connexion depuis le header
+- ✅ **Style cohérent** : Design harmonieux avec bordures discrètes et focus states appropriés
+
+### 🔧 Améliorations Techniques V3.6 (🆕)
+- ✅ **Select natif HTML** : Élimination des problèmes de customisation PrimeReact
+- ✅ **Affichage garanti** : Texte "Fr"/"En" toujours visible sans troncature
+- ✅ **Events handlers optimisés** : `onChange` avec `e.target.value` pour compatibilité native
+- ✅ **Styles Tailwind minimalistes** : Classes CSS simples et maintenables
+- ✅ **Performance améliorée** : Suppression des composants lourds non nécessaires
+
+### 🎯 Expérience Utilisateur V3.6
+- ✅ **Interface épurée** : Header moins encombré avec éléments discrets
+- ✅ **Lisibilité optimale** : Sélecteur de langue compact mais parfaitement lisible
+- ✅ **Navigation intuitive** : Liens de connexion cohérents dans header et footer
+- ✅ **Responsive design** : Adaptation mobile/desktop préservée
+- ✅ **Accessibilité maintenue** : Focus states et navigation clavier fonctionnels
 
 ## Évolutions Futures
 
