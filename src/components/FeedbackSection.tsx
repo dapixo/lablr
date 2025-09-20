@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowRight, Heart, Mail, MessageSquareText, Zap } from 'lucide-react'
+import { Heart, Mail, MessageSquareText, Lightbulb, Zap } from 'lucide-react'
 import { Card } from 'primereact/card'
 import React from 'react'
 
@@ -92,7 +92,7 @@ ${t('feedback.email.thanks')}`)
           <div className="grid sm:grid-cols-2 gap-4 mb-6">
             {suggestions.map((suggestion, index) => (
               <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50">
-                <ArrowRight className="h-4 w-4 text-blue-600 flex-shrink-0" />
+                <Lightbulb className="h-4 w-4 text-amber-500 flex-shrink-0" />
                 <span className="text-gray-700">{suggestion}</span>
               </div>
             ))}
