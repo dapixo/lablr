@@ -24,8 +24,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
   const supabase = createClient()
 
-  // Ref pour éviter les doubles appels durant l'initialisation
+  // Refs pour éviter les problèmes de closure et doubles appels
   const isInitializedRef = useRef(false)
+  const currentUserRef = useRef<User | null>(null)
+
+  // Mettre à jour la ref quand l'utilisateur change
+  useEffect(() => {
+    currentUserRef.current = user
+  }, [user])
 
   /**
    * Récupère le plan utilisateur depuis la base de données
@@ -80,7 +86,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     /**
      * Gère l'état de l'utilisateur et son plan de manière unifiée
      */
-    const handleAuthState = async (session: Session | null, isInitial = false) => {
+    const handleAuthState = async (session: Session | null) => {
       try {
         setUser(session?.user ?? null)
 
@@ -101,44 +107,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    /**
-     * Récupère la session initiale
-     */
-    const initializeAuth = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession()
-
-        if (error) {
-          console.error('Error getting session:', error.message)
-          setUser(null)
-          setUserPlan('free')
-          setLoading(false)
-          return
-        }
-
-        await handleAuthState(session, true)
-      } catch (error) {
-        console.error('Error initializing auth:', error)
-        setUser(null)
-        setUserPlan('free')
-        setLoading(false)
+    // Écouter les changements d'authentification AVANT l'initialisation
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      // Marquer comme initialisé après le premier événement
+      if (!isInitializedRef.current && (event === 'INITIAL_SESSION' || event === 'SIGNED_IN')) {
+        await handleAuthState(session)
+        isInitializedRef.current = true
+        return
       }
-    }
 
-    // Initialiser avec la session actuelle
-    initializeAuth()
-
-    // Écouter les changements d'authentification
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_, session) => {
-      // Éviter le traitement redondant lors de l'initialisation
+      // Éviter le traitement des événements avant l'initialisation
       if (!isInitializedRef.current) {
         return
       }
 
-      // Mettre en loading pendant la mise à jour du plan
-      setLoading(true)
-      await handleAuthState(session, false)
-      setLoading(false)
+      // Éviter les traitements redondants pour le même utilisateur
+      if (event === 'SIGNED_IN' && session?.user?.id === currentUserRef.current?.id) {
+        return
+      }
+
+      // Seuls certains événements nécessitent une mise à jour complète
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
+        setLoading(true)
+        await handleAuthState(session)
+        setLoading(false)
+      } else {
+        // Pour les autres événements (comme les focus d'onglet), mettre à jour la session
+        // mais préserver le plan utilisateur existant si on a toujours le même user
+        if (session && session?.user?.id === currentUserRef.current?.id) {
+          // Même utilisateur, garder le plan actuel
+          setUser(session.user)
+        } else {
+          // Utilisateur différent ou déconnecté, mise à jour complète
+          await handleAuthState(session)
+        }
+      }
     })
 
     return () => {
