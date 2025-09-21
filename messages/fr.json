@@ -223,6 +223,29 @@
       "signUp": "Créer un compte",
       "loading": "Connexion..."
     },
+    "otp": {
+      "enterCode": "Saisissez votre code",
+      "codeDescription": "Entrez le code de vérification reçu par email",
+      "sendCode": "Envoyer le code",
+      "resendCode": "Renvoyer le code",
+      "changeEmail": "Changer l'email",
+      "verify": "Vérifier",
+      "codeSent": "Code envoyé !",
+      "codeSentTo": "Un code de vérification a été envoyé à {email}",
+      "codeLabel": "Code de vérification",
+      "codePlaceholder": "123456",
+      "howItWorks": {
+        "title": "Comment ça marche ?",
+        "step1": "Saisissez votre adresse email",
+        "step2": "Recevez un code de 6 chiffres par email",
+        "step3": "Entrez le code pour vous connecter"
+      },
+      "tips": {
+        "checkSpam": "Vérifiez votre dossier spam si vous ne recevez pas le code",
+        "codeExpiry": "Le code expire dans 10 minutes",
+        "resendAvailable": "Vous pouvez renvoyer un code après 30 secondes"
+      }
+    },
     "toggle": {
       "toSignUp": "→ Nouveau sur Lalabel ? Créer un compte",
       "toSignIn": "← Vous avez déjà un compte ? Se connecter"
@@ -257,11 +280,12 @@
     },
     "loading": "Connexion en cours...",
     "errors": {
-      "invalidCredentials": "Email ou mot de passe incorrect",
-      "emailNotConfirmed": "Veuillez confirmer votre email avant de vous connecter",
-      "passwordTooShort": "Le mot de passe doit contenir au moins 6 caractères",
       "invalidEmail": "Adresse email invalide",
-      "userExists": "Un compte existe déjà avec cette adresse email",
+      "tooManyRequests": "Trop de tentatives. Veuillez attendre quelques minutes",
+      "rateLimit": "Pour des raisons de sécurité, veuillez attendre {seconds} secondes avant de redemander un code",
+      "rateLimitGeneric": "Trop de tentatives. Veuillez attendre avant de redemander un code",
+      "invalidCode": "Code de vérification incorrect",
+      "expiredCode": "Code de vérification expiré. Demandez un nouveau code",
       "unexpected": "Une erreur inattendue s'est produite"
     }
   },

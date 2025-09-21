@@ -9,8 +9,8 @@ interface AuthContextType {
   user: User | null
   userPlan: UserPlan
   loading: boolean
-  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
-  signUp: (email: string, password: string) => Promise<{ error: AuthError | null }>
+  sendOtpCode: (email: string) => Promise<{ error: AuthError | null }>
+  verifyOtpCode: (email: string, code: string) => Promise<{ error: AuthError | null }>
   signOut: () => Promise<{ error: AuthError | null }>
   deleteAccount: () => Promise<{ error: AuthError | null }>
   refreshUserPlan: () => Promise<void>
@@ -149,18 +149,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [supabase.auth, fetchUserPlan])
 
-  const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+  const sendOtpCode = async (email: string) => {
+    // Pour recevoir un code OTP, il faut configurer Supabase pour désactiver
+    // les magic links et activer les codes OTP dans le dashboard
+    const { error } = await supabase.auth.signInWithOtp({
       email,
-      password,
+      options: {
+        shouldCreateUser: true,
+      },
     })
     return { error }
   }
 
-  const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({
+  const verifyOtpCode = async (email: string, code: string) => {
+    const { error } = await supabase.auth.verifyOtp({
       email,
-      password,
+      token: code,
+      type: 'email',
     })
     return { error }
   }
@@ -214,8 +219,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     userPlan,
     loading,
-    signIn,
-    signUp,
+    sendOtpCode,
+    verifyOtpCode,
     signOut,
     deleteAccount,
     refreshUserPlan,

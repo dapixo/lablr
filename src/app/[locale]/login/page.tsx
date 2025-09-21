@@ -4,46 +4,31 @@ import { useParams, useRouter } from 'next/navigation'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 import { InputText } from 'primereact/inputtext'
+import { InputOtp } from 'primereact/inputotp'
 import { Message } from 'primereact/message'
-import { Password } from 'primereact/password'
 import { useCallback, useEffect, useState } from 'react'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { useAuth } from '@/hooks/useAuth'
 import { useTranslations } from '@/hooks/useTranslations'
-
-function getErrorMessage(message: string, t: (key: string) => string): string {
-  if (message.includes('Invalid login credentials')) {
-    return t('auth.errors.invalidCredentials')
-  }
-  if (message.includes('Email not confirmed')) {
-    return t('auth.errors.emailNotConfirmed')
-  }
-  if (message.includes('Password should be at least')) {
-    return t('auth.errors.passwordTooShort')
-  }
-  if (message.includes('Unable to validate email address')) {
-    return t('auth.errors.invalidEmail')
-  }
-  if (message.includes('User already registered')) {
-    return t('auth.errors.userExists')
-  }
-  return message
-}
+import { extractRateLimitDelay, getErrorMessage, isRateLimitError } from '@/lib/auth-helpers'
 
 export default function LoginPage() {
   const params = useParams()
   const router = useRouter()
   const locale = (params?.locale as string) || 'fr'
   const t = useTranslations(locale)
-  const { user, loading: authLoading, signIn, signUp } = useAuth()
+  const { user, loading: authLoading, sendOtpCode, verifyOtpCode } = useAuth()
 
   // États du formulaire
-  const [isSignUp, setIsSignUp] = useState(false)
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [otpCode, setOtpCode] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [errorCode, setErrorCode] = useState<string | null>(null)
+  const [step, setStep] = useState<'email' | 'code'>('email')
+  const [resendCountdown, setResendCountdown] = useState(0)
+  const [canResend, setCanResend] = useState(true)
 
   /**
    * Rediriger vers Mon compte si l'utilisateur est déjà connecté
@@ -54,42 +39,125 @@ export default function LoginPage() {
     }
   }, [user, authLoading, router, locale])
 
-  const handleSubmit = useCallback(
+  // Fonction pour démarrer le countdown adaptatif
+  const startResendCountdown = useCallback((seconds: number) => {
+    setResendCountdown(seconds)
+    setCanResend(false)
+
+    const interval = setInterval(() => {
+      setResendCountdown((prev) => {
+        if (prev <= 1) {
+          setCanResend(true)
+          clearInterval(interval)
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [])
+
+  const handleEmailSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault()
       setLoading(true)
       setError(null)
 
       try {
-        const { error: authError } = isSignUp
-          ? await signUp(email, password)
-          : await signIn(email, password)
+        const { error: authError } = await sendOtpCode(email)
 
         if (authError) {
           setError(getErrorMessage(authError.message, t))
-          setLoading(false)
+          setErrorCode(authError.message)
         } else {
-          // Connexion réussie - redirection se fera via useEffect
+          setStep('code')
+          // Pas de countdown initial - laisser l'utilisateur décider quand renvoyer
         }
       } catch {
         setError(t('auth.errors.unexpected'))
-        setLoading(false)
+        setErrorCode(null)
       }
+
+      setLoading(false)
     },
-    [email, password, isSignUp, signIn, signUp, t]
+    [email, sendOtpCode, t, startResendCountdown]
   )
 
-  const resetForm = useCallback(() => {
-    setEmail('')
-    setPassword('')
+  const handleCodeSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault()
+      setLoading(true)
+      setError(null)
+
+      try {
+        const { error: authError } = await verifyOtpCode(email, otpCode)
+
+        if (authError) {
+          setError(getErrorMessage(authError.message, t))
+          setErrorCode(authError.message)
+        }
+        // Si pas d'erreur, la connexion se fera automatiquement via useEffect
+      } catch {
+        setError(t('auth.errors.unexpected'))
+        setErrorCode(null)
+      }
+
+      setLoading(false)
+    },
+    [email, otpCode, verifyOtpCode, t]
+  )
+
+
+  const goBackToEmail = useCallback(() => {
+    setOtpCode('')
     setError(null)
-    setLoading(false)
+    setErrorCode(null)
+    setStep('email')
+    setResendCountdown(0)
+    setCanResend(true)
   }, [])
 
-  const toggleMode = useCallback(() => {
-    setIsSignUp(!isSignUp)
-    resetForm()
-  }, [isSignUp, resetForm])
+  // Fonction pour gérer le resend avec countdown
+  const handleResendCode = useCallback(async () => {
+    if (!canResend || loading) return
+
+    setLoading(true)
+    setError(null)
+    try {
+      const { error: resendError } = await sendOtpCode(email)
+      if (resendError) {
+        if (isRateLimitError(resendError.message)) {
+          const delay = extractRateLimitDelay(resendError.message)
+          startResendCountdown(delay || 30) // Fallback 30s si parsing échoue
+        }
+        setError(getErrorMessage(resendError.message, t))
+      } else {
+        // Succès, pas de countdown - laisser l'utilisateur libre
+      }
+    } catch {
+      setError(t('auth.errors.unexpected'))
+    }
+    setLoading(false)
+  }, [canResend, loading, email, sendOtpCode, t, startResendCountdown])
+
+  // Reset automatique du code OTP en cas d'erreur après 3 secondes
+  useEffect(() => {
+    if (error && step === 'code' && errorCode) {
+      const timer = setTimeout(() => {
+        // Vérifier les codes d'erreur OTP de Supabase pour reset automatique
+        const shouldReset =
+          errorCode.includes('invalid_otp') ||
+          errorCode.includes('otp_expired') ||
+          errorCode.includes('Token has expired or is invalid')
+
+        if (shouldReset) {
+          setOtpCode('')
+        }
+      }, 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [error, step, errorCode])
 
   // Loader pendant la vérification auth
   if (authLoading) {
@@ -122,96 +190,169 @@ export default function LoginPage() {
             {/* Header du formulaire */}
             <div className="text-center mb-8">
               <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-4">
-                <i className="pi pi-user text-blue-500 text-xl"></i>
+                <i className={`pi ${step === 'code' ? 'pi-key' : 'pi-envelope'} text-blue-500 text-xl`}></i>
               </div>
               <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                {isSignUp ? t('auth.title.signUp') : t('auth.title.signIn')}
+                {step === 'code' ? t('auth.otp.enterCode') : t('auth.title.signIn')}
               </h1>
               <p className="text-gray-600 text-sm">
-                {t('auth.page.description')}
+                {step === 'code' ? t('auth.otp.codeDescription') : t('auth.page.description')}
               </p>
             </div>
 
-            {/* Formulaire simplifié */}
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div>
-                <InputText
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder={t('auth.form.emailPlaceholder')}
-                  required
-                  disabled={loading}
-                  className="w-full"
-                />
-              </div>
+            {step === 'code' ? (
+              /* Formulaire de saisie du code */
+              <div className="space-y-6">
+                <div className="text-center">
+                  <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-4">
+                    <i className="pi pi-envelope text-green-500 text-2xl"></i>
+                  </div>
+                  <p className="text-gray-700 font-medium mb-2">
+                    {t('auth.otp.codeSent')}
+                  </p>
+                  <p className="text-sm text-gray-500 mb-4">
+                    {t('auth.otp.codeSentTo').replace('{email}', email)}
+                  </p>
+                </div>
 
-              <div>
-                <Password
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder={
-                    isSignUp
-                      ? t('auth.form.passwordPlaceholder.signUp')
-                      : t('auth.form.passwordPlaceholder.signIn')
+                <form onSubmit={handleCodeSubmit} className="space-y-5">
+                  <div className="flex justify-center otp-container">
+                    <InputOtp
+                      value={otpCode}
+                      onChange={(e) => setOtpCode(String(e.value || ''))}
+                      length={6}
+                      integerOnly
+                      disabled={loading}
+                      style={{ gap: '0.5rem' }}
+                    />
+                  </div>
+                  <style jsx>{`
+                    .otp-container :global(.p-inputotp input) {
+                      width: 3rem;
+                      height: 3rem;
+                      text-align: center;
+                      font-size: 1.125rem;
+                      border: 2px solid #e5e7eb;
+                      border-radius: 0.5rem;
+                      outline: none;
+                      transition: all 0.2s;
+                      margin: 0 0.25rem;
+                    }
+                    .otp-container :global(.p-inputotp input:focus) {
+                      border-color: #3b82f6;
+                      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+                    }
+                    .otp-container :global(.p-inputotp input:disabled) {
+                      background-color: #f9fafb;
+                      cursor: not-allowed;
+                    }
+                  `}</style>
+
+                  {error && (
+                    <div style={{ marginBottom: '1.25rem' }}>
+                      <Message
+                        severity="error"
+                        text={error}
+                        className="w-full"
+                        icon="pi pi-exclamation-triangle"
+                      />
+                    </div>
+                  )}
+
+                  <Button
+                    type="submit"
+                    label={
+                      loading
+                        ? t('auth.buttons.loading')
+                        : t('auth.otp.verify')
+                    }
+                    icon={loading ? undefined : 'pi pi-check'}
+                    loading={loading}
+                    disabled={loading || otpCode.length < 6}
+                    className="w-full py-3 text-base font-semibold"
+                  />
+                </form>
+
+                <div className="flex flex-col gap-3">
+                  <Button
+                    label={
+                      resendCountdown > 0
+                        ? `${t('auth.otp.resendCode')} (${resendCountdown}s)`
+                        : t('auth.otp.resendCode')
+                    }
+                    icon={resendCountdown > 0 ? "pi pi-clock" : "pi pi-refresh"}
+                    outlined
+                    onClick={handleResendCode}
+                    disabled={loading || !canResend}
+                    className="w-full"
+                  />
+                  <Button
+                    label={t('auth.otp.changeEmail')}
+                    icon="pi pi-arrow-left"
+                    text
+                    onClick={goBackToEmail}
+                    className="w-full"
+                  />
+                </div>
+              </div>
+            ) : (
+              /* Formulaire d'email */
+              <form onSubmit={handleEmailSubmit} className="space-y-5">
+                <div>
+                  <InputText
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder={t('auth.form.emailPlaceholder')}
+                    required
+                    disabled={loading}
+                    className="w-full"
+                  />
+                </div>
+
+                {error && (
+                  <div style={{ marginBottom: '1.25rem' }}>
+                    <Message
+                      severity="error"
+                      text={error}
+                      className="w-full"
+                      icon="pi pi-exclamation-triangle"
+                    />
+                  </div>
+                )}
+
+                <Button
+                  type="submit"
+                  label={
+                    loading
+                      ? t('auth.buttons.loading')
+                      : t('auth.otp.sendCode')
                   }
-                  required
+                  icon={loading ? undefined : 'pi pi-send'}
+                  loading={loading}
                   disabled={loading}
-                  className="w-full"
-                  inputClassName="w-full"
-                  feedback={false}
-                  toggleMask
+                  className="w-full py-3 text-base font-semibold"
                 />
+              </form>
+            )}
+
+            {step === 'email' && (
+              /* Section inférieure */
+              <div className="mt-8 pt-6 border-t border-gray-100">
+
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="text-center text-sm text-gray-600">
+                    <p className="font-medium mb-2">{t('auth.otp.howItWorks.title')}</p>
+                    <ul className="space-y-1 text-xs">
+                      <li>• {t('auth.otp.howItWorks.step1')}</li>
+                      <li>• {t('auth.otp.howItWorks.step2')}</li>
+                      <li>• {t('auth.otp.howItWorks.step3')}</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
-
-              {error && (
-                <Message
-                  severity="error"
-                  text={error}
-                  className="w-full"
-                  icon="pi pi-exclamation-triangle"
-                />
-              )}
-
-              {/* Bouton de soumission */}
-              <Button
-                type="submit"
-                label={
-                  loading
-                    ? t('auth.buttons.loading')
-                    : isSignUp
-                      ? t('auth.buttons.signUp')
-                      : t('auth.buttons.signIn')
-                }
-                icon={loading ? undefined : `pi ${isSignUp ? 'pi-user-plus' : 'pi-sign-in'}`}
-                loading={loading}
-                disabled={loading}
-                className="w-full py-3 text-base font-semibold"
-              />
-            </form>
-
-            {/* Section inférieure */}
-            <div className="mt-8 pt-6 border-t border-gray-100">
-              <div className="text-center mb-4">
-                <span className="text-xs text-gray-500 bg-gray-50 px-3 py-1 rounded-full">
-                  ✨ {t('auth.benefits.freeLabels.title')}
-                </span>
-              </div>
-
-              {/* Toggle mode */}
-              <div className="text-center">
-                <button
-                  type="button"
-                  onClick={toggleMode}
-                  className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
-                  disabled={loading}
-                >
-                  {isSignUp ? t('auth.toggle.toSignIn') : t('auth.toggle.toSignUp')}
-                </button>
-              </div>
-            </div>
+            )}
           </Card>
         </div>
       </main>

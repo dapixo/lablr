@@ -223,6 +223,29 @@
       "signUp": "Create account",
       "loading": "Signing in..."
     },
+    "otp": {
+      "enterCode": "Enter your code",
+      "codeDescription": "Enter the verification code received by email",
+      "sendCode": "Send code",
+      "resendCode": "Resend code",
+      "changeEmail": "Change email",
+      "verify": "Verify",
+      "codeSent": "Code sent!",
+      "codeSentTo": "A verification code has been sent to {email}",
+      "codeLabel": "Verification code",
+      "codePlaceholder": "123456",
+      "howItWorks": {
+        "title": "How it works?",
+        "step1": "Enter your email address",
+        "step2": "Receive a 6-digit code by email",
+        "step3": "Enter the code to sign in"
+      },
+      "tips": {
+        "checkSpam": "Check your spam folder if you don't receive the code",
+        "codeExpiry": "Code expires in 10 minutes",
+        "resendAvailable": "You can resend a code after 30 seconds"
+      }
+    },
     "toggle": {
       "toSignUp": "→ New to Lalabel? Create account",
       "toSignIn": "← Already have an account? Sign in"
@@ -257,11 +280,12 @@
     },
     "loading": "Signing in...",
     "errors": {
-      "invalidCredentials": "Incorrect email or password",
-      "emailNotConfirmed": "Please confirm your email before signing in",
-      "passwordTooShort": "Password must contain at least 6 characters",
       "invalidEmail": "Invalid email address",
-      "userExists": "An account already exists with this email address",
+      "tooManyRequests": "Too many attempts. Please wait a few minutes",
+      "rateLimit": "For security purposes, please wait {seconds} seconds before requesting a new code",
+      "rateLimitGeneric": "Too many attempts. Please wait before requesting a new code",
+      "invalidCode": "Incorrect verification code",
+      "expiredCode": "Verification code expired. Request a new code",
       "unexpected": "An unexpected error occurred"
     }
   },
