@@ -81,7 +81,7 @@ export default function LoginPage() {
 
       setLoading(false)
     },
-    [email, sendOtpCode, t, startResendCountdown]
+    [email, sendOtpCode, t]
   )
 
   const handleCodeSubmit = useCallback(

@@ -80,7 +80,7 @@ export function AuthModal({ visible, onHide, onSuccess, t }: AuthModalProps) {
 
       setLoading(false)
     },
-    [email, sendOtpCode, t, startResendCountdown]
+    [email, sendOtpCode, t]
   )
 
   const handleCodeSubmit = useCallback(

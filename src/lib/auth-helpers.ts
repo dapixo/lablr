@@ -50,6 +50,7 @@ export function getErrorMessage(message: string, t: (key: string) => string): st
       message.includes('For security purposes') || message.includes('once every')) {
     const delay = extractRateLimitDelay(message)
     if (delay) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return (t as any)('auth.errors.rateLimit', { seconds: delay.toString() })
     }
     return t('auth.errors.rateLimitGeneric')

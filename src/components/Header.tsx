@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { useParams, usePathname, useRouter } from 'next/navigation'
-import { Dropdown } from 'primereact/dropdown'
 import type React from 'react'
 import { useCallback, useEffect, useState, useTransition } from 'react'
 import { UserMenu } from '@/components/auth/UserMenu'
@@ -11,12 +10,6 @@ import { useAuth } from '@/hooks/useAuth'
 interface HeaderProps {
   t: (key: string) => string
 }
-
-// Options de langue pour le select
-const LANGUAGE_OPTIONS = [
-  { label: 'Fr', value: 'fr' },
-  { label: 'En', value: 'en' }
-]
 
 export const Header: React.FC<HeaderProps> = ({ t }) => {
   const params = useParams()
