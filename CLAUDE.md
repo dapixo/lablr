@@ -4,7 +4,7 @@
 
 **Lablr** est une solution professionnelle permettant aux vendeurs Amazon de générer et imprimer facilement des étiquettes d'adresse à partir de leurs rapports Amazon Seller au format TSV. Interface moderne et intuitive avec design responsive pour tous les appareils. 
 
-**V3.6** : Optimisations UX du header avec sélecteur de langue simplifié et améliorations de l'interface d'authentification.
+**V3.7** : Implémentation de l'authentification passwordless OTP avec rate limiting adaptatif et optimisations DRY.
 
 ## Architecture Technique
 
@@ -44,8 +44,9 @@ src/
 ├── lib/
 │   ├── supabase/
 │   │   ├── client.ts          # 🆕 Client Supabase navigateur
-│   │   ├── server.ts          # 🆕 Client Supabase serveur 
+│   │   ├── server.ts          # 🆕 Client Supabase serveur
 │   │   └── middleware.ts      # 🆕 Middleware gestion session
+│   ├── auth-helpers.ts        # 🆕 Helpers partagés pour authentification OTP
 │   ├── utils.ts              # Utilitaires (cn)
 │   ├── universal-parser.ts   # 🆕 Parser universel multi-plateformes
 │   ├── direct-column-finder.ts # 🆕 Détection directe des colonnes
@@ -114,15 +115,17 @@ src/
 - **ROLL_57x32** : Rouleaux d'étiquettes 57×32mm (une par adresse)
 - **CSV_EXPORT** : Export des données au format CSV pour tableur
 
-### 6. Système d'Authentification (🆕 V3.0)
-- **Protection d'impression** : Authentification requise avant impression
-- **Modal professionnelle** : Interface élégante avec messages rassurants
-- **Connexion automatique** : Inscription → Connexion → Impression directe
-- **Session management** : Gestion SSR avec Supabase Auth
-- **UX optimisée** : Interface header simplifiée avec avatar utilisateur + toast notifications
-- **Sécurité renforcée** : API sécurisée, validation stricte, gestion d'erreurs robuste
-- **Performance** : Callbacks mémorisés, contenu optimisé, états loading
-- **Modèle freemium** : Messages clairs sur les 10 étiquettes gratuites par jour
+### 6. Système d'Authentification Passwordless OTP (🆕 V3.7)
+- **Authentification OTP** : Connexion sans mot de passe via code email 6 chiffres
+- **Flow à deux étapes** : Email → Code de vérification → Connexion automatique
+- **Rate limiting adaptatif** : Parsing intelligent des délais Supabase (30s, 45s, 60s...)
+- **Countdown intelligent** : Timer visuel avec délai exact selon l'erreur
+- **Auto-reset optimisé** : Champs vidés automatiquement après erreurs OTP
+- **Interface cohérente** : Page login dédiée + modal auth avec même UX
+- **Helpers partagés** : Code DRY avec `auth-helpers.ts` pour parsing erreurs
+- **Messages traduits** : Support FR/EN avec interpolation variables
+- **PrimeReact InputOtp** : Composant professionnel avec styles personnalisés
+- **UX non-frustrante** : Pas de countdown initial, activation uniquement après rate limit
 
 ### 7. FAQ Interactive (🆕 V3.0)
 - **Accordion optimisé** : Interface PrimeReact avec animations fluides
