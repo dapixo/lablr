@@ -5,6 +5,15 @@ export interface LabelDimensions {
   height: string
 }
 
+export interface LabelSpacing {
+  marginTop: string
+  marginRight: string
+  marginBottom: string
+  marginLeft: string
+  gapHorizontal: string
+  gapVertical: string
+}
+
 export interface FormatConfig {
   pageSettings: {
     margin: number
@@ -21,6 +30,7 @@ export interface FormatConfig {
     containerClass: string
     itemClass: string
     dimensions?: LabelDimensions
+    spacing?: LabelSpacing
   }
 }
 
@@ -33,42 +43,74 @@ export const PRINT_CONFIGS: Record<PrintFormat, FormatConfig> = {
   },
 
   A4_LABELS_10: {
-    pageSettings: { margin: 10, fontSize: 29 },
+    pageSettings: { margin: 0, fontSize: 25, specialMargins: '6mm 0mm 6mm 0mm' },
     layout: { type: 'grid', itemsPerPage: 10, columns: 2, rows: 5 },
     styling: {
       containerClass: 'labels-grid',
       itemClass: 'address-item',
       dimensions: { width: '105mm', height: '57mm' },
+      spacing: {
+        marginTop: '6mm',
+        marginRight: '0mm',
+        marginBottom: '6mm',
+        marginLeft: '0mm',
+        gapHorizontal: '0mm',
+        gapVertical: '0mm'
+      }
     },
   },
 
   A4_LABELS_14: {
-    pageSettings: { margin: 8, fontSize: 21, specialMargins: '15.1mm 5.95mm' },
+    pageSettings: { margin: 0, fontSize: 18, specialMargins: '8mm 0mm 4mm 0mm' },
     layout: { type: 'grid', itemsPerPage: 14, columns: 2, rows: 7 },
     styling: {
       containerClass: 'labels-grid',
       itemClass: 'address-item',
-      dimensions: { width: '99.1mm', height: '38.1mm' },
+      dimensions: { width: '105mm', height: '39mm' },
+      spacing: {
+        marginTop: '8mm',
+        marginRight: '0mm',
+        marginBottom: '4mm',
+        marginLeft: '0mm',
+        gapHorizontal: '0mm',
+        gapVertical: '0mm'
+      }
     },
   },
 
   A4_LABELS_16: {
-    pageSettings: { margin: 8, fontSize: 19, specialMargins: '12.9mm 5.9mm' },
+    pageSettings: { margin: 0, fontSize: 16, specialMargins: '8.5mm 0mm 8.5mm 0mm' },
     layout: { type: 'grid', itemsPerPage: 16, columns: 2, rows: 8 },
     styling: {
       containerClass: 'labels-grid',
       itemClass: 'address-item',
-      dimensions: { width: '99.1mm', height: '33.9mm' },
+      dimensions: { width: '105mm', height: '35mm' },
+      spacing: {
+        marginTop: '8.5mm',
+        marginRight: '0mm',
+        marginBottom: '8.5mm',
+        marginLeft: '0mm',
+        gapHorizontal: '0mm',
+        gapVertical: '0mm'
+      }
     },
   },
 
   A4_LABELS_21: {
-    pageSettings: { margin: 8, fontSize: 19, specialMargins: '0mm' },
+    pageSettings: { margin: 0, fontSize: 19, specialMargins: '12mm 9.75mm 12mm 9.75mm' },
     layout: { type: 'grid', itemsPerPage: 21, columns: 3, rows: 7 },
     styling: {
       containerClass: 'labels-grid',
       itemClass: 'address-item',
-      dimensions: { width: '70mm', height: '42.4mm' },
+      dimensions: { width: '63.5mm', height: '38.1mm' },
+      spacing: {
+        marginTop: '12mm',
+        marginRight: '9.75mm',
+        marginBottom: '12mm',
+        marginLeft: '9.75mm',
+        gapHorizontal: '1mm',
+        gapVertical: '0mm'
+      }
     },
   },
 

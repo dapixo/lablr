@@ -8,7 +8,7 @@ export {
 } from '@/lib/print/config'
 
 // Re-export du générateur CSS pour compatibilité
-export { generatePrintCSS as getPrintCSS } from '@/lib/print/css-generator'
+export { generatePrintCSS as getPrintCSS, generateDebugPrintCSS } from '@/lib/print/css-generator'
 
 // Re-export des utilitaires pour compatibilité
 export { generateAddressesHTML } from '@/lib/print-utils'

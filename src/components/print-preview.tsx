@@ -4,12 +4,14 @@ import { Eye, Settings } from 'lucide-react'
 import { Button } from 'primereact/button'
 import { Panel } from 'primereact/panel'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { AuthModal } from '@/components/auth/AuthModal'
 import { UpgradeModal } from '@/components/UpgradeModal'
 import { PREVIEW_DIMENSIONS, PREVIEW_MAX_LABELS_ROLL, PREVIEW_MAX_PAGES } from '@/constants'
 import { useAuth } from '@/hooks/useAuth'
 import { useUsageTracking } from '@/hooks/useUsageTracking'
-import { downloadCSV, getPrintCSS } from '@/lib/print-formats'
+import { downloadCSV, getPrintCSS, generateDebugPrintCSS } from '@/lib/print-formats'
+import { PRINT_CONFIGS } from '@/lib/print/config'
 import { printAddresses } from '@/lib/print-utils'
 import { STORAGE_KEYS, useCollapsiblePanel, usePersistedSelection } from '@/lib/storage'
 import { cn } from '@/lib/utils'
@@ -47,6 +49,10 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [pendingPrintAction, setPendingPrintAction] = useState<(() => void) | null>(null)
+
+  // Debug mode basé sur l'URL
+  const searchParams = useSearchParams()
+  const debugMode = searchParams.get('debug') === 'true'
 
   // Refs pour éviter les appels multiples
   const hasExecutedPendingActionRef = useRef(false)
@@ -112,7 +118,9 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
           return
         }
 
-        const printCSS = getPrintCSS(selectedFormat.value)
+        const printCSS = debugMode
+          ? generateDebugPrintCSS(selectedFormat.value)
+          : getPrintCSS(selectedFormat.value)
 
         // Configurer le reset du flag d'impression
         resetPrintFlag()
@@ -129,7 +137,7 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
         throw error
       }
     },
-    [addresses, selectedFormat.value, user, trackLabelUsage, resetPrintFlag]
+    [addresses, selectedFormat.value, user, trackLabelUsage, resetPrintFlag, debugMode]
   )
 
   const handlePrint = useCallback(() => {
@@ -235,6 +243,7 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
             </div>
           </fieldset>
         </div>
+
 
         {/* Actions */}
         <div className="flex justify-center mt-6 mb-4">
@@ -381,30 +390,54 @@ const PrintPreviewSheet = React.memo<PrintPreviewSheetProps>(function PrintPrevi
             }}
           >
             {/* Marges visuelles */}
-            <div
-              className="absolute inset-0 border border-dashed border-gray-200"
-              style={{ margin: '16px' }}
-            />
+            {(() => {
+              const config = PRINT_CONFIGS[format]
+              const spacing = config.styling.spacing
+              const marginStyle = spacing
+                ? `${spacing.marginTop} ${spacing.marginRight} ${spacing.marginBottom} ${spacing.marginLeft}`
+                : '16px'
+
+              return (
+                <div
+                  className="absolute inset-0 border border-dashed border-gray-200"
+                  style={{ margin: marginStyle }}
+                />
+              )
+            })()}
 
             {/* Contenu de la page */}
-            <div
-              className="absolute inset-0 p-6 overflow-hidden"
-              style={{ fontSize: '8px', lineHeight: '1.3' }}
-            >
-              {format === 'A4_LABELS_10' ? (
-                <PrintPreviewLabels addresses={pageAddresses} gridCols={2} t={t} />
-              ) : format === 'A4_LABELS_14' ? (
-                <PrintPreviewLabels addresses={pageAddresses} gridCols={2} gridRows={7} t={t} />
-              ) : format === 'A4_LABELS_16' ? (
-                <PrintPreviewLabels addresses={pageAddresses} gridCols={2} gridRows={8} t={t} />
-              ) : format === 'A4_LABELS_21' ? (
-                <PrintPreviewLabels addresses={pageAddresses} gridCols={3} t={t} />
-              ) : format === 'A4_COMPACT' ? (
-                <PrintPreviewCompact addresses={pageAddresses} />
-              ) : (
-                <PrintPreviewList addresses={pageAddresses} />
-              )}
-            </div>
+            {(() => {
+              const config = PRINT_CONFIGS[format]
+              const spacing = config.styling.spacing
+              const paddingStyle = spacing
+                ? `${spacing.marginTop} ${spacing.marginRight} ${spacing.marginBottom} ${spacing.marginLeft}`
+                : '24px'
+
+              return (
+                <div
+                  className="absolute inset-0 overflow-hidden"
+                  style={{
+                    fontSize: '8px',
+                    lineHeight: '1.3',
+                    padding: paddingStyle
+                  }}
+                >
+                  {format === 'A4_LABELS_10' ? (
+                    <PrintPreviewLabels addresses={pageAddresses} gridCols={2} gridRows={5} t={t} format={format} />
+                  ) : format === 'A4_LABELS_14' ? (
+                    <PrintPreviewLabels addresses={pageAddresses} gridCols={2} gridRows={7} t={t} format={format} />
+                  ) : format === 'A4_LABELS_16' ? (
+                    <PrintPreviewLabels addresses={pageAddresses} gridCols={2} gridRows={8} t={t} format={format} />
+                  ) : format === 'A4_LABELS_21' ? (
+                    <PrintPreviewLabels addresses={pageAddresses} gridCols={3} gridRows={7} t={t} format={format} />
+                  ) : format === 'A4_COMPACT' ? (
+                    <PrintPreviewCompact addresses={pageAddresses} />
+                  ) : (
+                    <PrintPreviewList addresses={pageAddresses} />
+                  )}
+                </div>
+              )
+            })()}
 
             {/* Numéro de page */}
             <div className="absolute bottom-2 right-4 text-xs text-gray-400">
@@ -431,39 +464,50 @@ const PrintPreviewLabels = React.memo<{
   gridCols: number
   gridRows?: number
   t: (key: string) => string
-}>(function PrintPreviewLabels({ addresses, gridCols, gridRows, t }) {
+  format?: PrintFormat
+}>(function PrintPreviewLabels({ addresses, gridCols, gridRows, t, format }) {
   const totalLabels = gridRows ? gridCols * gridRows : gridCols === 2 ? 10 : 21
-  const labelHeight =
-    gridRows === 8 ? '12.5%' : gridRows === 7 ? '14.3%' : gridCols === 2 ? '19%' : '13%'
+
+  // Obtenir les dimensions réelles de la configuration
+  const config = format ? PRINT_CONFIGS[format] : null
+  const dimensions = config?.styling.dimensions
+
+  // Calculer les styles de grille basés sur les vraies proportions
+  const gridStyle: React.CSSProperties = dimensions && gridRows ? {
+    display: 'grid',
+    gridTemplateColumns: `repeat(${gridCols}, 1fr)`,
+    gridTemplateRows: `repeat(${gridRows}, 1fr)`,
+    gap: 0,
+    width: '100%',
+    height: '100%'
+  } : {
+    display: 'grid',
+    gridTemplateColumns: `repeat(${gridCols}, 1fr)`,
+    gap: 0,
+    width: '100%',
+    height: '100%'
+  }
 
   return (
-    <div
-      className={`grid gap-2 h-full`}
-      style={{ gridTemplateColumns: `repeat(${gridCols}, 1fr)` }}
-    >
+    <div className="w-full h-full" style={gridStyle}>
       {Array.from({ length: totalLabels }, (_, index) => {
         const address = addresses[index]
+        const labelStyle: React.CSSProperties = {
+          width: '100%',
+          height: '100%',
+          padding: '4px',
+          fontSize: gridRows === 8 ? '6px' : gridRows === 7 ? '6.5px' : gridCols === 2 ? '7px' : '6px',
+          lineHeight: '1.2',
+          textAlign: 'center',
+          boxSizing: 'border-box',
+          minHeight: gridRows === 8 ? '40px' : gridRows === 7 ? '45px' : gridCols === 2 ? '60px' : '50px'
+        }
+
         return (
           <div
             key={index}
             className="border border-gray-400 rounded-sm bg-white flex flex-col justify-center items-center overflow-hidden"
-            style={{
-              height: labelHeight,
-              minHeight:
-                gridRows === 8
-                  ? '55px'
-                  : gridRows === 7
-                    ? '60px'
-                    : gridCols === 2
-                      ? '80px'
-                      : '55px',
-              padding:
-                gridRows === 8 ? '4px' : gridRows === 7 ? '5px' : gridCols === 2 ? '6px' : '4px',
-              fontSize:
-                gridRows === 8 ? '6px' : gridRows === 7 ? '6.5px' : gridCols === 2 ? '7px' : '6px',
-              lineHeight: '1.2',
-              textAlign: 'center',
-            }}
+            style={labelStyle}
           >
             {address ? (
               <div className="w-full text-center overflow-hidden">

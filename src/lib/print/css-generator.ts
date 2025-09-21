@@ -1,16 +1,16 @@
 import type { PrintFormat } from '@/types/address'
-import { PRINT_CONFIGS } from './config'
+import { PRINT_CONFIGS, type LabelSpacing } from './config'
 
 // Mixins CSS réutilisables
 interface CSSMixins {
   pageBase: (margin: string) => string
   bodyReset: () => string
-  addressItem: (fontSize: number, padding?: string) => string
+  addressItem: (fontSize: number, padding?: string, debugBorder?: string) => string
   addressContent: () => string
-  gridLayout: (columns: number, rows?: number, width?: string, height?: string) => string
-  labelItem: (width: string, height: string, fontSize: number) => string
-  compactLayout: () => string
-  rollLayout: (width: string, height: string) => string
+  gridLayout: (columns: number, rows?: number, width?: string, height?: string, debugBorder?: string, spacing?: LabelSpacing) => string
+  labelItem: (width: string, height: string, fontSize: number, debugBorder?: string) => string
+  compactLayout: (debugBorder?: string) => string
+  rollLayout: (width: string, height: string, debugBorder?: string) => string
   pageBreaks: (itemsPerPage: number) => string
 }
 
@@ -32,7 +32,7 @@ const CSS_MIXINS: CSSMixins = {
       padding: 0;
     }`,
 
-  addressItem: (fontSize, padding = '2mm') => `
+  addressItem: (fontSize, padding = '2mm', debugBorder = 'none') => `
     .address-item {
       font-size: ${fontSize}px;
       padding: ${padding};
@@ -45,6 +45,7 @@ const CSS_MIXINS: CSSMixins = {
       box-sizing: border-box;
       margin: 0;
       page-break-inside: avoid;
+      border: ${debugBorder};
     }`,
 
   addressContent: () => `
@@ -71,31 +72,48 @@ const CSS_MIXINS: CSSMixins = {
       margin-top: 0.5mm;
     }`,
 
-  gridLayout: (columns, rows, width, height) => {
+  gridLayout: (columns, rows, width, height, debugBorder = 'none', spacing?: LabelSpacing) => {
     let css = `
       .labels-grid {
         display: grid;
         grid-template-columns: repeat(${columns}, 1fr);
         gap: 0;
+        border: ${debugBorder === 'none' ? 'none' : '2px solid #0000ff'};
       }`
 
     if (rows && width && height) {
-      const totalWidth = parseFloat(width) * columns
-      const totalHeight = parseFloat(height) * rows
-      const columnTemplate = Array(columns).fill(width).join(' ')
-      css += `
-      .labels-grid {
-        grid-template-columns: ${columnTemplate};
-        grid-template-rows: repeat(${rows}, ${height});
-        height: ${totalHeight}mm;
-        width: ${totalWidth}mm;
-      }`
+      // Utiliser les espacements précis si disponibles
+      if (spacing) {
+        const columnTemplate = Array(columns).fill(width).join(' ')
+        const rowTemplate = Array(rows).fill(height).join(' ')
+
+        css += `
+        .labels-grid {
+          grid-template-columns: ${columnTemplate};
+          grid-template-rows: ${rowTemplate};
+          gap: ${spacing.gapVertical} ${spacing.gapHorizontal};
+          border: ${debugBorder === 'none' ? 'none' : '2px solid #0000ff'};
+        }`
+      } else {
+        // Mode legacy
+        const totalWidth = parseFloat(width) * columns
+        const totalHeight = parseFloat(height) * rows
+        const columnTemplate = Array(columns).fill(width).join(' ')
+        css += `
+        .labels-grid {
+          grid-template-columns: ${columnTemplate};
+          grid-template-rows: repeat(${rows}, ${height});
+          height: ${totalHeight}mm;
+          width: ${totalWidth}mm;
+          border: ${debugBorder === 'none' ? 'none' : '2px solid #0000ff'};
+        }`
+      }
     }
 
     return css
   },
 
-  labelItem: (width, height, fontSize) => `
+  labelItem: (width, height, fontSize, debugBorder = 'none') => `
     .address-item {
       width: ${width};
       height: ${height};
@@ -106,18 +124,20 @@ const CSS_MIXINS: CSSMixins = {
       align-items: center;
       text-align: center;
       box-sizing: border-box;
+      border: ${debugBorder};
     }`,
 
-  compactLayout: () => `
+  compactLayout: (debugBorder = 'none') => `
     .compact-grid {
       display: block;
       width: 100%;
       overflow: hidden;
+      border: ${debugBorder === 'none' ? 'none' : '2px solid #00ff00'};
     }
     .address-item {
       padding: 5mm;
       margin-bottom: 5mm;
-      border: 1px solid #e5e7eb;
+      border: ${debugBorder === 'none' ? '1px solid #e5e7eb' : '1px solid #ff0000'};
       border-radius: 2mm;
       float: left;
       width: calc(50% - 5mm);
@@ -143,7 +163,7 @@ const CSS_MIXINS: CSSMixins = {
       margin-top: 2mm;
     }`,
 
-  rollLayout: (width, height) => `
+  rollLayout: (width, height, debugBorder = 'none') => `
     @page {
       size: ${width} ${height};
       margin: 0;
@@ -152,13 +172,14 @@ const CSS_MIXINS: CSSMixins = {
       width: ${width};
       height: ${height};
       overflow: hidden;
-      border: none;
+      border: ${debugBorder === 'none' ? 'none' : '2px solid #ff00ff'};
     }
     .address-item {
       height: ${height};
       width: ${width};
       break-after: page;
       box-sizing: border-box;
+      border: ${debugBorder};
     }
     .address-item div {
       margin: 0.3mm 0;
@@ -179,17 +200,20 @@ const CSS_MIXINS: CSSMixins = {
 }
 
 // Générateur CSS principal
-export function generatePrintCSS(format: PrintFormat): string {
+export function generatePrintCSS(format: PrintFormat, debug: boolean = false): string {
   const config = PRINT_CONFIGS[format]
   const { pageSettings, layout, styling } = config
 
   // CSS de base commun
   let css = ''
 
+  // Bordures de debug si activées
+  const debugBorder = debug ? '1px solid #ff0000' : 'none'
+
   // Gestion spéciale pour le format rouleau
   if (layout.type === 'roll' && styling.dimensions) {
-    css += CSS_MIXINS.rollLayout(styling.dimensions.width, styling.dimensions.height)
-    css += CSS_MIXINS.addressItem(pageSettings.fontSize, '2mm')
+    css += CSS_MIXINS.rollLayout(styling.dimensions.width, styling.dimensions.height, debugBorder)
+    css += CSS_MIXINS.addressItem(pageSettings.fontSize, '2mm', debugBorder)
     css += CSS_MIXINS.addressContent()
     return css
   }
@@ -207,29 +231,32 @@ export function generatePrintCSS(format: PrintFormat): string {
           layout.columns,
           layout.rows,
           styling.dimensions.width,
-          styling.dimensions.height
+          styling.dimensions.height,
+          debugBorder,
+          styling.spacing
         )
         css += CSS_MIXINS.labelItem(
           styling.dimensions.width,
           styling.dimensions.height,
-          pageSettings.fontSize
+          pageSettings.fontSize,
+          debugBorder
         )
       } else {
-        css += CSS_MIXINS.gridLayout(layout.columns || 2)
-        css += CSS_MIXINS.addressItem(pageSettings.fontSize)
+        css += CSS_MIXINS.gridLayout(layout.columns || 2, undefined, undefined, undefined, debugBorder)
+        css += CSS_MIXINS.addressItem(pageSettings.fontSize, '2mm', debugBorder)
       }
       break
 
     case 'compact':
-      css += CSS_MIXINS.compactLayout()
-      css += CSS_MIXINS.addressItem(pageSettings.fontSize, '5mm')
+      css += CSS_MIXINS.compactLayout(debugBorder)
+      css += CSS_MIXINS.addressItem(pageSettings.fontSize, '5mm', debugBorder)
       break
     default:
-      css += CSS_MIXINS.addressItem(pageSettings.fontSize, '10px')
+      css += CSS_MIXINS.addressItem(pageSettings.fontSize, '10px', debugBorder)
       css += `
         .address-item {
           margin-bottom: 20px;
-          border-bottom: 1px solid #e5e7eb;
+          border-bottom: ${debug ? '2px solid #00ff00' : '1px solid #e5e7eb'};
           text-align: left;
         }`
       break
@@ -248,3 +275,8 @@ export function generatePrintCSS(format: PrintFormat): string {
 
 // Export de la fonction principale pour compatibilité
 export { generatePrintCSS as getPrintCSS }
+
+// Fonction avec debug activé par défaut pour les tests
+export function generateDebugPrintCSS(format: PrintFormat): string {
+  return generatePrintCSS(format, true)
+}
