@@ -281,6 +281,7 @@
     "loading": "Signing in...",
     "errors": {
       "invalidEmail": "Invalid email address",
+      "disposableEmail": "Temporary/disposable email addresses are not allowed. Please use a permanent email address",
       "tooManyRequests": "Too many attempts. Please wait a few minutes",
       "rateLimit": "For security purposes, please wait {seconds} seconds before requesting a new code",
       "rateLimitGeneric": "Too many attempts. Please wait before requesting a new code",

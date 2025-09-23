@@ -3,6 +3,7 @@
 import type { AuthError, Session, User } from '@supabase/supabase-js'
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { validateEmailDomain, EMAIL_VALIDATION_ERRORS } from '@/lib/disposable-email-domains'
 import type { UserPlan } from '@/types/user'
 
 interface AuthContextType {
@@ -149,7 +150,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [supabase.auth, fetchUserPlan])
 
+  /**
+   * Helper pour créer une erreur de validation email standardisée
+   */
+  const createValidationError = (errorCode: keyof typeof EMAIL_VALIDATION_ERRORS): AuthError => ({
+    message: EMAIL_VALIDATION_ERRORS[errorCode],
+    status: 400,
+  } as AuthError)
+
   const sendOtpCode = async (email: string) => {
+    // Validation serveur-side de l'email avant envoi du code OTP
+    const emailValidation = validateEmailDomain(email)
+
+    if (!emailValidation.isValid) {
+      return {
+        error: createValidationError('INVALID_FORMAT')
+      }
+    }
+
+    if (emailValidation.isDisposable) {
+      return {
+        error: createValidationError('DISPOSABLE_DOMAIN')
+      }
+    }
+
     // Pour recevoir un code OTP, il faut configurer Supabase pour désactiver
     // les magic links et activer les codes OTP dans le dashboard
     const { error } = await supabase.auth.signInWithOtp({
@@ -162,6 +186,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const verifyOtpCode = async (email: string, code: string) => {
+    // Validation serveur-side de l'email avant vérification du code OTP
+    const emailValidation = validateEmailDomain(email)
+
+    if (!emailValidation.isValid) {
+      return {
+        error: createValidationError('INVALID_FORMAT')
+      }
+    }
+
+    if (emailValidation.isDisposable) {
+      return {
+        error: createValidationError('DISPOSABLE_DOMAIN')
+      }
+    }
+
     const { error } = await supabase.auth.verifyOtp({
       email,
       token: code,

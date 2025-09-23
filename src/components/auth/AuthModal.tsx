@@ -9,6 +9,7 @@ import { Message } from 'primereact/message'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { extractRateLimitDelay, getErrorMessage, isRateLimitError } from '@/lib/auth-helpers'
+import { validateEmailDomain } from '@/lib/disposable-email-domains'
 
 interface AuthModalProps {
   visible: boolean
@@ -64,6 +65,21 @@ export function AuthModal({ visible, onHide, onSuccess, t }: AuthModalProps) {
       e.preventDefault()
       setLoading(true)
       setError(null)
+
+      // Validation côté client de l'email
+      const emailValidation = validateEmailDomain(email)
+
+      if (!emailValidation.isValid) {
+        setError(t('auth.errors.invalidEmail'))
+        setLoading(false)
+        return
+      }
+
+      if (emailValidation.isDisposable) {
+        setError(t('auth.errors.disposableEmail'))
+        setLoading(false)
+        return
+      }
 
       try {
         const { error: authError } = await sendOtpCode(email)

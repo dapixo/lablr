@@ -12,6 +12,7 @@ import { Header } from '@/components/Header'
 import { useAuth } from '@/hooks/useAuth'
 import { useTranslations } from '@/hooks/useTranslations'
 import { extractRateLimitDelay, getErrorMessage, isRateLimitError } from '@/lib/auth-helpers'
+import { validateEmailDomain } from '@/lib/disposable-email-domains'
 
 export default function LoginPage() {
   const params = useParams()
@@ -63,6 +64,21 @@ export default function LoginPage() {
       e.preventDefault()
       setLoading(true)
       setError(null)
+
+      // Validation côté client de l'email
+      const emailValidation = validateEmailDomain(email)
+
+      if (!emailValidation.isValid) {
+        setError(t('auth.errors.invalidEmail'))
+        setLoading(false)
+        return
+      }
+
+      if (emailValidation.isDisposable) {
+        setError(t('auth.errors.disposableEmail'))
+        setLoading(false)
+        return
+      }
 
       try {
         const { error: authError } = await sendOtpCode(email)

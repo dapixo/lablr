@@ -281,6 +281,7 @@
     "loading": "Connexion en cours...",
     "errors": {
       "invalidEmail": "Adresse email invalide",
+      "disposableEmail": "Les adresses email temporaires/jetables ne sont pas autorisées. Veuillez utiliser une adresse email permanente",
       "tooManyRequests": "Trop de tentatives. Veuillez attendre quelques minutes",
       "rateLimit": "Pour des raisons de sécurité, veuillez attendre {seconds} secondes avant de redemander un code",
       "rateLimitGeneric": "Trop de tentatives. Veuillez attendre avant de redemander un code",

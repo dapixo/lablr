@@ -4,7 +4,7 @@
 
 **Lablr** est une solution professionnelle permettant aux vendeurs Amazon de générer et imprimer facilement des étiquettes d'adresse à partir de leurs rapports Amazon Seller au format TSV. Interface moderne et intuitive avec design responsive pour tous les appareils. 
 
-**V3.7** : Implémentation de l'authentification passwordless OTP avec rate limiting adaptatif et optimisations DRY.
+**V3.7** : Optimisation du système anti-emails temporaires avec validation centralisée, patterns précompilés et architecture DRY.
 
 ## Architecture Technique
 
@@ -521,29 +521,37 @@ const FormatCard = React.memo(function FormatCard({...}))
 - ✅ **Design system cohérent** : Intégration harmonieuse avec le style existant
 - ✅ **Code modulaire** : Séparation claire entre logique métier et présentation
 
-## Évolutions Récentes (✅ V3.6)
+## Évolutions Récentes (✅ V3.7)
 
-### 🎨 Optimisations UX Header et Interface (🆕 V3.6)
+### 🛡️ Système Anti-Emails Temporaires Optimisé (🆕 V3.7)
+- ✅ **Validation centralisée** : Élimination de la duplication de code avec constantes `EMAIL_VALIDATION_ERRORS`
+- ✅ **Domaines optimisés** : Suppression des doublons (yopmail.com 3x → 1x), structure Set() pour O(1) lookup
+- ✅ **Helpers performants** : Patterns précompilés (`RATE_LIMIT_PATTERNS`, `OTP_ERROR_CODES`) pour éviter regex répétées
+- ✅ **Types stricts** : Interface `EmailValidationResult` avec `errorCode`, `TranslationFunction` typée
+- ✅ **Clean Code DRY** : Helper `createValidationError()` dans AuthContext, fonctions pures modulaires
+- ✅ **420+ domaines jetables** : Liste maintenue à jour avec services 2024 (tempmail.dev, 1secmail.com)
+
+### 🔧 Optimisations Code V3.7 (🆕)
+- ✅ **Regex email optimisée** : Validation RFC 5322 compliant avec `EMAIL_REGEX` strict
+- ✅ **Extraction domain sécurisée** : Fonction `extractDomain()` avec validation type et trim automatique
+- ✅ **Error handling centralisé** : Fonctions `isOTPError()`, `isRateLimitError()` avec constantes préfinies
+- ✅ **Performance améliorée** : Patterns précompilés, validation O(1), callbacks optimisés
+- ✅ **Maintenabilité** : Code modulaire, constantes externalisées, types partagés
+
+### 🎯 Sécurité Renforcée V3.7
+- ✅ **Validation stricte** : Blocage côté client ET serveur des domaines jetables
+- ✅ **Messages standardisés** : Constantes `INVALID_FORMAT`, `DISPOSABLE_DOMAIN` centralisées
+- ✅ **Types safety** : Interface `EmailValidationResult` avec `errorCode` optionnel typé
+- ✅ **Architecture DRY** : Élimination complète des duplications de validation email
+- ✅ **Performance sécurisée** : Validation rapide sans compromis sur la robustesse
+
+### 🎨 Optimisations UX Header et Interface (V3.6)
 - ✅ **Sélecteur de langue simplifié** : Remplacement du Dropdown PrimeReact par un select HTML natif
 - ✅ **Labels "Fr/En"** : Texte plus lisible et compact sans problème de troncature
 - ✅ **Bouton connexion discret** : Transformation du gros bouton en lien simple et élégant
 - ✅ **Page login dédiée** : Création d'une page `/login` pour remplacer l'authentification modale
 - ✅ **Navigation optimisée** : Redirection fluide vers la page de connexion depuis le header
 - ✅ **Style cohérent** : Design harmonieux avec bordures discrètes et focus states appropriés
-
-### 🔧 Améliorations Techniques V3.6 (🆕)
-- ✅ **Select natif HTML** : Élimination des problèmes de customisation PrimeReact
-- ✅ **Affichage garanti** : Texte "Fr"/"En" toujours visible sans troncature
-- ✅ **Events handlers optimisés** : `onChange` avec `e.target.value` pour compatibilité native
-- ✅ **Styles Tailwind minimalistes** : Classes CSS simples et maintenables
-- ✅ **Performance améliorée** : Suppression des composants lourds non nécessaires
-
-### 🎯 Expérience Utilisateur V3.6
-- ✅ **Interface épurée** : Header moins encombré avec éléments discrets
-- ✅ **Lisibilité optimale** : Sélecteur de langue compact mais parfaitement lisible
-- ✅ **Navigation intuitive** : Liens de connexion cohérents dans header et footer
-- ✅ **Responsive design** : Adaptation mobile/desktop préservée
-- ✅ **Accessibilité maintenue** : Focus states et navigation clavier fonctionnels
 
 ## Évolutions Futures
 
