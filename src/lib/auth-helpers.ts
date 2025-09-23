@@ -95,8 +95,9 @@ export function getErrorMessage(message: string, t: TranslationFunction): string
   if (isRateLimitError(message)) {
     const delay = extractRateLimitDelay(message)
     if (delay) {
-      // Type assertion sécurisée pour les fonctions surchargées
-      return (t as any)('auth.errors.rateLimit', { seconds: delay.toString() })
+      // Type assertion pour les fonctions surchargées avec variables
+      const tWithVariables = t as (key: string, variables: Record<string, string>) => string
+      return tWithVariables('auth.errors.rateLimit', { seconds: delay.toString() })
     }
     return t('auth.errors.rateLimitGeneric')
   }
