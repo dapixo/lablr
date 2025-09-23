@@ -9,7 +9,7 @@ interface FeedbackSectionProps {
   t: (key: string) => string
 }
 
-const FeedbackSection: React.FC<FeedbackSectionProps> = ({ className, t }) => {
+function FeedbackSection({ className, t }: FeedbackSectionProps) {
   // Créer le mailto avec sujet et corps pré-remplis
   const subject = encodeURIComponent(t('feedback.email.subject'))
   const body = encodeURIComponent(`${t('feedback.email.greeting')}

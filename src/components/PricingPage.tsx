@@ -81,7 +81,7 @@ function createPricingPlan(
 /**
  * Composant de page de tarification avec plans Free et Premium
  */
-export const PricingPage: React.FC<PricingPageProps> = ({ t }) => {
+export function PricingPage({ t }: PricingPageProps) {
   const [isAnnual, setIsAnnual] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [isUpgrading, setIsUpgrading] = useState(false)

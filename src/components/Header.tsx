@@ -11,7 +11,7 @@ interface HeaderProps {
   t: (key: string) => string
 }
 
-export const Header: React.FC<HeaderProps> = ({ t }) => {
+export function Header({ t }: HeaderProps) {
   const params = useParams()
   const pathname = usePathname()
   const router = useRouter()

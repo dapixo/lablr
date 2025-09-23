@@ -8,7 +8,7 @@ import { InputOtp } from 'primereact/inputotp'
 import { Message } from 'primereact/message'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
-import { extractRateLimitDelay, getErrorMessage, isRateLimitError } from '@/lib/auth-helpers'
+import { extractRateLimitDelay, getErrorMessage, isRateLimitError, isOTPError } from '@/lib/auth-helpers'
 import { validateEmailDomain } from '@/lib/disposable-email-domains'
 
 interface AuthModalProps {
@@ -166,26 +166,13 @@ export function AuthModal({ visible, onHide, onSuccess, t }: AuthModalProps) {
     setLoading(false)
   }, [canResend, loading, email, sendOtpCode, t, startResendCountdown])
 
-  // Reset automatique du code OTP en cas d'erreur après 3 secondes
+  // Reset automatique du code OTP en cas d'erreur OTP (immédiat, event-based)
   useEffect(() => {
-    if (error && step === 'code') {
-      const timer = setTimeout(() => {
-        // Vérifier les codes d'erreur OTP de Supabase pour reset automatique
-        if (
-          error.includes('invalid_otp') ||
-          error.includes('otp_expired') ||
-          error.includes('Token has expired or is invalid') ||
-          error.includes('invalid') ||
-          error.includes('expired') ||
-          error.includes(t('auth.errors.invalidCode')) ||
-          error.includes(t('auth.errors.expiredCode'))
-        ) {
-          setOtpCode('')
-        }
-      }, 3000)
-      return () => clearTimeout(timer)
+    if (error && step === 'code' && isOTPError(error)) {
+      // Reset immédiat du code OTP si c'est une erreur de code invalide/expiré
+      setOtpCode('')
     }
-  }, [error, step, t])
+  }, [error, step])
 
   const handleHide = useCallback(() => {
     resetForm()

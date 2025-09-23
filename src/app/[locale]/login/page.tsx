@@ -11,7 +11,7 @@ import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { useAuth } from '@/hooks/useAuth'
 import { useTranslations } from '@/hooks/useTranslations'
-import { extractRateLimitDelay, getErrorMessage, isRateLimitError } from '@/lib/auth-helpers'
+import { extractRateLimitDelay, getErrorMessage, isRateLimitError, isOTPError } from '@/lib/auth-helpers'
 import { validateEmailDomain } from '@/lib/disposable-email-domains'
 
 export default function LoginPage() {
@@ -157,21 +157,11 @@ export default function LoginPage() {
     setLoading(false)
   }, [canResend, loading, email, sendOtpCode, t, startResendCountdown])
 
-  // Reset automatique du code OTP en cas d'erreur après 3 secondes
+  // Reset automatique du code OTP en cas d'erreur OTP (immédiat, event-based)
   useEffect(() => {
-    if (error && step === 'code' && errorCode) {
-      const timer = setTimeout(() => {
-        // Vérifier les codes d'erreur OTP de Supabase pour reset automatique
-        const shouldReset =
-          errorCode.includes('invalid_otp') ||
-          errorCode.includes('otp_expired') ||
-          errorCode.includes('Token has expired or is invalid')
-
-        if (shouldReset) {
-          setOtpCode('')
-        }
-      }, 3000)
-      return () => clearTimeout(timer)
+    if (error && step === 'code' && errorCode && isOTPError(errorCode)) {
+      // Reset immédiat du code OTP si c'est une erreur de code invalide/expiré
+      setOtpCode('')
     }
   }, [error, step, errorCode])
 

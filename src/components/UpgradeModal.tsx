@@ -24,18 +24,27 @@ interface UpgradeModalProps {
 /**
  * Modal d'upgrade lorsque l'utilisateur atteint ses limites freemium
  */
-export const UpgradeModal: React.FC<UpgradeModalProps> = ({
+export function UpgradeModal({
   visible,
   onHide,
   onPrintLimited,
   t,
   totalAddresses,
   remainingLabels,
-}) => {
+}: UpgradeModalProps) {
   const [isAnnual, setIsAnnual] = useState(false)
   const [isUpgrading, setIsUpgrading] = useState(false)
+  const [upgradeSuccess, setUpgradeSuccess] = useState(false)
   const { user, userPlan, refreshUserPlan } = useAuth()
   const toast = useRef<Toast>(null)
+
+  /**
+   * Ferme la modal et reset l'état de succès
+   */
+  const handleClose = useCallback(() => {
+    setUpgradeSuccess(false)
+    onHide()
+  }, [onHide])
 
 
   /**
@@ -81,10 +90,8 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
         life: 5000,
       })
 
-      // Fermer la modal après un succès
-      setTimeout(() => {
-        onHide()
-      }, 1000)
+      // Marquer l'upgrade comme réussi (l'utilisateur fermera manuellement)
+      setUpgradeSuccess(true)
     } catch (error) {
       console.error('Error upgrading to premium:', error)
       toast.current?.show({
@@ -101,24 +108,36 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
   const headerContent = useMemo(
     () => (
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center shadow-lg">
-          <Crown className="h-5 w-5 text-white" />
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-lg ${
+          upgradeSuccess
+            ? 'bg-gradient-to-br from-green-500 to-green-600'
+            : 'bg-gradient-to-br from-orange-500 to-red-600'
+        }`}>
+          {upgradeSuccess ? (
+            <Check className="h-5 w-5 text-white" />
+          ) : (
+            <Crown className="h-5 w-5 text-white" />
+          )}
         </div>
         <div>
           <span className="text-xl font-bold text-gray-900">
-            {remainingLabels === 0
-              ? t('pricing.limits.dailyLimit')
-              : t('pricing.limits.limitSoon', getPluralVariables(remainingLabels))}
+            {upgradeSuccess
+              ? t('pricing.upgrade.success.title')
+              : remainingLabels === 0
+                ? t('pricing.limits.dailyLimit')
+                : t('pricing.limits.limitSoon', getPluralVariables(remainingLabels))}
           </span>
           <p className="text-sm text-gray-500 mt-1">
-            {remainingLabels === 0
-              ? t('pricing.limits.upgradeMessage')
-              : t('pricing.limits.upgradeSoonMessage')}
+            {upgradeSuccess
+              ? t('pricing.upgrade.success.subtitle')
+              : remainingLabels === 0
+                ? t('pricing.limits.upgradeMessage')
+                : t('pricing.limits.upgradeSoonMessage')}
           </p>
         </div>
       </div>
     ),
-    [t, remainingLabels]
+    [t, remainingLabels, upgradeSuccess]
   )
 
   const premiumFeatures = useMemo(
@@ -134,15 +153,36 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
   return (
     <Dialog
       visible={visible}
-      onHide={onHide}
+      onHide={handleClose}
       header={headerContent}
       className="w-full max-w-2xl"
       modal
       draggable={false}
       resizable={false}
     >
-      {/* Situation actuelle */}
-      <div className="bg-gradient-to-r from-orange-50 to-red-50 border-l-4 border-orange-500 p-4 rounded-lg mb-6">
+      {upgradeSuccess ? (
+        /* Interface de succès */
+        <div className="text-center py-8">
+          <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-4">
+            <Check className="h-8 w-8 text-green-500" />
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">
+            {t('pricing.upgrade.success.title')}
+          </h3>
+          <p className="text-gray-600 mb-6">
+            {t('pricing.upgrade.success.message')}
+          </p>
+          <Button
+            label={t('pricing.upgrade.success.continue')}
+            icon="pi pi-arrow-right"
+            onClick={handleClose}
+            className="w-full py-3 text-base font-semibold"
+          />
+        </div>
+      ) : (
+        <>
+          {/* Situation actuelle */}
+          <div className="bg-gradient-to-r from-orange-50 to-red-50 border-l-4 border-orange-500 p-4 rounded-lg mb-6">
         <div className="flex items-start gap-3">
           <div className="flex-shrink-0 mt-1">
             <Zap className="h-5 w-5 text-orange-500" />
@@ -263,6 +303,8 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
         <div className="mt-4 p-3 bg-gray-50 rounded-lg text-center">
           <p className="text-sm text-gray-600">🕐 {t('pricing.limits.resetTomorrow')}</p>
         </div>
+      )}
+        </>
       )}
 
       {/* Toast pour les notifications */}

@@ -10,7 +10,7 @@ interface FooterProps {
   t: (key: string) => string
 }
 
-export const Footer: React.FC<FooterProps> = ({ t }) => {
+export function Footer({ t }: FooterProps) {
   const params = useParams()
   const locale = (params?.locale as string) || 'fr'
   const { user } = useAuth()

@@ -37,11 +37,10 @@ export default function AccountPage() {
             severity: 'success',
             summary: t('userMenu.toast.deleteSuccess.summary'),
             detail: t('userMenu.toast.deleteSuccess.detail'),
+            life: 2000, // Durée d'affichage du toast
           })
-          // Redirection vers la page d'accueil après suppression
-          setTimeout(() => {
-            router.push(`/${locale}`)
-          }, 1500)
+          // Redirection immédiate après suppression réussie
+          router.push(`/${locale}`)
         } catch (error) {
           console.error('Delete account error:', error)
           toast.current?.show({
