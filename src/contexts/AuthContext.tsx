@@ -1,46 +1,75 @@
 'use client'
 
-import type { AuthError, Session, User } from '@supabase/supabase-js'
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import type { AuthError, User } from '@supabase/supabase-js'
+import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { validateEmailDomain, EMAIL_VALIDATION_ERRORS } from '@/lib/disposable-email-domains'
 import type { UserPlan } from '@/types/user'
 
+/**
+ * Helper pour les logs de debug
+ * Active les logs seulement avec ?debug=true
+ */
+const debugLog = (...args: unknown[]) => {
+  if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('debug') === 'true') {
+    console.log(...args)
+  }
+}
+
+/**
+ * Interface AuthContext - Simple et Clean
+ * 🎯 Séparation Auth (session) vs Plan utilisateur (données métier)
+ */
 interface AuthContextType {
+  // 🔐 État d'authentification (session Supabase)
   user: User | null
-  userPlan: UserPlan
   loading: boolean
+  error: string | null
+
+  // 💰 Plan utilisateur (lazy loading, non-bloquant)
+  userPlan: UserPlan
+  planLoading: boolean
+  planError: string | null
+
+  // 🔧 Actions d'authentification
   sendOtpCode: (email: string) => Promise<{ error: AuthError | null }>
   verifyOtpCode: (email: string, code: string) => Promise<{ error: AuthError | null }>
   signOut: () => Promise<{ error: AuthError | null }>
   deleteAccount: () => Promise<{ error: AuthError | null }>
   refreshUserPlan: () => Promise<void>
+  clearError: () => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
+/**
+ * AuthProvider - Architecture Simple et Robuste
+ * 🚀 Pattern Supabase standard avec améliorations UX
+ */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [userPlan, setUserPlan] = useState<UserPlan>('free')
-  const [loading, setLoading] = useState(true)
   const supabase = createClient()
 
-  // Refs pour éviter les problèmes de closure et doubles appels
-  const isInitializedRef = useRef(false)
-  const currentUserRef = useRef<User | null>(null)
+  // 🔐 État d'authentification (session uniquement)
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  // Mettre à jour la ref quand l'utilisateur change
-  useEffect(() => {
-    currentUserRef.current = user
-  }, [user])
+  // 💰 État plan utilisateur (séparé, non-bloquant)
+  const [userPlan, setUserPlan] = useState<UserPlan>('free')
+  const [planLoading, setPlanLoading] = useState(false)
+  const [planError, setPlanError] = useState<string | null>(null)
 
   /**
-   * Récupère le plan utilisateur depuis la base de données
-   * @param userId - ID de l'utilisateur
-   * @returns Promise<UserPlan> - Plan utilisateur ('free' par défaut)
+   * Récupère le plan utilisateur de manière non-bloquante
+   * 🎯 Lazy loading - ne bloque pas l'authentification
    */
-  const fetchUserPlan = useCallback(async (userId: string): Promise<UserPlan> => {
+  const fetchUserPlan = useCallback(async (userId: string) => {
+    setPlanLoading(true)
+    setPlanError(null)
+
     try {
+      debugLog('📡 Fetching user plan for:', userId)
+
       const { data, error } = await supabase
         .from('profiles')
         .select('plan')
@@ -48,226 +77,301 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .single()
 
       if (error) {
-        console.error('Failed to fetch user plan:', error.message)
-        return 'free'
-      }
+        // Si profil pas trouvé, créer avec plan gratuit
+        if (error.code === 'PGRST116') {
+          debugLog('📝 Creating new profile with free plan')
+          const { error: insertError } = await supabase
+            .from('profiles')
+            .insert({ user_id: userId, plan: 'free' })
 
-      if (!data?.plan) {
-        // Profil non trouvé, retourner plan gratuit par défaut
-        return 'free'
-      }
+          if (insertError) {
+            throw insertError
+          }
 
-      return data.plan as UserPlan
-    } catch (error: unknown) {
-      console.error('Error fetching user plan:', error instanceof Error ? error.message : 'Unknown error')
-      return 'free'
+          setUserPlan('free')
+        } else {
+          throw error
+        }
+      } else {
+        const plan = (data?.plan as UserPlan) || 'free'
+        debugLog('📋 User plan loaded:', plan)
+        setUserPlan(plan)
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load user plan'
+      debugLog('❌ Error fetching user plan:', errorMessage)
+      setPlanError(errorMessage)
+      // Fallback vers free en cas d'erreur
+      setUserPlan('free')
+    } finally {
+      setPlanLoading(false)
     }
   }, [supabase])
 
   /**
-   * Rafraîchit le plan utilisateur depuis la base de données
+   * Hook principal d'authentification
+   * ✨ Pattern Supabase standard - simple et fiable
+   */
+  useEffect(() => {
+    debugLog('🔄 Setting up auth listener')
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        debugLog('🔐 Auth event:', event, 'User:', session?.user?.email || 'none')
+
+        // 🎯 Mise à jour immédiate de l'état d'auth
+        const newUser = session?.user || null
+        setUser(newUser)
+        setLoading(false)
+        setError(null)
+
+        // 💰 Chargement du plan en arrière-plan (non-bloquant)
+        if (newUser?.id) {
+          // Pas d'await - non-bloquant pour l'UX
+          fetchUserPlan(newUser.id).catch((err) => {
+            debugLog('⚠️ Background plan fetch failed:', err)
+          })
+        } else {
+          // Reset plan si déconnexion
+          setUserPlan('free')
+          setPlanError(null)
+          setPlanLoading(false)
+        }
+      }
+    )
+
+    return () => {
+      debugLog('🧹 Cleaning up auth listener')
+      subscription.unsubscribe()
+    }
+  }, [fetchUserPlan, supabase.auth])
+
+  /**
+   * Rafraîchissement manuel du plan utilisateur
    */
   const refreshUserPlan = useCallback(async () => {
     if (!user?.id) {
-      setUserPlan('free')
+      debugLog('⚠️ No user to refresh plan for')
       return
     }
 
-    try {
-      const plan = await fetchUserPlan(user.id)
-      setUserPlan(plan)
-    } catch (error) {
-      console.error('Error refreshing user plan:', error)
-      setUserPlan('free')
-    }
+    await fetchUserPlan(user.id)
   }, [user?.id, fetchUserPlan])
 
-  useEffect(() => {
-
-    /**
-     * Gère l'état de l'utilisateur et son plan de manière unifiée
-     */
-    const handleAuthState = async (session: Session | null) => {
-      try {
-        setUser(session?.user ?? null)
-
-        if (session?.user) {
-          const plan = await fetchUserPlan(session.user.id)
-          setUserPlan(plan)
-        } else {
-          setUserPlan('free')
-        }
-      } catch (error) {
-        console.error('Error handling auth state:', error)
-        setUserPlan('free')
-      } finally {
-        if (!isInitializedRef.current) {
-          setLoading(false)
-          isInitializedRef.current = true
-        }
-      }
-    }
-
-    // Écouter les changements d'authentification AVANT l'initialisation
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      // Marquer comme initialisé après le premier événement
-      if (!isInitializedRef.current && (event === 'INITIAL_SESSION' || event === 'SIGNED_IN')) {
-        await handleAuthState(session)
-        isInitializedRef.current = true
-        return
-      }
-
-      // Éviter le traitement des événements avant l'initialisation
-      if (!isInitializedRef.current) {
-        return
-      }
-
-      // Éviter les traitements redondants pour le même utilisateur
-      if (event === 'SIGNED_IN' && session?.user?.id === currentUserRef.current?.id) {
-        return
-      }
-
-      // Seuls certains événements nécessitent une mise à jour complète
-      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
-        setLoading(true)
-        await handleAuthState(session)
-        setLoading(false)
-      } else {
-        // Pour les autres événements (comme les focus d'onglet), mettre à jour la session
-        // mais préserver le plan utilisateur existant si on a toujours le même user
-        if (session && session?.user?.id === currentUserRef.current?.id) {
-          // Même utilisateur, garder le plan actuel
-          setUser(session.user)
-        } else {
-          // Utilisateur différent ou déconnecté, mise à jour complète
-          await handleAuthState(session)
-        }
-      }
-    })
-
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [supabase.auth, fetchUserPlan])
-
   /**
-   * Helper pour créer une erreur de validation email standardisée
+   * Helper pour créer une erreur de validation email
    */
-  const createValidationError = (errorCode: keyof typeof EMAIL_VALIDATION_ERRORS): AuthError => ({
+  const createValidationError = useCallback((errorCode: keyof typeof EMAIL_VALIDATION_ERRORS): AuthError => ({
     message: EMAIL_VALIDATION_ERRORS[errorCode],
     status: 400,
-  } as AuthError)
+  } as AuthError), [])
 
-  const sendOtpCode = async (email: string) => {
-    // Validation serveur-side de l'email avant envoi du code OTP
+  /**
+   * Envoi du code OTP avec validation
+   */
+  const sendOtpCode = useCallback(async (email: string) => {
+    // Reset erreurs précédentes
+    setError(null)
+
+    // Validation côté client
     const emailValidation = validateEmailDomain(email)
 
     if (!emailValidation.isValid) {
-      return {
-        error: createValidationError('INVALID_FORMAT')
-      }
+      const validationError = createValidationError('INVALID_FORMAT')
+      setError(validationError.message)
+      return { error: validationError }
     }
 
     if (emailValidation.isDisposable) {
-      return {
-        error: createValidationError('DISPOSABLE_DOMAIN')
-      }
-    }
-
-    // Pour recevoir un code OTP, il faut configurer Supabase pour désactiver
-    // les magic links et activer les codes OTP dans le dashboard
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        shouldCreateUser: true,
-      },
-    })
-    return { error }
-  }
-
-  const verifyOtpCode = async (email: string, code: string) => {
-    // Validation serveur-side de l'email avant vérification du code OTP
-    const emailValidation = validateEmailDomain(email)
-
-    if (!emailValidation.isValid) {
-      return {
-        error: createValidationError('INVALID_FORMAT')
-      }
-    }
-
-    if (emailValidation.isDisposable) {
-      return {
-        error: createValidationError('DISPOSABLE_DOMAIN')
-      }
-    }
-
-    const { error } = await supabase.auth.verifyOtp({
-      email,
-      token: code,
-      type: 'email',
-    })
-    return { error }
-  }
-
-  const signOut = async () => {
-    const { error } = await supabase.auth.signOut()
-    return { error }
-  }
-
-  const deleteAccount = async () => {
-    if (!user?.id) {
-      return { error: new Error('No user logged in') as AuthError }
+      const validationError = createValidationError('DISPOSABLE_DOMAIN')
+      setError(validationError.message)
+      return { error: validationError }
     }
 
     try {
-      // Call our API route to delete the account
-      const response = await fetch('/api/auth/delete-account', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          shouldCreateUser: true,
         },
       })
 
-      if (!response.ok) {
-        const errorData = await response
-          .json()
-          .catch(() => ({ message: 'Failed to delete account' }))
-        return {
-          error: {
-            message: errorData.message || 'Failed to delete account',
-            status: response.status,
-          } as AuthError,
-        }
+      if (error) {
+        setError(error.message)
       }
 
-      // Clear local auth state since account is deleted server-side
-      setUser(null)
-      return { error: null }
-    } catch (error) {
-      console.error('Delete account error:', error)
-      return {
-        error: {
-          message: error instanceof Error ? error.message : 'Network error occurred',
-          status: 0,
-        } as AuthError,
-      }
+      return { error }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to send OTP code'
+      setError(errorMessage)
+      return { error: new Error(errorMessage) as AuthError }
     }
-  }
+  }, [supabase.auth, createValidationError])
 
-  const value = {
+  /**
+   * Vérification du code OTP
+   */
+  const verifyOtpCode = useCallback(async (email: string, code: string) => {
+    setError(null)
+
+    // Validation côté client
+    const emailValidation = validateEmailDomain(email)
+
+    if (!emailValidation.isValid) {
+      const validationError = createValidationError('INVALID_FORMAT')
+      setError(validationError.message)
+      return { error: validationError }
+    }
+
+    if (emailValidation.isDisposable) {
+      const validationError = createValidationError('DISPOSABLE_DOMAIN')
+      setError(validationError.message)
+      return { error: validationError }
+    }
+
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        email,
+        token: code,
+        type: 'email',
+      })
+
+      if (error) {
+        setError(error.message)
+      }
+
+      return { error }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to verify OTP code'
+      setError(errorMessage)
+      return { error: new Error(errorMessage) as AuthError }
+    }
+  }, [supabase.auth, createValidationError])
+
+  /**
+   * Déconnexion
+   */
+  const signOut = useCallback(async () => {
+    try {
+      const { error } = await supabase.auth.signOut()
+
+      if (error) {
+        setError(error.message)
+      } else {
+        // Reset local state
+        setError(null)
+      }
+
+      return { error }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to sign out'
+      setError(errorMessage)
+      return { error: new Error(errorMessage) as AuthError }
+    }
+  }, [supabase.auth])
+
+  /**
+   * Suppression du compte
+   */
+  const deleteAccount = useCallback(async () => {
+    if (!user?.id) {
+      const error = new Error('No user logged in') as AuthError
+      setError(error.message)
+      return { error }
+    }
+
+    try {
+      // Appel API pour supprimer le compte
+      const response = await fetch('/api/auth/delete-account', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Failed to delete account' }))
+        const error = new Error(errorData.message) as AuthError
+        setError(error.message)
+        return { error }
+      }
+
+      // Nettoyage côté client
+      await supabase.auth.signOut({ scope: 'global' })
+
+      // Force reset local state immédiatement
+      setUser(null)
+      setUserPlan('free')
+      setPlanError(null)
+      setPlanLoading(false)
+      setError(null)
+
+      // Nettoyage du storage
+      if (typeof window !== 'undefined') {
+        // localStorage
+        Object.keys(localStorage).forEach(key => {
+          if (key.startsWith('supabase') || key.startsWith('sb-')) {
+            localStorage.removeItem(key)
+          }
+        })
+
+        // sessionStorage
+        Object.keys(sessionStorage).forEach(key => {
+          if (key.startsWith('supabase') || key.startsWith('sb-')) {
+            sessionStorage.removeItem(key)
+          }
+        })
+
+        // Cookies
+        document.cookie.split(';').forEach(cookie => {
+          const cookieName = cookie.trim().split('=')[0]
+          if (cookieName.startsWith('sb-') || cookieName.includes('auth-token')) {
+            document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
+          }
+        })
+      }
+
+      return { error: null }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Network error occurred'
+      setError(errorMessage)
+      return { error: new Error(errorMessage) as AuthError }
+    }
+  }, [user?.id, supabase.auth])
+
+  /**
+   * Clear error state
+   */
+  const clearError = useCallback(() => {
+    setError(null)
+    setPlanError(null)
+  }, [])
+
+  // 🎯 API Context simple et clean
+  const value: AuthContextType = {
+    // Auth state
     user,
-    userPlan,
     loading,
+    error,
+
+    // Plan state
+    userPlan,
+    planLoading,
+    planError,
+
+    // Actions
     sendOtpCode,
     verifyOtpCode,
     signOut,
     deleteAccount,
     refreshUserPlan,
+    clearError,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
+/**
+ * Hook pour utiliser l'authentification
+ */
 export function useAuth() {
   const context = useContext(AuthContext)
   if (context === undefined) {

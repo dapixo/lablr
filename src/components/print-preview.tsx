@@ -37,7 +37,7 @@ interface PrintPreviewProps {
 
 export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
   // États d'authentification et usage tracking
-  const { user, userPlan, loading: authLoading } = useAuth()
+  const { user, userPlan, loading } = useAuth()
   const {
     remainingLabels,
     canPrintLabels,
@@ -186,7 +186,7 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
 
   // Réagir aux changements d'état auth pour traiter les actions pendantes
   useEffect(() => {
-    if (!authLoading && user && pendingPrintAction && !hasExecutedPendingActionRef.current) {
+    if (!loading && user && pendingPrintAction && !hasExecutedPendingActionRef.current) {
       hasExecutedPendingActionRef.current = true
 
       // Vérifier les limites freemium et exécuter l'action appropriée
@@ -197,7 +197,7 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
       action()
       setPendingPrintAction(null)
     }
-  }, [authLoading, user, userPlan, pendingPrintAction, canPrintLabels, addresses.length])
+  }, [loading, user, userPlan, pendingPrintAction, canPrintLabels, addresses.length])
 
   if (addresses.length === 0) {
     return null

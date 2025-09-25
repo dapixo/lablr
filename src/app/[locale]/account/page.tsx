@@ -17,7 +17,7 @@ import { getPluralVariables } from '@/lib/i18n-helpers'
 export default function AccountPage() {
   const { locale } = useParams()
   const router = useRouter()
-  const { user, userPlan, loading: authLoading, deleteAccount } = useAuth()
+  const { user, userPlan, loading, deleteAccount } = useAuth()
   const t = useTranslations(locale as string)
   const toast = useRef<Toast>(null)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -62,10 +62,10 @@ export default function AccountPage() {
 
   // Redirection si pas d'utilisateur
   useEffect(() => {
-    if (!authLoading && !user) {
+    if (!loading && !user) {
       router.push(`/${locale}/login`)
     }
-  }, [authLoading, user, router, locale])
+  }, [loading, user, router, locale])
 
   // Afficher un loader pendant la redirection ou si pas d'utilisateur
   if (!user) {
@@ -102,7 +102,7 @@ export default function AccountPage() {
                 {/* Plan actuel */}
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-200">
                   <div className="flex items-center justify-between mb-4">
-                    {authLoading ? (
+                    {loading ? (
                       /* Skeleton loader pour le plan */
                       <>
                         <div className="flex items-center gap-3">
@@ -152,7 +152,7 @@ export default function AccountPage() {
 
                   {/* Usage quotidien */}
                   <div className="space-y-3">
-                    {authLoading || usageLoading ? (
+                    {loading || usageLoading ? (
                       /* Skeleton loader global */
                       <>
                         <div className="flex justify-between items-center text-sm">
@@ -208,7 +208,7 @@ export default function AccountPage() {
                   </div>
 
                   {/* Call to action upgrade - uniquement pour les utilisateurs gratuits */}
-                  {!authLoading && userPlan === 'free' && (
+                  {!loading && userPlan === 'free' && (
                     <div className="mt-6 pt-4 border-t border-blue-200">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                       <div className="flex-1">
