@@ -38,9 +38,31 @@ export async function GET(): Promise<NextResponse<UsageResponse>> {
     }
 
     // Récupérer ou créer l'usage quotidien
-    const { data, error } = await supabase.rpc('get_or_create_daily_usage', { user_uuid: user.id })
+    let { data, error } = await supabase
+      .from('daily_usage')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('usage_date', new Date().toISOString().split('T')[0])
+      .single()
 
-    if (error) {
+    // Si aucun enregistrement trouvé, en créer un
+    if (error?.code === 'PGRST116') {
+      const { data: newData, error: insertError } = await supabase
+        .from('daily_usage')
+        .insert({
+          user_id: user.id,
+          usage_date: new Date().toISOString().split('T')[0],
+          labels_used: 0,
+        })
+        .select()
+        .single()
+
+      if (insertError) {
+        console.error('Error creating daily usage:', insertError)
+        return NextResponse.json({ success: false, error: 'Failed to create usage record' }, { status: 500 })
+      }
+      data = newData
+    } else if (error) {
       console.error('Error fetching daily usage:', error)
       return NextResponse.json({ success: false, error: 'Failed to fetch usage' }, { status: 500 })
     }
@@ -90,15 +112,57 @@ export async function POST(request: NextRequest): Promise<NextResponse<UsageResp
       )
     }
 
-    // Incrémenter l'usage
-    const { data, error } = await supabase.rpc('increment_daily_usage', {
-      user_uuid: user.id,
-      label_count: labelCount,
-    })
+    // Incrémenter l'usage - d'abord récupérer l'existant, puis incrémenter
+    const today = new Date().toISOString().split('T')[0]
 
-    if (error) {
-      console.error('Error incrementing daily usage:', error)
-      return NextResponse.json({ success: false, error: 'Failed to update usage' }, { status: 500 })
+    // Récupérer l'enregistrement existant ou en créer un
+    let { data: existing, error: fetchError } = await supabase
+      .from('daily_usage')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('usage_date', today)
+      .single()
+
+    let data: any
+
+    if (fetchError?.code === 'PGRST116') {
+      // Aucun enregistrement trouvé, en créer un
+      const { data: newData, error: insertError } = await supabase
+        .from('daily_usage')
+        .insert({
+          user_id: user.id,
+          usage_date: today,
+          labels_used: labelCount,
+        })
+        .select()
+        .single()
+
+      if (insertError) {
+        console.error('Error creating daily usage:', insertError)
+        return NextResponse.json({ success: false, error: 'Failed to create usage' }, { status: 500 })
+      }
+      data = newData
+    } else if (fetchError) {
+      console.error('Error fetching daily usage:', fetchError)
+      return NextResponse.json({ success: false, error: 'Failed to fetch usage' }, { status: 500 })
+    } else {
+      // Enregistrement existant trouvé, l'incrémenter
+      const { data: updated, error: updateError } = await supabase
+        .from('daily_usage')
+        .update({
+          labels_used: existing.labels_used + labelCount,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('user_id', user.id)
+        .eq('usage_date', today)
+        .select()
+        .single()
+
+      if (updateError) {
+        console.error('Error updating daily usage:', updateError)
+        return NextResponse.json({ success: false, error: 'Failed to update usage' }, { status: 500 })
+      }
+      data = updated
     }
 
     return NextResponse.json({
