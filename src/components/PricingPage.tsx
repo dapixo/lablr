@@ -86,7 +86,7 @@ export function PricingPage({ t }: PricingPageProps) {
   const [isAnnual, setIsAnnual] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const { user, userPlan, loading } = useAuth()
-  const { createCheckout, isLoading: isUpgrading, error: checkoutError, clearError } = useLemonSqueezyCheckout()
+  const { createCheckout, isLoading: isUpgrading, error: checkoutError } = useLemonSqueezyCheckout()
   const toast = useRef<Toast>(null)
 
   const { freePlan, premiumPlan } = useMemo(

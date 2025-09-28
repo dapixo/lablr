@@ -55,8 +55,8 @@ export const PRINT_CONFIGS: Record<PrintFormat, FormatConfig> = {
         marginBottom: '6mm',
         marginLeft: '0mm',
         gapHorizontal: '0mm',
-        gapVertical: '0mm'
-      }
+        gapVertical: '0mm',
+      },
     },
   },
 
@@ -73,8 +73,8 @@ export const PRINT_CONFIGS: Record<PrintFormat, FormatConfig> = {
         marginBottom: '4mm',
         marginLeft: '0mm',
         gapHorizontal: '0mm',
-        gapVertical: '0mm'
-      }
+        gapVertical: '0mm',
+      },
     },
   },
 
@@ -91,8 +91,8 @@ export const PRINT_CONFIGS: Record<PrintFormat, FormatConfig> = {
         marginBottom: '8.5mm',
         marginLeft: '0mm',
         gapHorizontal: '0mm',
-        gapVertical: '0mm'
-      }
+        gapVertical: '0mm',
+      },
     },
   },
 
@@ -109,8 +109,8 @@ export const PRINT_CONFIGS: Record<PrintFormat, FormatConfig> = {
         marginBottom: '12mm',
         marginLeft: '9.75mm',
         gapHorizontal: '1mm',
-        gapVertical: '0mm'
-      }
+        gapVertical: '0mm',
+      },
     },
   },
 

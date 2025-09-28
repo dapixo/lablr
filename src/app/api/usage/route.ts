@@ -38,12 +38,14 @@ export async function GET(): Promise<NextResponse<UsageResponse>> {
     }
 
     // Récupérer ou créer l'usage quotidien
-    let { data, error } = await supabase
+    const { data, error } = await supabase
       .from('daily_usage')
       .select('*')
       .eq('user_id', user.id)
       .eq('usage_date', new Date().toISOString().split('T')[0])
       .single()
+
+    let usageData = data
 
     // Si aucun enregistrement trouvé, en créer un
     if (error?.code === 'PGRST116') {
@@ -59,9 +61,12 @@ export async function GET(): Promise<NextResponse<UsageResponse>> {
 
       if (insertError) {
         console.error('Error creating daily usage:', insertError)
-        return NextResponse.json({ success: false, error: 'Failed to create usage record' }, { status: 500 })
+        return NextResponse.json(
+          { success: false, error: 'Failed to create usage record' },
+          { status: 500 }
+        )
       }
-      data = newData
+      usageData = newData
     } else if (error) {
       console.error('Error fetching daily usage:', error)
       return NextResponse.json({ success: false, error: 'Failed to fetch usage' }, { status: 500 })
@@ -69,7 +74,7 @@ export async function GET(): Promise<NextResponse<UsageResponse>> {
 
     return NextResponse.json({
       success: true,
-      data: data as DailyUsage,
+      data: usageData as DailyUsage,
     })
   } catch (error) {
     console.error('Unexpected error in GET /api/usage:', error)
@@ -116,14 +121,21 @@ export async function POST(request: NextRequest): Promise<NextResponse<UsageResp
     const today = new Date().toISOString().split('T')[0]
 
     // Récupérer l'enregistrement existant ou en créer un
-    let { data: existing, error: fetchError } = await supabase
+    const { data: existing, error: fetchError } = await supabase
       .from('daily_usage')
       .select('*')
       .eq('user_id', user.id)
       .eq('usage_date', today)
       .single()
 
-    let data: any
+    let resultData: {
+      id: string
+      user_id: string
+      usage_date: string
+      labels_used: number
+      created_at: string
+      updated_at: string
+    }
 
     if (fetchError?.code === 'PGRST116') {
       // Aucun enregistrement trouvé, en créer un
@@ -139,9 +151,12 @@ export async function POST(request: NextRequest): Promise<NextResponse<UsageResp
 
       if (insertError) {
         console.error('Error creating daily usage:', insertError)
-        return NextResponse.json({ success: false, error: 'Failed to create usage' }, { status: 500 })
+        return NextResponse.json(
+          { success: false, error: 'Failed to create usage' },
+          { status: 500 }
+        )
       }
-      data = newData
+      resultData = newData
     } else if (fetchError) {
       console.error('Error fetching daily usage:', fetchError)
       return NextResponse.json({ success: false, error: 'Failed to fetch usage' }, { status: 500 })
@@ -160,14 +175,17 @@ export async function POST(request: NextRequest): Promise<NextResponse<UsageResp
 
       if (updateError) {
         console.error('Error updating daily usage:', updateError)
-        return NextResponse.json({ success: false, error: 'Failed to update usage' }, { status: 500 })
+        return NextResponse.json(
+          { success: false, error: 'Failed to update usage' },
+          { status: 500 }
+        )
       }
-      data = updated
+      resultData = updated
     }
 
     return NextResponse.json({
       success: true,
-      data: data as DailyUsage,
+      data: resultData as DailyUsage,
     })
   } catch (error) {
     console.error('Unexpected error in POST /api/usage:', error)

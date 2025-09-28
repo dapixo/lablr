@@ -6,7 +6,7 @@ import { Card } from 'primereact/card'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import { Skeleton } from 'primereact/skeleton'
 import { Toast } from 'primereact/toast'
-import { useEffect, useRef, useState } from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { SubscriptionManager } from '@/components/SubscriptionManager'
@@ -15,7 +15,7 @@ import { useTranslations } from '@/hooks/useTranslations'
 import { useUsageTracking } from '@/hooks/useUsageTracking'
 import { getPluralVariables } from '@/lib/i18n-helpers'
 
-export default function AccountPage() {
+function AccountPageContent() {
   const { locale } = useParams()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -136,7 +136,9 @@ export default function AccountPage() {
               <div className="space-y-6">
                 <div>
                   <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                    {userPlan === 'premium' ? t('subscription.title') : t('account.planStatus.title')}
+                    {userPlan === 'premium'
+                      ? t('subscription.title')
+                      : t('account.planStatus.title')}
                   </h2>
                 </div>
 
@@ -149,7 +151,9 @@ export default function AccountPage() {
                         <div className="flex items-center gap-3">
                           <Skeleton shape="circle" size="2.5rem" />
                           <div>
-                            <h3 className="font-semibold text-gray-900">{t('account.planStatus.currentPlan')}</h3>
+                            <h3 className="font-semibold text-gray-900">
+                              {t('account.planStatus.currentPlan')}
+                            </h3>
                             <Skeleton width="6rem" height="1rem" className="mt-1" />
                           </div>
                         </div>
@@ -165,26 +169,30 @@ export default function AccountPage() {
                             <i className="pi pi-star text-white text-lg"></i>
                           </div>
                           <div>
-                            <h3 className="font-semibold text-gray-900">{t('account.planStatus.currentPlan')}</h3>
+                            <h3 className="font-semibold text-gray-900">
+                              {t('account.planStatus.currentPlan')}
+                            </h3>
                             <p className="text-sm text-gray-600">
                               {userPlan === 'premium'
                                 ? t('pricing.premium.title')
-                                : t('account.planStatus.freePlan')
-                              }
+                                : t('account.planStatus.freePlan')}
                             </p>
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                            userPlan === 'premium'
-                              ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white'
-                              : 'bg-blue-100 text-blue-800'
-                          }`}>
-                            <i className={`mr-2 ${userPlan === 'premium' ? 'pi pi-star' : 'pi pi-gift'}`}></i>
+                          <div
+                            className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                              userPlan === 'premium'
+                                ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white'
+                                : 'bg-blue-100 text-blue-800'
+                            }`}
+                          >
+                            <i
+                              className={`mr-2 ${userPlan === 'premium' ? 'pi pi-star' : 'pi pi-gift'}`}
+                            ></i>
                             {userPlan === 'premium'
                               ? t('pricing.premium.title')
-                              : t('pricing.plans.free.name')
-                            }
+                              : t('pricing.plans.free.name')}
                           </div>
                         </div>
                       </>
@@ -210,7 +218,9 @@ export default function AccountPage() {
                       <div className="text-center pt-4">
                         <div className="inline-flex items-center gap-2 text-blue-600 font-medium">
                           <i className="pi pi-infinity text-xl"></i>
-                          <span className="text-lg">{t('account.planStatus.premiumStatus.unlimitedLabels')}</span>
+                          <span className="text-lg">
+                            {t('account.planStatus.premiumStatus.unlimitedLabels')}
+                          </span>
                         </div>
                         <p className="text-sm text-gray-600 mt-2">
                           {t('account.planStatus.premiumStatus.description')}
@@ -220,7 +230,9 @@ export default function AccountPage() {
                       /* Contenu réel pour utilisateurs gratuits */
                       <>
                         <div className="flex justify-between items-center text-sm">
-                          <span className="text-gray-600">{t('account.planStatus.dailyUsage')}</span>
+                          <span className="text-gray-600">
+                            {t('account.planStatus.dailyUsage')}
+                          </span>
                           <span className="font-medium text-gray-900">
                             {labelsUsed}/10 {t('account.planStatus.labelsUsed')}
                           </span>
@@ -230,8 +242,11 @@ export default function AccountPage() {
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div
                             className={`h-2 rounded-full transition-all duration-300 ${
-                              remainingLabels === 0 ? 'bg-red-500' :
-                              remainingLabels <= 3 ? 'bg-orange-500' : 'bg-green-500'
+                              remainingLabels === 0
+                                ? 'bg-red-500'
+                                : remainingLabels <= 3
+                                  ? 'bg-orange-500'
+                                  : 'bg-green-500'
                             }`}
                             style={{ width: `${(labelsUsed / 10) * 100}%` }}
                           ></div>
@@ -239,9 +254,16 @@ export default function AccountPage() {
 
                         <div className="text-sm text-gray-600">
                           {remainingLabels > 0 ? (
-                            <span>{t('account.planStatus.remainingLabels', getPluralVariables(remainingLabels))}</span>
+                            <span>
+                              {t(
+                                'account.planStatus.remainingLabels',
+                                getPluralVariables(remainingLabels)
+                              )}
+                            </span>
                           ) : (
-                            <span className="text-red-600 font-medium">{t('account.planStatus.limitReached')}</span>
+                            <span className="text-red-600 font-medium">
+                              {t('account.planStatus.limitReached')}
+                            </span>
                           )}
                         </div>
                       </>
@@ -251,39 +273,39 @@ export default function AccountPage() {
                   {/* Call to action upgrade - uniquement pour les utilisateurs gratuits */}
                   {!loading && userPlan === 'free' && (
                     <div className="mt-6 pt-4 border-t border-blue-200">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                      <div className="flex-1">
-                        <p className="text-sm text-gray-700 mb-2">
-                          {t('account.planStatus.upgradePrompt')}
-                        </p>
-                        <ul className="text-xs text-gray-600 space-y-1">
-                          <li className="flex items-center gap-2">
-                            <i className="pi pi-check text-green-500"></i>
-                            {t('account.planStatus.premiumFeatures.unlimited')}
-                          </li>
-                          <li className="flex items-center gap-2">
-                            <i className="pi pi-check text-green-500"></i>
-                            {t('account.planStatus.premiumFeatures.priority')}
-                          </li>
-                          <li className="flex items-center gap-2">
-                            <i className="pi pi-check text-green-500"></i>
-                            {t('account.planStatus.premiumFeatures.support')}
-                          </li>
-                        </ul>
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <Button
-                          label={t('account.planStatus.upgradeToPremium')}
-                          icon="pi pi-star"
-                          className="p-button-success"
-                          onClick={() => router.push(`/${locale}/pricing`)}
-                          size="small"
-                        />
-                        <div className="text-xs text-center text-gray-500">
-                          {t('account.planStatus.fromPrice')}
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div className="flex-1">
+                          <p className="text-sm text-gray-700 mb-2">
+                            {t('account.planStatus.upgradePrompt')}
+                          </p>
+                          <ul className="text-xs text-gray-600 space-y-1">
+                            <li className="flex items-center gap-2">
+                              <i className="pi pi-check text-green-500"></i>
+                              {t('account.planStatus.premiumFeatures.unlimited')}
+                            </li>
+                            <li className="flex items-center gap-2">
+                              <i className="pi pi-check text-green-500"></i>
+                              {t('account.planStatus.premiumFeatures.priority')}
+                            </li>
+                            <li className="flex items-center gap-2">
+                              <i className="pi pi-check text-green-500"></i>
+                              {t('account.planStatus.premiumFeatures.support')}
+                            </li>
+                          </ul>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <Button
+                            label={t('account.planStatus.upgradeToPremium')}
+                            icon="pi pi-star"
+                            className="p-button-success"
+                            onClick={() => router.push(`/${locale}/pricing`)}
+                            size="small"
+                          />
+                          <div className="text-xs text-center text-gray-500">
+                            {t('account.planStatus.fromPrice')}
+                          </div>
                         </div>
                       </div>
-                    </div>
                     </div>
                   )}
                 </div>
@@ -376,5 +398,13 @@ export default function AccountPage() {
       <ConfirmDialog />
       <Toast ref={toast} />
     </div>
+  )
+}
+
+export default function AccountPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AccountPageContent />
+    </Suspense>
   )
 }

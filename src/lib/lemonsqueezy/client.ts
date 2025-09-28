@@ -25,7 +25,7 @@ export function validateLemonSqueezyConfig(): boolean {
   const requiredVars = [
     'LEMONSQUEEZY_API_KEY',
     'LEMONSQUEEZY_STORE_ID',
-    'LEMONSQUEEZY_WEBHOOK_SECRET'
+    'LEMONSQUEEZY_WEBHOOK_SECRET',
   ]
 
   for (const varName of requiredVars) {

@@ -37,7 +37,6 @@ export function useUsageTracking(): UsageTrackingHook {
     error: null,
   })
 
-
   /**
    * Récupère l'usage quotidien depuis l'API
    */
@@ -96,7 +95,7 @@ export function useUsageTracking(): UsageTrackingHook {
         error: error instanceof Error ? error.message : 'Unknown error',
       }))
     }
-  }, [user?.id, userPlan, authLoading])
+  }, [user, userPlan, authLoading])
 
   /**
    * Incrémente l'usage des étiquettes
@@ -143,7 +142,8 @@ export function useUsageTracking(): UsageTrackingHook {
         return false
       }
     },
-    [user, userPlan, refreshUsage]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [user, userPlan] // refreshUsage excluded to avoid infinite loop
   )
 
   /**
@@ -175,7 +175,8 @@ export function useUsageTracking(): UsageTrackingHook {
     if (!authLoading && user) {
       refreshUsage()
     }
-  }, [authLoading, refreshUsage, user]) // refreshUsage is stable with useCallback
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authLoading, user, userPlan]) // refreshUsage excluded to avoid infinite loop
 
   return {
     ...state,

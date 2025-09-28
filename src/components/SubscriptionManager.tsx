@@ -1,16 +1,16 @@
 'use client'
 
+import { Calendar, CreditCard, Package } from 'lucide-react'
 import { useParams } from 'next/navigation'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 import { Skeleton } from 'primereact/skeleton'
 import { Tag } from 'primereact/tag'
 import { useCallback, useEffect, useState } from 'react'
-import { Calendar, CreditCard, Package } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
+import type { TranslationVariables } from '@/hooks/useTranslations'
 import { getPluralVariables } from '@/lib/i18n-helpers'
 import type { LemonSqueezySubscription } from '@/types/lemonsqueezy'
-import type { TranslationVariables } from '@/hooks/useTranslations'
 
 interface SubscriptionManagerProps {
   t: (key: string, variables?: TranslationVariables) => string
@@ -62,12 +62,14 @@ export function SubscriptionManager({ t, embedded = false }: SubscriptionManager
       setLoading(false)
       setHasFetched(true) // Marquer comme récupéré
     }
-  }, [user, hasFetched])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]) // hasFetched excluded to avoid infinite loop
 
   useEffect(() => {
     setHasFetched(false) // Reset cache quand l'utilisateur change
     fetchSubscription()
-  }, [fetchSubscription]) // Seulement se déclencher quand l'utilisateur change, pas à chaque render
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]) // fetchSubscription excluded to avoid infinite loop
 
   /**
    * Ouverture du customer portal Lemon Squeezy

@@ -3,12 +3,17 @@
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 import { Dialog } from 'primereact/dialog'
-import { InputText } from 'primereact/inputtext'
 import { InputOtp } from 'primereact/inputotp'
+import { InputText } from 'primereact/inputtext'
 import { Message } from 'primereact/message'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
-import { extractRateLimitDelay, getErrorMessage, isRateLimitError, isOTPError } from '@/lib/auth-helpers'
+import {
+  extractRateLimitDelay,
+  getErrorMessage,
+  isOTPError,
+  isRateLimitError,
+} from '@/lib/auth-helpers'
 import { validateEmailDomain } from '@/lib/disposable-email-domains'
 
 interface AuthModalProps {
@@ -210,11 +215,7 @@ export function AuthModal({ visible, onHide, onSuccess, t }: AuthModalProps) {
         {step === 'email' && (
           <Button
             type="submit"
-            label={
-              loading
-                ? t('auth.buttons.loading')
-                : t('auth.otp.sendCode')
-            }
+            label={loading ? t('auth.buttons.loading') : t('auth.otp.sendCode')}
             icon={loading ? undefined : 'pi pi-send'}
             loading={loading}
             disabled={loading}
@@ -225,11 +226,7 @@ export function AuthModal({ visible, onHide, onSuccess, t }: AuthModalProps) {
         {step === 'code' && (
           <Button
             type="submit"
-            label={
-              loading
-                ? t('auth.buttons.loading')
-                : t('auth.otp.verify')
-            }
+            label={loading ? t('auth.buttons.loading') : t('auth.otp.verify')}
             icon={loading ? undefined : 'pi pi-check'}
             loading={loading}
             disabled={loading || otpCode.length < 6}
@@ -291,9 +288,7 @@ export function AuthModal({ visible, onHide, onSuccess, t }: AuthModalProps) {
               <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-4">
                 <i className="pi pi-envelope text-green-500 text-2xl"></i>
               </div>
-              <p className="text-gray-700 font-medium mb-2">
-                {t('auth.otp.codeSent')}
-              </p>
+              <p className="text-gray-700 font-medium mb-2">{t('auth.otp.codeSent')}</p>
               <p className="text-sm text-gray-500 mb-4">
                 {t('auth.otp.codeSentTo').replace('{email}', email)}
               </p>
@@ -334,7 +329,7 @@ export function AuthModal({ visible, onHide, onSuccess, t }: AuthModalProps) {
                     ? `${t('auth.otp.resendCode')} (${resendCountdown}s)`
                     : t('auth.otp.resendCode')
                 }
-                icon={resendCountdown > 0 ? "pi pi-clock" : "pi pi-refresh"}
+                icon={resendCountdown > 0 ? 'pi pi-clock' : 'pi pi-refresh'}
                 outlined
                 onClick={handleResendCode}
                 disabled={loading || !canResend}

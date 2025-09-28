@@ -14,17 +14,13 @@ const RATE_LIMIT_PATTERNS = [
   /after (\d+) seconds?/i,
   /request this after (\d+)/i,
   /wait (\d+)/i,
-  /(\d+) seconds?\./i
+  /(\d+) seconds?\./i,
 ] as const
 
 /**
  * Codes d'erreur OTP standardisés
  */
-const OTP_ERROR_CODES = [
-  'otp_expired',
-  'invalid_otp',
-  'Token has expired or is invalid'
-] as const
+const OTP_ERROR_CODES = ['otp_expired', 'invalid_otp', 'Token has expired or is invalid'] as const
 
 /**
  * Indicateurs de rate limiting
@@ -33,7 +29,7 @@ const RATE_LIMIT_INDICATORS = [
   'rate_limit',
   'too_many_requests',
   'For security purposes',
-  'once every'
+  'once every',
 ] as const
 
 /**
@@ -63,9 +59,7 @@ export type TranslationFunction = {
  * Vérifie si une erreur est liée à un code OTP invalide/expiré
  */
 export function isOTPError(message: string): boolean {
-  return OTP_ERROR_CODES.some(code =>
-    message.toLowerCase().includes(code.toLowerCase())
-  )
+  return OTP_ERROR_CODES.some((code) => message.toLowerCase().includes(code.toLowerCase()))
 }
 
 /**
@@ -110,7 +104,7 @@ export function getErrorMessage(message: string, t: TranslationFunction): string
  * Version optimisée avec indicateurs prédefinis
  */
 export function isRateLimitError(message: string): boolean {
-  return RATE_LIMIT_INDICATORS.some(indicator =>
+  return RATE_LIMIT_INDICATORS.some((indicator) =>
     message.toLowerCase().includes(indicator.toLowerCase())
   )
 }

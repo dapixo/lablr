@@ -15,7 +15,7 @@ export function UserMenu() {
   const t = useTranslations(locale)
   const menuRef = useRef<Menu>(null)
   const toastRef = useRef<Toast>(null)
-  const [loading, _setLoading] = useState(false)
+  const [loading] = useState(false)
 
   // Récupérer le locale depuis l'URL et écouter les changements
   useEffect(() => {

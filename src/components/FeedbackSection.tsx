@@ -1,6 +1,6 @@
 'use client'
 
-import { Heart, Mail, MessageSquareText, Lightbulb, Zap } from 'lucide-react'
+import { Heart, Lightbulb, Mail, MessageSquareText, Zap } from 'lucide-react'
 import { Card } from 'primereact/card'
 import React from 'react'
 

@@ -1,17 +1,17 @@
 'use client'
 
 import { Eye, Settings } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
 import { Button } from 'primereact/button'
 import { Panel } from 'primereact/panel'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
 import { AuthModal } from '@/components/auth/AuthModal'
 import { UpgradeModal } from '@/components/UpgradeModal'
 import { PREVIEW_DIMENSIONS, PREVIEW_MAX_LABELS_ROLL, PREVIEW_MAX_PAGES } from '@/constants'
 import { useAuth } from '@/hooks/useAuth'
 import { useUsageTracking } from '@/hooks/useUsageTracking'
-import { downloadCSV, getPrintCSS, generateDebugPrintCSS } from '@/lib/print-formats'
 import { PRINT_CONFIGS } from '@/lib/print/config'
+import { downloadCSV, generateDebugPrintCSS, getPrintCSS } from '@/lib/print-formats'
 import { printAddresses } from '@/lib/print-utils'
 import { STORAGE_KEYS, useCollapsiblePanel, usePersistedSelection } from '@/lib/storage'
 import { cn } from '@/lib/utils'
@@ -38,13 +38,8 @@ interface PrintPreviewProps {
 export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
   // États d'authentification et usage tracking
   const { user, userPlan, loading } = useAuth()
-  const {
-    remainingLabels,
-    canPrintLabels,
-    getMaxPrintableLabels,
-    trackLabelUsage,
-    loading: usageLoading,
-  } = useUsageTracking()
+  const { remainingLabels, canPrintLabels, getMaxPrintableLabels, trackLabelUsage } =
+    useUsageTracking()
 
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
@@ -160,7 +155,7 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
 
     // Utilisateur connecté et dans les limites, exécuter directement l'impression
     executePrint()
-  }, [user, addresses.length, canPrintLabels, executePrint])
+  }, [user, addresses, canPrintLabels, executePrint])
 
   const handlePrintLimited = useCallback(() => {
     // Imprimer seulement le nombre d'adresses autorisées
@@ -168,7 +163,6 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
     const limitedAddresses = addresses.slice(0, maxPrintable)
     executePrint(limitedAddresses)
   }, [addresses, getMaxPrintableLabels, executePrint])
-
 
   const handleAuthModalHide = useCallback(() => {
     setShowAuthModal(false)
@@ -243,7 +237,6 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
             </div>
           </fieldset>
         </div>
-
 
         {/* Actions */}
         <div className="flex justify-center mt-6 mb-4">
@@ -419,17 +412,41 @@ const PrintPreviewSheet = React.memo<PrintPreviewSheetProps>(function PrintPrevi
                   style={{
                     fontSize: '8px',
                     lineHeight: '1.3',
-                    padding: paddingStyle
+                    padding: paddingStyle,
                   }}
                 >
                   {format === 'A4_LABELS_10' ? (
-                    <PrintPreviewLabels addresses={pageAddresses} gridCols={2} gridRows={5} t={t} format={format} />
+                    <PrintPreviewLabels
+                      addresses={pageAddresses}
+                      gridCols={2}
+                      gridRows={5}
+                      t={t}
+                      format={format}
+                    />
                   ) : format === 'A4_LABELS_14' ? (
-                    <PrintPreviewLabels addresses={pageAddresses} gridCols={2} gridRows={7} t={t} format={format} />
+                    <PrintPreviewLabels
+                      addresses={pageAddresses}
+                      gridCols={2}
+                      gridRows={7}
+                      t={t}
+                      format={format}
+                    />
                   ) : format === 'A4_LABELS_16' ? (
-                    <PrintPreviewLabels addresses={pageAddresses} gridCols={2} gridRows={8} t={t} format={format} />
+                    <PrintPreviewLabels
+                      addresses={pageAddresses}
+                      gridCols={2}
+                      gridRows={8}
+                      t={t}
+                      format={format}
+                    />
                   ) : format === 'A4_LABELS_21' ? (
-                    <PrintPreviewLabels addresses={pageAddresses} gridCols={3} gridRows={7} t={t} format={format} />
+                    <PrintPreviewLabels
+                      addresses={pageAddresses}
+                      gridCols={3}
+                      gridRows={7}
+                      t={t}
+                      format={format}
+                    />
                   ) : format === 'A4_COMPACT' ? (
                     <PrintPreviewCompact addresses={pageAddresses} />
                   ) : (
@@ -473,20 +490,23 @@ const PrintPreviewLabels = React.memo<{
   const dimensions = config?.styling.dimensions
 
   // Calculer les styles de grille basés sur les vraies proportions
-  const gridStyle: React.CSSProperties = dimensions && gridRows ? {
-    display: 'grid',
-    gridTemplateColumns: `repeat(${gridCols}, 1fr)`,
-    gridTemplateRows: `repeat(${gridRows}, 1fr)`,
-    gap: 0,
-    width: '100%',
-    height: '100%'
-  } : {
-    display: 'grid',
-    gridTemplateColumns: `repeat(${gridCols}, 1fr)`,
-    gap: 0,
-    width: '100%',
-    height: '100%'
-  }
+  const gridStyle: React.CSSProperties =
+    dimensions && gridRows
+      ? {
+          display: 'grid',
+          gridTemplateColumns: `repeat(${gridCols}, 1fr)`,
+          gridTemplateRows: `repeat(${gridRows}, 1fr)`,
+          gap: 0,
+          width: '100%',
+          height: '100%',
+        }
+      : {
+          display: 'grid',
+          gridTemplateColumns: `repeat(${gridCols}, 1fr)`,
+          gap: 0,
+          width: '100%',
+          height: '100%',
+        }
 
   return (
     <div className="w-full h-full" style={gridStyle}>
@@ -496,11 +516,13 @@ const PrintPreviewLabels = React.memo<{
           width: '100%',
           height: '100%',
           padding: '4px',
-          fontSize: gridRows === 8 ? '6px' : gridRows === 7 ? '6.5px' : gridCols === 2 ? '7px' : '6px',
+          fontSize:
+            gridRows === 8 ? '6px' : gridRows === 7 ? '6.5px' : gridCols === 2 ? '7px' : '6px',
           lineHeight: '1.2',
           textAlign: 'center',
           boxSizing: 'border-box',
-          minHeight: gridRows === 8 ? '40px' : gridRows === 7 ? '45px' : gridCols === 2 ? '60px' : '50px'
+          minHeight:
+            gridRows === 8 ? '40px' : gridRows === 7 ? '45px' : gridCols === 2 ? '60px' : '50px',
         }
 
         return (

@@ -14,13 +14,15 @@ export const LEMONSQUEEZY_CONFIG = {
 
   // URLs de redirection après paiement
   redirectUrls: {
-    success: process.env.NODE_ENV === 'production'
-      ? 'https://lablr.fr/account?success=true'
-      : 'http://localhost:3000/account?success=true',
-    cancel: process.env.NODE_ENV === 'production'
-      ? 'https://lablr.fr/pricing?cancelled=true'
-      : 'http://localhost:3000/pricing?cancelled=true',
-  }
+    success:
+      process.env.NODE_ENV === 'production'
+        ? 'https://lablr.fr/account?success=true'
+        : 'http://localhost:3000/account?success=true',
+    cancel:
+      process.env.NODE_ENV === 'production'
+        ? 'https://lablr.fr/pricing?cancelled=true'
+        : 'http://localhost:3000/pricing?cancelled=true',
+  },
 } as const
 
 /**
@@ -38,8 +40,8 @@ export const SUBSCRIPTION_PLANS = {
     price: 48,
     billingCycle: 'yearly',
     variantId: LEMONSQUEEZY_CONFIG.variants.yearly,
-    savings: '20% d\'économie'
-  }
+    savings: "20% d'économie",
+  },
 } as const
 
 export type PlanType = keyof typeof SUBSCRIPTION_PLANS

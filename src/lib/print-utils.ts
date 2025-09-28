@@ -1,4 +1,3 @@
-import { PRINT_DELAY_MS } from '@/constants'
 import { generateAddressesHTML as generateHTML } from '@/lib/print/html-generator'
 import { generateCSV } from '@/lib/print-formats'
 import type { Address, PrintFormat } from '@/types/address'

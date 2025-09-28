@@ -3,15 +3,20 @@
 import { useParams, useRouter } from 'next/navigation'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
-import { InputText } from 'primereact/inputtext'
 import { InputOtp } from 'primereact/inputotp'
+import { InputText } from 'primereact/inputtext'
 import { Message } from 'primereact/message'
 import { useCallback, useEffect, useState } from 'react'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { useAuth } from '@/hooks/useAuth'
 import { useTranslations } from '@/hooks/useTranslations'
-import { extractRateLimitDelay, getErrorMessage, isRateLimitError, isOTPError } from '@/lib/auth-helpers'
+import {
+  extractRateLimitDelay,
+  getErrorMessage,
+  isOTPError,
+  isRateLimitError,
+} from '@/lib/auth-helpers'
 import { validateEmailDomain } from '@/lib/disposable-email-domains'
 
 export default function LoginPage() {
@@ -124,7 +129,6 @@ export default function LoginPage() {
     [email, otpCode, verifyOtpCode, t]
   )
 
-
   const goBackToEmail = useCallback(() => {
     setOtpCode('')
     setError(null)
@@ -196,7 +200,9 @@ export default function LoginPage() {
             {/* Header du formulaire */}
             <div className="text-center mb-8">
               <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-4">
-                <i className={`pi ${step === 'code' ? 'pi-key' : 'pi-envelope'} text-blue-500 text-xl`}></i>
+                <i
+                  className={`pi ${step === 'code' ? 'pi-key' : 'pi-envelope'} text-blue-500 text-xl`}
+                ></i>
               </div>
               <h1 className="text-2xl font-bold text-gray-900 mb-2">
                 {step === 'code' ? t('auth.otp.enterCode') : t('auth.title.signIn')}
@@ -213,9 +219,7 @@ export default function LoginPage() {
                   <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-4">
                     <i className="pi pi-envelope text-green-500 text-2xl"></i>
                   </div>
-                  <p className="text-gray-700 font-medium mb-2">
-                    {t('auth.otp.codeSent')}
-                  </p>
+                  <p className="text-gray-700 font-medium mb-2">{t('auth.otp.codeSent')}</p>
                   <p className="text-sm text-gray-500 mb-4">
                     {t('auth.otp.codeSentTo').replace('{email}', email)}
                   </p>
@@ -267,11 +271,7 @@ export default function LoginPage() {
 
                   <Button
                     type="submit"
-                    label={
-                      loading
-                        ? t('auth.buttons.loading')
-                        : t('auth.otp.verify')
-                    }
+                    label={loading ? t('auth.buttons.loading') : t('auth.otp.verify')}
                     icon={loading ? undefined : 'pi pi-check'}
                     loading={loading}
                     disabled={loading || otpCode.length < 6}
@@ -286,7 +286,7 @@ export default function LoginPage() {
                         ? `${t('auth.otp.resendCode')} (${resendCountdown}s)`
                         : t('auth.otp.resendCode')
                     }
-                    icon={resendCountdown > 0 ? "pi pi-clock" : "pi pi-refresh"}
+                    icon={resendCountdown > 0 ? 'pi pi-clock' : 'pi pi-refresh'}
                     outlined
                     onClick={handleResendCode}
                     disabled={loading || !canResend}
@@ -330,11 +330,7 @@ export default function LoginPage() {
 
                 <Button
                   type="submit"
-                  label={
-                    loading
-                      ? t('auth.buttons.loading')
-                      : t('auth.otp.sendCode')
-                  }
+                  label={loading ? t('auth.buttons.loading') : t('auth.otp.sendCode')}
                   icon={loading ? undefined : 'pi pi-send'}
                   loading={loading}
                   disabled={loading}
@@ -346,7 +342,6 @@ export default function LoginPage() {
             {step === 'email' && (
               /* Section inférieure */
               <div className="mt-8 pt-6 border-t border-gray-100">
-
                 <div className="bg-gray-50 rounded-lg p-4">
                   <div className="text-center text-sm text-gray-600">
                     <p className="font-medium mb-2">{t('auth.otp.howItWorks.title')}</p>

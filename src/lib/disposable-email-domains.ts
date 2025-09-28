@@ -414,7 +414,7 @@ export const disposableEmailDomains = new Set([
   'tempail.com',
   'tempmailgen.com',
   'fakemailz.com',
-  'mail-temp.com'
+  'mail-temp.com',
 ])
 
 /**
@@ -439,7 +439,7 @@ export function isDisposableEmailDomain(email: string): boolean {
  */
 export const EMAIL_VALIDATION_ERRORS = {
   INVALID_FORMAT: 'Unable to validate email address: invalid format',
-  DISPOSABLE_DOMAIN: 'Unable to validate email address: disposable email domain not allowed'
+  DISPOSABLE_DOMAIN: 'Unable to validate email address: disposable email domain not allowed',
 } as const
 
 /**
@@ -455,7 +455,8 @@ export interface EmailValidationResult {
 /**
  * Regex de validation email optimisée (plus stricte)
  */
-const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
+const EMAIL_REGEX =
+  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
 
 /**
  * Extrait le domaine d'un email de manière sécurisée
@@ -480,7 +481,7 @@ export function validateEmailDomain(email: string): EmailValidationResult {
       isValid: false,
       isDisposable: false,
       domain: null,
-      errorCode: 'INVALID_FORMAT'
+      errorCode: 'INVALID_FORMAT',
     }
   }
 
@@ -491,7 +492,7 @@ export function validateEmailDomain(email: string): EmailValidationResult {
       isValid: false,
       isDisposable: false,
       domain: null,
-      errorCode: 'INVALID_FORMAT'
+      errorCode: 'INVALID_FORMAT',
     }
   }
 
@@ -502,7 +503,7 @@ export function validateEmailDomain(email: string): EmailValidationResult {
       isValid: false,
       isDisposable: false,
       domain: null,
-      errorCode: 'INVALID_FORMAT'
+      errorCode: 'INVALID_FORMAT',
     }
   }
 
@@ -513,6 +514,6 @@ export function validateEmailDomain(email: string): EmailValidationResult {
     isValid: true,
     isDisposable,
     domain,
-    ...(isDisposable && { errorCode: 'DISPOSABLE_DOMAIN' as const })
+    ...(isDisposable && { errorCode: 'DISPOSABLE_DOMAIN' as const }),
   }
 }

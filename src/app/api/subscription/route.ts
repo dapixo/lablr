@@ -7,7 +7,10 @@ import { createClient } from '@/lib/supabase/server'
 export async function GET() {
   try {
     const supabase = await createClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
 
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -64,9 +67,9 @@ export async function GET() {
           cardLastFour: null,
           urls: {
             customer_portal: null,
-            update_payment_method: null
-          }
-        }
+            update_payment_method: null,
+          },
+        },
       })
     }
 
@@ -77,13 +80,14 @@ export async function GET() {
       .eq('id', subscription.plan_id)
       .single()
 
-
     // Vérifier si l'utilisateur est en période de grâce
-    const isInPaymentGracePeriod = subscription.grace_period_ends_at &&
-      new Date() < new Date(subscription.grace_period_ends_at)
+    const isInPaymentGracePeriod =
+      subscription.grace_period_ends_at && new Date() < new Date(subscription.grace_period_ends_at)
 
-    const isInCancelledGracePeriod = subscription.status === 'cancelled' &&
-      subscription.ends_at && new Date() < new Date(subscription.ends_at)
+    const isInCancelledGracePeriod =
+      subscription.status === 'cancelled' &&
+      subscription.ends_at &&
+      new Date() < new Date(subscription.ends_at)
 
     const isInGracePeriod = isInPaymentGracePeriod || isInCancelledGracePeriod
 
@@ -107,9 +111,12 @@ export async function GET() {
     const translatePlanName = (name: string | undefined) => {
       if (!name) return 'Inconnu'
       switch (name.toLowerCase()) {
-        case 'monthly': return 'Mensuel'
-        case 'yearly': return 'Annuel'
-        default: return name
+        case 'monthly':
+          return 'Mensuel'
+        case 'yearly':
+          return 'Annuel'
+        default:
+          return name
       }
     }
 
@@ -122,12 +129,18 @@ export async function GET() {
         return `Annulé (accès jusqu'au ${graceDaysRemaining} jour${graceDaysRemaining > 1 ? 's' : ''})`
       }
       switch (status) {
-        case 'active': return 'Actif'
-        case 'past_due': return 'Paiement en retard'
-        case 'unpaid': return 'Non payé'
-        case 'cancelled': return 'Annulé'
-        case 'expired': return 'Expiré'
-        default: return status
+        case 'active':
+          return 'Actif'
+        case 'past_due':
+          return 'Paiement en retard'
+        case 'unpaid':
+          return 'Non payé'
+        case 'cancelled':
+          return 'Annulé'
+        case 'expired':
+          return 'Expiré'
+        default:
+          return status
       }
     }
 
@@ -147,22 +160,18 @@ export async function GET() {
       cardLastFour: subscription.card_last_four,
       urls: subscription.urls || {
         customer_portal: null,
-        update_payment_method: null
+        update_payment_method: null,
       },
       // Informations période de grâce
       isInGracePeriod: isInGracePeriod,
       gracePeriodEndsAt: subscription.grace_period_ends_at,
-      graceDaysRemaining: graceDaysRemaining
+      graceDaysRemaining: graceDaysRemaining,
     }
 
     return NextResponse.json({ subscription: simpleSubscription })
-
   } catch (error) {
     console.error('Subscription API error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 

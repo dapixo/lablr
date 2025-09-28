@@ -1,9 +1,9 @@
 'use client'
 
 import type { AuthError, User } from '@supabase/supabase-js'
-import { createContext, useCallback, useContext, useEffect, useState, useRef } from 'react'
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { EMAIL_VALIDATION_ERRORS, validateEmailDomain } from '@/lib/disposable-email-domains'
 import { createClient } from '@/lib/supabase/client'
-import { validateEmailDomain, EMAIL_VALIDATION_ERRORS } from '@/lib/disposable-email-domains'
 import type { UserPlan } from '@/types/user'
 
 /**
@@ -11,7 +11,10 @@ import type { UserPlan } from '@/types/user'
  * Active les logs seulement avec ?debug=true
  */
 const debugLog = (...args: unknown[]) => {
-  if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('debug') === 'true') {
+  if (
+    typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get('debug') === 'true'
+  ) {
     console.log(...args)
   }
 }
@@ -64,57 +67,60 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
    * Récupère le plan utilisateur de manière non-bloquante
    * 🎯 Lazy loading - ne bloque pas l'authentification
    */
-  const fetchUserPlan = useCallback(async (userId: string) => {
-    // Éviter les appels redondants pour le même utilisateur
-    if (hasInitiallyFetched.current.has(userId)) {
-      debugLog('🚀 Skipping fetchUserPlan - already fetched for user:', userId)
-      return
-    }
-
-    setPlanLoading(true)
-    setPlanError(null)
-
-    try {
-      debugLog('📡 Fetching user plan for:', userId)
-      hasInitiallyFetched.current.add(userId)
-
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('plan')
-        .eq('user_id', userId)
-        .single()
-
-      if (error) {
-        // Si profil pas trouvé, créer avec plan gratuit
-        if (error.code === 'PGRST116') {
-          debugLog('📝 Creating new profile with free plan')
-          const { error: insertError } = await supabase
-            .from('profiles')
-            .insert({ user_id: userId, plan: 'free' })
-
-          if (insertError) {
-            throw insertError
-          }
-
-          setUserPlan('free')
-        } else {
-          throw error
-        }
-      } else {
-        const plan = (data?.plan as UserPlan) || 'free'
-        debugLog('📋 User plan loaded:', plan)
-        setUserPlan(plan)
+  const fetchUserPlan = useCallback(
+    async (userId: string) => {
+      // Éviter les appels redondants pour le même utilisateur
+      if (hasInitiallyFetched.current.has(userId)) {
+        debugLog('🚀 Skipping fetchUserPlan - already fetched for user:', userId)
+        return
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load user plan'
-      debugLog('❌ Error fetching user plan:', errorMessage)
-      setPlanError(errorMessage)
-      // Fallback vers free en cas d'erreur
-      setUserPlan('free')
-    } finally {
-      setPlanLoading(false)
-    }
-  }, [supabase])
+
+      setPlanLoading(true)
+      setPlanError(null)
+
+      try {
+        debugLog('📡 Fetching user plan for:', userId)
+        hasInitiallyFetched.current.add(userId)
+
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('plan')
+          .eq('user_id', userId)
+          .single()
+
+        if (error) {
+          // Si profil pas trouvé, créer avec plan gratuit
+          if (error.code === 'PGRST116') {
+            debugLog('📝 Creating new profile with free plan')
+            const { error: insertError } = await supabase
+              .from('profiles')
+              .insert({ user_id: userId, plan: 'free' })
+
+            if (insertError) {
+              throw insertError
+            }
+
+            setUserPlan('free')
+          } else {
+            throw error
+          }
+        } else {
+          const plan = (data?.plan as UserPlan) || 'free'
+          debugLog('📋 User plan loaded:', plan)
+          setUserPlan(plan)
+        }
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load user plan'
+        debugLog('❌ Error fetching user plan:', errorMessage)
+        setPlanError(errorMessage)
+        // Fallback vers free en cas d'erreur
+        setUserPlan('free')
+      } finally {
+        setPlanLoading(false)
+      }
+    },
+    [supabase]
+  )
 
   /**
    * Hook principal d'authentification
@@ -123,32 +129,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     debugLog('🔄 Setting up auth listener')
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        debugLog('🔐 Auth event:', event, 'User:', session?.user?.email || 'none')
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      debugLog('🔐 Auth event:', event, 'User:', session?.user?.email || 'none')
 
-        // 🎯 Mise à jour immédiate de l'état d'auth
-        const newUser = session?.user || null
-        setUser(newUser)
-        setLoading(false)
-        setError(null)
+      // 🎯 Mise à jour immédiate de l'état d'auth
+      const newUser = session?.user || null
+      setUser(newUser)
+      setLoading(false)
+      setError(null)
 
-        // 💰 Chargement du plan en arrière-plan (non-bloquant)
-        if (newUser?.id) {
-          // Pas d'await - non-bloquant pour l'UX
-          fetchUserPlan(newUser.id).catch((err) => {
-            debugLog('⚠️ Background plan fetch failed:', err)
-          })
-        } else {
-          // Reset plan si déconnexion
-          setUserPlan('free')
-          setPlanError(null)
-          setPlanLoading(false)
-          // Reset le cache quand l'utilisateur se déconnecte
-          hasInitiallyFetched.current.clear()
-        }
+      // 💰 Chargement du plan en arrière-plan (non-bloquant)
+      if (newUser?.id) {
+        // Pas d'await - non-bloquant pour l'UX
+        fetchUserPlan(newUser.id).catch((err) => {
+          debugLog('⚠️ Background plan fetch failed:', err)
+        })
+      } else {
+        // Reset plan si déconnexion
+        setUserPlan('free')
+        setPlanError(null)
+        setPlanLoading(false)
+        // Reset le cache quand l'utilisateur se déconnecte
+        hasInitiallyFetched.current.clear()
       }
-    )
+    })
 
     return () => {
       debugLog('🧹 Cleaning up auth listener')
@@ -173,92 +179,102 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   /**
    * Helper pour créer une erreur de validation email
    */
-  const createValidationError = useCallback((errorCode: keyof typeof EMAIL_VALIDATION_ERRORS): AuthError => ({
-    message: EMAIL_VALIDATION_ERRORS[errorCode],
-    status: 400,
-  } as AuthError), [])
+  const createValidationError = useCallback(
+    (errorCode: keyof typeof EMAIL_VALIDATION_ERRORS): AuthError =>
+      ({
+        message: EMAIL_VALIDATION_ERRORS[errorCode],
+        status: 400,
+      }) as AuthError,
+    []
+  )
 
   /**
    * Envoi du code OTP avec validation
    */
-  const sendOtpCode = useCallback(async (email: string) => {
-    // Reset erreurs précédentes
-    setError(null)
+  const sendOtpCode = useCallback(
+    async (email: string) => {
+      // Reset erreurs précédentes
+      setError(null)
 
-    // Validation côté client
-    const emailValidation = validateEmailDomain(email)
+      // Validation côté client
+      const emailValidation = validateEmailDomain(email)
 
-    if (!emailValidation.isValid) {
-      const validationError = createValidationError('INVALID_FORMAT')
-      setError(validationError.message)
-      return { error: validationError }
-    }
-
-    if (emailValidation.isDisposable) {
-      const validationError = createValidationError('DISPOSABLE_DOMAIN')
-      setError(validationError.message)
-      return { error: validationError }
-    }
-
-    try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          shouldCreateUser: true,
-        },
-      })
-
-      if (error) {
-        setError(error.message)
+      if (!emailValidation.isValid) {
+        const validationError = createValidationError('INVALID_FORMAT')
+        setError(validationError.message)
+        return { error: validationError }
       }
 
-      return { error }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to send OTP code'
-      setError(errorMessage)
-      return { error: new Error(errorMessage) as AuthError }
-    }
-  }, [supabase.auth, createValidationError])
+      if (emailValidation.isDisposable) {
+        const validationError = createValidationError('DISPOSABLE_DOMAIN')
+        setError(validationError.message)
+        return { error: validationError }
+      }
+
+      try {
+        const { error } = await supabase.auth.signInWithOtp({
+          email,
+          options: {
+            shouldCreateUser: true,
+          },
+        })
+
+        if (error) {
+          setError(error.message)
+        }
+
+        return { error }
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to send OTP code'
+        setError(errorMessage)
+        return { error: new Error(errorMessage) as AuthError }
+      }
+    },
+    [supabase.auth, createValidationError]
+  )
 
   /**
    * Vérification du code OTP
    */
-  const verifyOtpCode = useCallback(async (email: string, code: string) => {
-    setError(null)
+  const verifyOtpCode = useCallback(
+    async (email: string, code: string) => {
+      setError(null)
 
-    // Validation côté client
-    const emailValidation = validateEmailDomain(email)
+      // Validation côté client
+      const emailValidation = validateEmailDomain(email)
 
-    if (!emailValidation.isValid) {
-      const validationError = createValidationError('INVALID_FORMAT')
-      setError(validationError.message)
-      return { error: validationError }
-    }
-
-    if (emailValidation.isDisposable) {
-      const validationError = createValidationError('DISPOSABLE_DOMAIN')
-      setError(validationError.message)
-      return { error: validationError }
-    }
-
-    try {
-      const { error } = await supabase.auth.verifyOtp({
-        email,
-        token: code,
-        type: 'email',
-      })
-
-      if (error) {
-        setError(error.message)
+      if (!emailValidation.isValid) {
+        const validationError = createValidationError('INVALID_FORMAT')
+        setError(validationError.message)
+        return { error: validationError }
       }
 
-      return { error }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to verify OTP code'
-      setError(errorMessage)
-      return { error: new Error(errorMessage) as AuthError }
-    }
-  }, [supabase.auth, createValidationError])
+      if (emailValidation.isDisposable) {
+        const validationError = createValidationError('DISPOSABLE_DOMAIN')
+        setError(validationError.message)
+        return { error: validationError }
+      }
+
+      try {
+        const { error } = await supabase.auth.verifyOtp({
+          email,
+          token: code,
+          type: 'email',
+        })
+
+        if (error) {
+          setError(error.message)
+        }
+
+        return { error }
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to verify OTP code'
+        setError(errorMessage)
+        return { error: new Error(errorMessage) as AuthError }
+      }
+    },
+    [supabase.auth, createValidationError]
+  )
 
   /**
    * Déconnexion
@@ -300,7 +316,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: 'Failed to delete account' }))
+        const errorData = await response
+          .json()
+          .catch(() => ({ message: 'Failed to delete account' }))
         const error = new Error(errorData.message) as AuthError
         setError(error.message)
         return { error }
@@ -319,21 +337,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Nettoyage du storage
       if (typeof window !== 'undefined') {
         // localStorage
-        Object.keys(localStorage).forEach(key => {
+        Object.keys(localStorage).forEach((key) => {
           if (key.startsWith('supabase') || key.startsWith('sb-')) {
             localStorage.removeItem(key)
           }
         })
 
         // sessionStorage
-        Object.keys(sessionStorage).forEach(key => {
+        Object.keys(sessionStorage).forEach((key) => {
           if (key.startsWith('supabase') || key.startsWith('sb-')) {
             sessionStorage.removeItem(key)
           }
         })
 
         // Cookies
-        document.cookie.split(';').forEach(cookie => {
+        document.cookie.split(';').forEach((cookie) => {
           const cookieName = cookie.trim().split('=')[0]
           if (cookieName.startsWith('sb-') || cookieName.includes('auth-token')) {
             document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`

@@ -1,11 +1,10 @@
-import { headers } from 'next/headers'
-import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'node:crypto'
+import { createClient } from '@supabase/supabase-js'
+import { headers } from 'next/headers'
+import { type NextRequest, NextResponse } from 'next/server'
 import { setupLemonSqueezy } from '@/lib/lemonsqueezy/client'
 import { LEMONSQUEEZY_CONFIG } from '@/lib/lemonsqueezy/config'
-import { WebhookSubscriptionPayload, LemonSqueezySubscription } from '@/types/lemonsqueezy'
-import { getPrice } from '@lemonsqueezy/lemonsqueezy.js'
-import { createClient } from '@supabase/supabase-js'
+import type { WebhookSubscriptionPayload } from '@/types/lemonsqueezy'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -18,10 +17,7 @@ const supabase = createClient(
 function verifyWebhookSignature(body: string, signature: string, secret: string): boolean {
   try {
     // Suivre exactement la doc officielle Lemon Squeezy
-    const hmac = Buffer.from(
-      crypto.createHmac('sha256', secret).update(body).digest('hex'),
-      'hex'
-    )
+    const hmac = Buffer.from(crypto.createHmac('sha256', secret).update(body).digest('hex'), 'hex')
     const signatureBuffer = Buffer.from(signature || '', 'hex')
 
     if (signatureBuffer.length === 0 || hmac.length === 0) {
@@ -71,7 +67,7 @@ export async function POST(request: NextRequest) {
       .insert({
         event_name: eventName,
         body: JSON.parse(body),
-        processed: false
+        processed: false,
       })
       .select('id')
       .single()
@@ -96,7 +92,7 @@ export async function POST(request: NextRequest) {
         // Vérifier que le variant correspond à nos plans configurés
         const validVariants = [
           process.env.LEMONSQUEEZY_VARIANT_MONTHLY,
-          process.env.LEMONSQUEEZY_VARIANT_YEARLY
+          process.env.LEMONSQUEEZY_VARIANT_YEARLY,
         ]
 
         if (!validVariants.includes(variantId)) {
@@ -109,14 +105,15 @@ export async function POST(request: NextRequest) {
 
           if (attributes.status === 'active') {
             // Mettre à jour le profil utilisateur pour le marquer Premium
-            const { error: profileError } = await supabase
-              .from('profiles')
-              .upsert({
+            const { error: profileError } = await supabase.from('profiles').upsert(
+              {
                 user_id: userId,
-                plan: 'premium'
-              }, {
-                onConflict: 'user_id'
-              })
+                plan: 'premium',
+              },
+              {
+                onConflict: 'user_id',
+              }
+            )
 
             if (profileError) {
               processingError = `Failed to update user profile: ${profileError.message}`
@@ -150,7 +147,7 @@ export async function POST(request: NextRequest) {
                 status_formatted: attributes.status_formatted,
                 price: variantId === process.env.LEMONSQUEEZY_VARIANT_YEARLY ? '48' : '5',
                 current_period_start: null, // Non disponible dans ce webhook
-                current_period_end: null,   // Non disponible dans ce webhook
+                current_period_end: null, // Non disponible dans ce webhook
                 trial_ends_at: attributes.trial_ends_at,
                 renews_at: attributes.renews_at,
                 ends_at: attributes.ends_at,
@@ -161,13 +158,13 @@ export async function POST(request: NextRequest) {
                 urls: attributes.urls,
                 customer_id: attributes.customer_id,
                 product_id: attributes.product_id,
-                variant_id: parseInt(variantId)
+                variant_id: parseInt(variantId),
               }
 
               const { error: subscriptionError } = await supabase
                 .from('subscriptions')
                 .upsert(subscriptionData, {
-                  onConflict: 'lemon_squeezy_id'
+                  onConflict: 'lemon_squeezy_id',
                 })
 
               if (subscriptionError) {
@@ -180,7 +177,7 @@ export async function POST(request: NextRequest) {
           } else if (attributes.status === 'past_due' || attributes.status === 'unpaid') {
             // PÉRIODE DE GRÂCE : Garder l'accès Premium pendant 7 jours
             const now = new Date()
-            const gracePeriodEnd = new Date(now.getTime() + (7 * 24 * 60 * 60 * 1000)) // +7 jours
+            const gracePeriodEnd = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000) // +7 jours
 
             console.log(`⚠️ Payment issue for user ${userId}, status: ${attributes.status}`)
             console.log(`🕐 Grace period until: ${gracePeriodEnd.toISOString()}`)
@@ -193,22 +190,25 @@ export async function POST(request: NextRequest) {
                 status_formatted: attributes.status_formatted,
                 grace_period_starts_at: now.toISOString(),
                 grace_period_ends_at: gracePeriodEnd.toISOString(),
-                updated_at: new Date().toISOString()
+                updated_at: new Date().toISOString(),
               })
               .eq('lemon_squeezy_id', payload.data.id)
 
             if (subscriptionError) {
               console.error('Failed to update subscription with grace period:', subscriptionError)
             } else {
-              console.log(`✅ Grace period set for user ${userId} until ${gracePeriodEnd.toISOString()}`)
+              console.log(
+                `✅ Grace period set for user ${userId} until ${gracePeriodEnd.toISOString()}`
+              )
             }
 
             // L'utilisateur RESTE Premium pendant la période de grâce
             // Pas de changement du plan dans profiles
-
           } else if (attributes.status === 'cancelled') {
             // CANCELLED : L'utilisateur garde l'accès jusqu'à ends_at (période de grâce native Lemon Squeezy)
-            console.log(`📋 Subscription cancelled for user ${userId}, access until: ${attributes.ends_at}`)
+            console.log(
+              `📋 Subscription cancelled for user ${userId}, access until: ${attributes.ends_at}`
+            )
 
             // Mettre à jour le statut mais GARDER l'utilisateur Premium jusqu'à ends_at
             const { error: subscriptionError } = await supabase
@@ -217,18 +217,19 @@ export async function POST(request: NextRequest) {
                 status: attributes.status,
                 status_formatted: attributes.status_formatted,
                 ends_at: attributes.ends_at,
-                updated_at: new Date().toISOString()
+                updated_at: new Date().toISOString(),
               })
               .eq('lemon_squeezy_id', payload.data.id)
 
             if (subscriptionError) {
               console.error('Failed to update subscription status:', subscriptionError)
             } else {
-              console.log(`✅ Subscription ${payload.data.id} marked as cancelled, access preserved until ${attributes.ends_at}`)
+              console.log(
+                `✅ Subscription ${payload.data.id} marked as cancelled, access preserved until ${attributes.ends_at}`
+              )
             }
 
             // L'utilisateur reste Premium - la rétrogradation se fera via webhook 'expired'
-
           } else if (attributes.status === 'expired') {
             // EXPIRED : Maintenant on rétrograde vraiment l'utilisateur
             console.log(`⏰ Subscription expired for user ${userId}, downgrading to Free`)
@@ -252,7 +253,7 @@ export async function POST(request: NextRequest) {
                   ends_at: attributes.ends_at,
                   grace_period_starts_at: null,
                   grace_period_ends_at: null,
-                  updated_at: new Date().toISOString()
+                  updated_at: new Date().toISOString(),
                 })
                 .eq('lemon_squeezy_id', payload.data.id)
 
@@ -299,13 +300,13 @@ export async function POST(request: NextRequest) {
               customer_id: attributes.customer_id,
               product_id: attributes.product_id,
               variant_id: parseInt(variantId),
-              updated_at: new Date().toISOString()
+              updated_at: new Date().toISOString(),
             }
 
             const { error: subscriptionError } = await supabase
               .from('subscriptions')
               .upsert(subscriptionData, {
-                onConflict: 'lemon_squeezy_id'
+                onConflict: 'lemon_squeezy_id',
               })
 
             if (subscriptionError) {
@@ -328,18 +329,20 @@ export async function POST(request: NextRequest) {
       .update({
         processed: true,
         processing_error: processingError,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq('id', webhookEventId)
 
     if (processingError) {
       console.error('Webhook processing error:', processingError)
-      return NextResponse.json({ error: 'Processing error', details: processingError }, { status: 500 })
+      return NextResponse.json(
+        { error: 'Processing error', details: processingError },
+        { status: 500 }
+      )
     }
 
     console.log(`Successfully processed webhook event: ${eventName}`)
     return NextResponse.json({ success: true })
-
   } catch (error) {
     console.error('Webhook error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

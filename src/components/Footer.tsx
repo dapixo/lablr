@@ -96,8 +96,8 @@ export function Footer({ t }: FooterProps) {
                 >
                   {t('navigation.pricing')}
                 </Link>
-                {isHydrated && (
-                  user ? (
+                {isHydrated &&
+                  (user ? (
                     <Link
                       href={`/${locale}/account`}
                       className="text-blue-600 hover:text-blue-800 font-medium transition-colors text-sm"
@@ -111,8 +111,7 @@ export function Footer({ t }: FooterProps) {
                     >
                       {t('auth.buttons.signIn')}
                     </Link>
-                  )
-                )}
+                  ))}
               </div>
             </div>
             <div className="flex items-center gap-6">

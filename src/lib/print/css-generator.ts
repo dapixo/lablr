@@ -1,5 +1,5 @@
 import type { PrintFormat } from '@/types/address'
-import { PRINT_CONFIGS, type LabelSpacing } from './config'
+import { type LabelSpacing, PRINT_CONFIGS } from './config'
 
 // Mixins CSS réutilisables
 interface CSSMixins {
@@ -7,7 +7,14 @@ interface CSSMixins {
   bodyReset: () => string
   addressItem: (fontSize: number, padding?: string, debugBorder?: string) => string
   addressContent: () => string
-  gridLayout: (columns: number, rows?: number, width?: string, height?: string, debugBorder?: string, spacing?: LabelSpacing) => string
+  gridLayout: (
+    columns: number,
+    rows?: number,
+    width?: string,
+    height?: string,
+    debugBorder?: string,
+    spacing?: LabelSpacing
+  ) => string
   labelItem: (width: string, height: string, fontSize: number, debugBorder?: string) => string
   compactLayout: (debugBorder?: string) => string
   rollLayout: (width: string, height: string, debugBorder?: string) => string
@@ -242,7 +249,13 @@ export function generatePrintCSS(format: PrintFormat, debug: boolean = false): s
           debugBorder
         )
       } else {
-        css += CSS_MIXINS.gridLayout(layout.columns || 2, undefined, undefined, undefined, debugBorder)
+        css += CSS_MIXINS.gridLayout(
+          layout.columns || 2,
+          undefined,
+          undefined,
+          undefined,
+          debugBorder
+        )
         css += CSS_MIXINS.addressItem(pageSettings.fontSize, '2mm', debugBorder)
       }
       break
