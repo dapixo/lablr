@@ -1,8 +1,4 @@
 {
-  "app": {
-    "title": "Lalabel - Amazon Seller Address Extractor",
-    "description": "Micro SaaS to extract and print addresses from your Amazon Seller TSV reports."
-  },
   "brand": {
     "name": "Lalabel",
     "tagline": "Professional address extraction solution"
@@ -30,12 +26,9 @@
   },
   "upload": {
     "header": "Address file import",
-    "title": "Address file import",
     "description": "Drag and drop or select your address file (.txt, .csv - Amazon Seller, Shopify, eBay, etc.)",
     "drag": "Drop your file here",
-    "dragText": "Drop your file here",
     "browse": "or click to browse your files",
-    "clickText": "or click to browse your files",
     "processing": "Processing...",
     "error": {
       "reading": "Error reading file"
@@ -57,7 +50,7 @@
     },
     "noResults": {
       "title": "No results found",
-      "description": "Try different keywords or check spelling"
+      "description": "Try with different keywords or check spelling"
     }
   },
   "editor": {
@@ -68,17 +61,17 @@
     "firstName": "First name *",
     "lastName": "Last name",
     "address1": "Address *",
-    "address2": "Additional address",
+    "address2": "Address line 2",
     "postalCode": "Postal code *",
     "city": "City *",
     "country": "Country *",
     "placeholders": {
       "firstName": "First name",
       "lastName": "Last name",
-      "address1": "123 Peace Street",
-      "address2": "Building A, Apt 12",
-      "postalCode": "75001",
-      "city": "Paris",
+      "address1": "123 Main Street",
+      "address2": "Apt 12, Building A",
+      "postalCode": "10001",
+      "city": "New York",
       "country": "Select a country"
     },
     "buttons": {
@@ -91,7 +84,6 @@
     "ariaLabel": "User menu",
     "signOut": "Sign out",
     "account": "My account",
-    "deleteAccount": "Delete account",
     "confirmDelete": {
       "message": "Are you absolutely sure you want to delete your account? This action is irreversible.",
       "header": "Delete account",
@@ -110,10 +102,6 @@
       "deleteSuccess": {
         "summary": "Success",
         "detail": "Account deleted successfully"
-      },
-      "unexpectedError": {
-        "summary": "Error",
-        "detail": "An unexpected error occurred"
       }
     }
   },
@@ -123,23 +111,6 @@
       "message": "Are you sure you want to delete this address? This action is irreversible.",
       "accept": "Delete",
       "reject": "Cancel"
-    }
-  },
-  "validation": {
-    "firstName": {
-      "required": "First name is required"
-    },
-    "address1": {
-      "required": "Address is required"
-    },
-    "postalCode": {
-      "required": "Postal code is required"
-    },
-    "city": {
-      "required": "City is required"
-    },
-    "country": {
-      "required": "Country is required"
     }
   },
   "print": {
@@ -153,10 +124,10 @@
     },
     "preview": {
       "title": "Preview - {format}",
-      "description": "Realistic visualization of print rendering (reduced scale)",
+      "description": "Realistic view of print output (reduced scale)",
       "csvTitle": "Preview - CSV Export",
       "csvDescription": "Preview of data to be exported",
-      "rollDescription": "Preview of label roll (one label per address)",
+      "rollDescription": "Label roll preview (one label per address)",
       "pagination": "... and {count} more page{s} ({total} addresses total)",
       "rollPagination": "... and {count} more label{s}",
       "csvPagination": "... and {count} more line{s} ({total} addresses total)",
@@ -199,32 +170,25 @@
   },
   "auth": {
     "title": {
-      "signIn": "Sign in",
-      "signUp": "Create account"
+      "signIn": "Sign in"
     },
     "tagline": "Lalabel - Label Generator",
     "welcome": {
-      "title": "🎉 Create 10 free labels every day",
-      "description": "A simple login lets you print up to 10 labels for free every day. Need more? Go Premium for just €4/month.",
+      "title": "🎉 Create 10 free labels daily",
+      "description": "A simple sign-in allows you to print up to 10 labels for free every day. Need more? Upgrade to Premium for just $5/month.",
       "privacy": "Your import data is never stored"
     },
     "required": {
-      "title": "Login required",
-      "message": "You must be logged in to perform this action."
+      "title": "Sign in required",
+      "message": "You must be signed in to perform this action."
     },
     "form": {
       "email": "Email address",
-      "password": "Password",
-      "emailPlaceholder": "your@email.com",
-      "passwordPlaceholder": {
-        "signUp": "Choose a secure password",
-        "signIn": "Your password"
-      }
+      "emailPlaceholder": "your@email.com"
     },
     "buttons": {
       "cancel": "Cancel",
       "signIn": "Sign in",
-      "signUp": "Create account",
       "loading": "Signing in..."
     },
     "otp": {
@@ -237,57 +201,25 @@
       "codeSent": "Code sent!",
       "codeSentTo": "A verification code has been sent to {email}",
       "codeLabel": "Verification code",
-      "codePlaceholder": "123456",
       "howItWorks": {
         "title": "How it works?",
         "step1": "Enter your email address",
         "step2": "Receive a 6-digit code by email",
         "step3": "Enter the code to sign in"
-      },
-      "tips": {
-        "checkSpam": "Check your spam folder if you don't receive the code",
-        "codeExpiry": "Code expires in 10 minutes",
-        "resendAvailable": "You can resend a code after 30 seconds"
       }
-    },
-    "toggle": {
-      "toSignUp": "→ New to Lalabel? Create account",
-      "toSignIn": "← Already have an account? Sign in"
     },
     "guarantees": {
       "free": "10 labels/day free",
-      "premium": "Premium €5/month",
       "secure": "Secure data",
       "noStorage": "No storage"
     },
     "page": {
-      "title": "Sign in to Lalabel",
       "description": "Access your account to generate your shipping labels and enjoy all features."
-    },
-    "benefits": {
-      "freeLabels": {
-        "title": "10 free labels per day",
-        "description": "Create up to 10 labels every day at no cost"
-      },
-      "secure": {
-        "title": "Secure data",
-        "description": "Your files are never stored on our servers"
-      },
-      "instant": {
-        "title": "Instant access",
-        "description": "Sign in and start printing instantly"
-      },
-      "upgrade": {
-        "title": "Premium upgrade",
-        "description": "Easily upgrade to Premium for unlimited labels"
-      }
     },
     "loading": "Signing in...",
     "errors": {
       "invalidEmail": "Invalid email address",
       "disposableEmail": "Temporary/disposable email addresses are not allowed. Please use a permanent email address",
-      "tooManyRequests": "Too many attempts. Please wait a few minutes",
-      "rateLimit": "For security purposes, please wait {seconds} seconds before requesting a new code",
       "rateLimitGeneric": "Too many attempts. Please wait before requesting a new code",
       "invalidCode": "Incorrect verification code",
       "expiredCode": "Verification code expired. Request a new code",
@@ -300,56 +232,32 @@
         "name": "Free"
       }
     },
-    "free": {
-      "title": "Free",
-      "price": "€0",
-      "features": [
-        "10 free labels every day",
-        "All formats (A4, rolls, CSV)",
-        "Import Amazon, Shopify, ...",
-        "No time limit"
-      ]
-    },
     "premium": {
       "title": "Premium",
-      "price": "€5",
-      "priceAnnual": "€40",
-      "period": "/month",
-      "periodAnnual": "/year",
-      "periodAnnualBilling": "/month (billed annually)",
       "perMonth": "/month",
-      "description": "Unlimited labels",
+      "periodAnnualBilling": "/month (annual billing)",
       "features": [
         "Unlimited labels",
         "All formats (A4, rolls, CSV)",
         "Import Amazon, Shopify, ...",
         "Priority support"
       ],
-      "popular": "Most popular",
-      "cta": "Upgrade to Premium",
-      "savings": "33% off"
+      "cta": "Upgrade to Premium"
     },
     "limits": {
       "dailyLimit": "Daily limit reached",
-      "limitSoon": "Only {count} free label{plural} left",
       "upgradeMessage": "You've used your 10 free labels today. Upgrade to Premium to continue.",
       "upgradeSoonMessage": "Upgrade to Premium for unlimited labels.",
       "resetTime": "Your free labels reset tomorrow at midnight.",
-      "remainingToday": "You have {count} free label(s) remaining today",
-      "addressesDetected": "{count} addresses detected",
-      "labelsRemaining": "You have **{count} free label{plural}** remaining today. You can print the first {count} address{plural}.",
-      "noLabelsLeft": "Your free labels reset tomorrow.",
-      "printLimited": "Print {count} label{plural}",
+      "noLabelsLeft": "Your free labels reload tomorrow.",
       "resetTomorrow": "Your 10 free labels reset tomorrow at midnight"
     },
     "upgrade": {
       "success": {
         "title": "Congratulations! 🎉",
-        "message": "Your account has been upgraded to Premium. You now have unlimited labels!"
-      },
-      "error": {
-        "title": "Upgrade Error",
-        "message": "An error occurred during the upgrade. Please try again."
+        "subtitle": "Your account has been upgraded to Premium. You now enjoy unlimited labels!",
+        "message": "Your account has been upgraded to Premium. You now enjoy unlimited labels!",
+        "continue": "Continue"
       },
       "alreadyPremium": {
         "title": "Already Premium",
@@ -362,92 +270,62 @@
         "message": "You will be redirected to the secure payment page."
       },
       "error": {
-        "title": "Payment Error",
+        "title": "Payment error",
         "message": "Unable to create payment session. Please try again."
       }
     },
     "page": {
-      "title": "Choose your plan",
-      "subtitle": "Create your shipping labels with the plan that fits your needs",
       "billingToggle": {
         "monthly": "Monthly",
         "annually": "Annually"
-      },
-      "comparison": {
-        "feature": "Feature",
-        "free": "Free",
-        "premium": "Premium",
-        "title": "Detailed comparison",
-        "subtitle": "Discover all features included in each plan"
-      },
-      "cta": {
-        "free": "Start for free",
-        "premium": "Upgrade to Premium",
-        "currentPlan": "Current plan",
-        "activePlan": "Active plan"
-      },
-      "features": {
-        "dailyLabels": "Labels per day",
-        "formats": "Label formats",
-        "platforms": "Supported platforms",
-        "support": "Support",
-        "history": "History"
-      },
-      "values": {
-        "unlimited": "Unlimited",
-        "allFormats": "All formats",
-        "basicSupport": "Standard support",
-        "prioritySupport": "Priority support",
-        "noHistory": "No history",
-        "fullHistory": "Full history"
       }
     }
   },
   "faq": {
     "title": "Frequently asked questions",
-    "subtitle": "Everything you need to know about Lalabel, your data security, and using the application.",
+    "subtitle": "Everything you need to know about Lalabel, your data security and using the application.",
     "cta": {
       "title": "Another question?",
       "description": "Feel free to contact us at contact@lalabel.app if you can't find the answer to your question.",
-      "emailSubject": "[Lalabel] Question about the app"
+      "emailSubject": "[Lalabel] Question about the application"
     },
     "questions": {
       "security": {
         "question": "Is my data secure?",
-        "answer": "Absolutely! Your data is processed 100% locally in your browser. No files are sent to our servers - all processing happens directly on your device. Your addresses and orders remain completely private and secure."
+        "answer": "Absolutely! Your data is processed 100% locally in your browser. No files are sent to our servers - all processing is done directly on your device. Your addresses and orders remain entirely private and secure."
       },
       "files": {
         "question": "What do you do with my import files?",
-        "answer": "Nothing at all! Your CSV/TSV files never leave your browser. They are processed locally to extract addresses, then immediately deleted from memory. We do not store, backup, or transmit any of your files or personal data."
+        "answer": "Nothing at all! Your CSV/TSV files never leave your browser. They are processed locally to extract addresses, then immediately deleted from memory. We do not store, backup or transmit any of your files or personal data."
       },
       "account": {
         "question": "Why do I need to create an account?",
-        "answer": "The account allows us only to count the number of active users to improve the service. We only collect your email - no commercial data, no client addresses, no files are linked to your account."
+        "answer": "The account only allows us to count the number of active users to improve the service. We only collect your email - no commercial data, no customer addresses, no files are linked to your account."
       },
       "platforms": {
         "question": "Which platforms are supported?",
         "answer": "Lalabel automatically supports Amazon Seller Central, Shopify, eBay, as well as all generic CSV files. Our system automatically detects your file format and extracts the right address columns. You can also import any CSV with address columns."
       },
       "formats": {
-        "question": "Which print formats are available?",
+        "question": "What print formats are available?",
         "answer": "We offer several formats: standard and compact A4, adhesive labels with 10, 14, 16 or 21 labels per page, label rolls for thermal printers, and CSV export. All formats include real-time preview."
       },
       "pricing": {
         "question": "How does the freemium model work?",
-        "answer": "Lalabel gives you 10 free labels every day, automatically renewed. Perfect for small shipments. If you need more, our Premium plan at €5/month (or €48/year) gives you unlimited labels with priority support."
+        "answer": "Lalabel offers you 10 free labels every day, automatically renewed. It's perfect for small shipments. If you need more, our Premium plan at $5/month (or $48/year) gives you access to unlimited labels with priority support."
       }
     }
   },
   "feedback": {
     "title": "Help us improve Lalabel",
-    "subtitle": "Your feedback matters! Suggest new formats, report bugs, or propose improvements.",
+    "subtitle": "Your opinion matters to us! Suggest new formats, report bugs or suggest improvements.",
     "benefits": {
       "responsive": "Quick response",
-      "responsiveDesc": "We typically respond within 24h",
+      "responsiveDesc": "We usually respond within 24h",
       "implementation": "Agile development",
-      "implementationDesc": "Good ideas are implemented quickly",
+      "implementationDesc": "Good ideas are integrated quickly",
       "community": "Active listening",
-      "communityDesc": "Every suggestion is carefully considered"
+      "communityDesc": "Every suggestion is studied carefully"
     },
     "suggestions": {
       "title": "What would you like to see in Lalabel?",
@@ -458,15 +336,15 @@
     },
     "cta": {
       "title": "Share your ideas!",
-      "description": "Contact us for any suggestion, format request, or improvement. Your feedback helps us create the best label solution possible.",
+      "description": "Contact us for any suggestion, format request or improvement. Your feedback helps us create the best label solution possible.",
       "button": "Send feedback"
     },
     "email": {
-      "subject": "[Lalabel] Feature Suggestion",
+      "subject": "[Lalabel] Improvement suggestion",
       "greeting": "Hello,",
       "intro": "I would like to suggest an improvement for Lalabel:",
       "placeholder": "[ Describe your idea here ]",
-      "typeTitle": "Suggestion type:",
+      "typeTitle": "Type of suggestion:",
       "types": {
         "formats": "New label format",
         "features": "Additional feature",
@@ -495,61 +373,74 @@
       "compatibility": "Compatible with all devices"
     },
     "links": {
-      "account": "My Account"
+      "account": "My account"
     },
-    "copyright": "© 2024 Lalabel. All rights reserved."
+    "copyright": "© 2024 Lalabel. All rights reserved.",
+    "version": {
+      "label": "Version"
+    }
   },
   "subscription": {
-    "title": "Subscription Management",
-    "details": "Subscription Details",
+    "title": "Subscription management",
+    "details": "Subscription details",
     "plan": "Plan",
     "price": "Price",
-    "month": "month",
     "usage": "usage",
     "renewsAt": "Renews on",
     "endsAt": "Ends on",
     "paymentMethod": "Payment method",
     "manage": "Manage subscription",
     "updatePayment": "Update payment",
-    "upgrade": {
-      "title": "Upgrade to Premium",
-      "description": "Unlock all features and enjoy unlimited labels.",
-      "cta": "Upgrade to Premium"
+    "intervals": {
+      "month": "month",
+      "year": "year",
+      "week": "week",
+      "day": "day"
     },
-    "free": {
-      "description": "You are currently using the free plan with 10 labels per day."
+    "priceFormat": {
+      "month": "/ month",
+      "year": "/ year",
+      "week": "/ week",
+      "day": "/ day"
     },
-    "status": {
-      "free": "Free"
+    "statusLabels": {
+      "active": "Active",
+      "on_trial": "Trial",
+      "paused": "Paused",
+      "cancelled": "Cancelled",
+      "expired": "Expired",
+      "past_due": "Past Due",
+      "unpaid": "Unpaid"
+    },
+    "plans": {
+      "Mensuel": "Monthly",
+      "Annuel": "Yearly",
+      "Monthly": "Monthly",
+      "Yearly": "Yearly",
+      "Premium": "Premium"
     },
     "error": {
       "loading": "Error loading subscription information"
     },
-    "checkout": {
-      "redirecting": {
-        "title": "Redirecting...",
-        "message": "You will be redirected to the payment page."
+    "status": {
+      "gracePeriod": "Grace period ({days}d remaining)",
+      "cancelled": {
+        "title": "Subscription cancelled",
+        "message": "Your subscription has been cancelled, but you retain Premium access until the end of your paid period ({days} day{plural} remaining).",
+        "action": "You can resume your subscription at any time via the customer portal."
+      },
+      "paymentIssue": {
+        "title": "Payment issue detected",
+        "message": "Your subscription encountered a payment issue, but you retain Premium access for another {days} day{plural}.",
+        "action": "To avoid any interruption, please update your payment method before {date}."
       }
     }
   },
-  "version": {
-      "label": "Version"
-    },
-  "errors": {
-    "fileTooLarge": "File is too large (max 10MB)",
-    "fileEmpty": "File is empty",
-    "invalidFileType": "Only .txt, .csv files are accepted",
-    "invalidFormat": "Invalid file format",
-    "lowConfidence": "Unrecognized file format - insufficient confidence",
-    "noAddresses": "No valid addresses found in the file"
-  },
   "status": {
-    "processing": "Processing...",
     "fileProcessed": "File processed successfully",
     "addressExtracted": "address extracted",
     "addressesExtracted": "addresses extracted",
-    "pageNumber": "Page {number}",
-    "printTitle": "Address printing - Lalabel"
+    "pageNumber": "Page {number}"
   },
   "csv": {
     "headers": {
@@ -562,28 +453,20 @@
       "country": "Country"
     }
   },
-  "api": {
-    "methodNotAllowed": "Method not allowed",
-    "unauthorized": "Unauthorized",
-    "invalidUserData": "Invalid user data",
-    "deleteAccountFailed": "Failed to delete account",
-    "accountDeletedSuccess": "Account deleted successfully",
-    "internalServerError": "Internal server error"
-  },
   "account": {
-    "title": "My Account",
+    "title": "My account",
     "description": "Manage your account information and preferences.",
     "planStatus": {
-      "title": "Account Status",
-      "currentPlan": "Current Plan",
-      "freePlan": "Free Plan",
-      "dailyUsage": "Daily Usage",
+      "title": "Account status",
+      "currentPlan": "Current plan",
+      "freePlan": "Free plan",
+      "dailyUsage": "Daily usage",
       "labelsUsed": "labels used",
       "remainingLabels": "{count} label{plural} remaining",
       "limitReached": "Daily limit reached",
       "upgradePrompt": "Upgrade to Premium for unlimited labels:",
-      "upgradeToPremium": "Go Premium",
-      "fromPrice": "from €4/month",
+      "upgradeToPremium": "Upgrade Premium",
+      "fromPrice": "from $4/month",
       "premiumFeatures": {
         "unlimited": "Unlimited labels",
         "priority": "Priority support",
@@ -595,29 +478,30 @@
       }
     },
     "userInfo": {
-      "title": "User Information",
-      "fullName": "Full Name",
-      "email": "Email Address",
-      "memberSince": "Member Since"
+      "title": "User information",
+      "fullName": "Full name",
+      "email": "Email address",
+      "memberSince": "Member since"
     },
     "dangerZone": {
-      "title": "Danger Zone",
+      "title": "Danger zone",
       "description": "This action is irreversible and will permanently delete your account and all associated data.",
-      "deleteAccount": "Delete My Account"
+      "deleteAccount": "Delete my account"
     },
     "payment": {
       "success": {
-        "title": "🎉 Payment Successful!",
+        "title": "🎉 Payment successful!",
         "message": "Your Premium subscription is now active. Enjoy unlimited labels!"
       },
       "cancelled": {
-        "title": "Payment Cancelled",
+        "title": "Payment cancelled",
         "message": "Your payment was cancelled. You remain on the free plan with 10 labels per day."
       }
     }
   },
   "common": {
     "or": "or",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "retry": "Retry"
   }
 }

@@ -1,8 +1,4 @@
 {
-  "app": {
-    "title": "Lalabel - Extracteur d'adresses Amazon Seller",
-    "description": "Micro SaaS pour extraire et imprimer les adresses de vos rapports Amazon Seller au format TSV."
-  },
   "brand": {
     "name": "Lalabel",
     "tagline": "Solution professionnelle d'extraction d'adresses"
@@ -30,12 +26,9 @@
   },
   "upload": {
     "header": "Import de fichier d'adresses",
-    "title": "Import de fichier d'adresses",
     "description": "Glissez-déposez ou sélectionnez votre fichier d'adresses (.txt, .csv - Amazon Seller, Shopify, eBay, etc.)",
     "drag": "Glissez votre fichier ici",
-    "dragText": "Glissez votre fichier ici",
     "browse": "ou cliquez pour parcourir vos fichiers",
-    "clickText": "ou cliquez pour parcourir vos fichiers",
     "processing": "Traitement en cours...",
     "error": {
       "reading": "Erreur lors de la lecture du fichier"
@@ -91,7 +84,6 @@
     "ariaLabel": "Menu utilisateur",
     "signOut": "Se déconnecter",
     "account": "Mon compte",
-    "deleteAccount": "Supprimer le compte",
     "confirmDelete": {
       "message": "Êtes-vous absolument sûr de vouloir supprimer votre compte ? Cette action est irréversible.",
       "header": "Supprimer le compte",
@@ -110,10 +102,6 @@
       "deleteSuccess": {
         "summary": "Succès",
         "detail": "Compte supprimé avec succès"
-      },
-      "unexpectedError": {
-        "summary": "Erreur",
-        "detail": "Une erreur inattendue s'est produite"
       }
     }
   },
@@ -123,23 +111,6 @@
       "message": "Êtes-vous sûr de vouloir supprimer cette adresse ? Cette action est irréversible.",
       "accept": "Supprimer",
       "reject": "Annuler"
-    }
-  },
-  "validation": {
-    "firstName": {
-      "required": "Le prénom est obligatoire"
-    },
-    "address1": {
-      "required": "L'adresse est obligatoire"
-    },
-    "postalCode": {
-      "required": "Le code postal est obligatoire"
-    },
-    "city": {
-      "required": "La ville est obligatoire"
-    },
-    "country": {
-      "required": "Le pays est obligatoire"
     }
   },
   "print": {
@@ -199,8 +170,7 @@
   },
   "auth": {
     "title": {
-      "signIn": "Se connecter",
-      "signUp": "Créer un compte"
+      "signIn": "Se connecter"
     },
     "tagline": "Lalabel - Générateur d'étiquettes",
     "welcome": {
@@ -214,17 +184,11 @@
     },
     "form": {
       "email": "Adresse email",
-      "password": "Mot de passe",
-      "emailPlaceholder": "votre@email.com",
-      "passwordPlaceholder": {
-        "signUp": "Choisissez un mot de passe sécurisé",
-        "signIn": "Votre mot de passe"
-      }
+      "emailPlaceholder": "votre@email.com"
     },
     "buttons": {
       "cancel": "Annuler",
       "signIn": "Se connecter",
-      "signUp": "Créer un compte",
       "loading": "Connexion..."
     },
     "otp": {
@@ -237,57 +201,25 @@
       "codeSent": "Code envoyé !",
       "codeSentTo": "Un code de vérification a été envoyé à {email}",
       "codeLabel": "Code de vérification",
-      "codePlaceholder": "123456",
       "howItWorks": {
         "title": "Comment ça marche ?",
         "step1": "Saisissez votre adresse email",
         "step2": "Recevez un code de 6 chiffres par email",
         "step3": "Entrez le code pour vous connecter"
-      },
-      "tips": {
-        "checkSpam": "Vérifiez votre dossier spam si vous ne recevez pas le code",
-        "codeExpiry": "Le code expire dans 10 minutes",
-        "resendAvailable": "Vous pouvez renvoyer un code après 30 secondes"
       }
-    },
-    "toggle": {
-      "toSignUp": "→ Nouveau sur Lalabel ? Créer un compte",
-      "toSignIn": "← Vous avez déjà un compte ? Se connecter"
     },
     "guarantees": {
       "free": "10 étiquettes/jour gratuites",
-      "premium": "Premium 5€/mois",
       "secure": "Données sécurisées",
       "noStorage": "Aucune conservation"
     },
     "page": {
-      "title": "Connectez-vous à Lalabel",
       "description": "Accédez à votre compte pour générer vos étiquettes d'expédition et profiter de toutes les fonctionnalités."
-    },
-    "benefits": {
-      "freeLabels": {
-        "title": "10 étiquettes gratuites par jour",
-        "description": "Créez jusqu'à 10 étiquettes chaque jour sans aucun coût"
-      },
-      "secure": {
-        "title": "Données sécurisées",
-        "description": "Vos fichiers ne sont jamais stockés sur nos serveurs"
-      },
-      "instant": {
-        "title": "Accès immédiat",
-        "description": "Connectez-vous et commencez à imprimer instantanément"
-      },
-      "upgrade": {
-        "title": "Upgrade Premium",
-        "description": "Passez facilement à Premium pour des étiquettes illimitées"
-      }
     },
     "loading": "Connexion en cours...",
     "errors": {
       "invalidEmail": "Adresse email invalide",
       "disposableEmail": "Les adresses email temporaires/jetables ne sont pas autorisées. Veuillez utiliser une adresse email permanente",
-      "tooManyRequests": "Trop de tentatives. Veuillez attendre quelques minutes",
-      "rateLimit": "Pour des raisons de sécurité, veuillez attendre {seconds} secondes avant de redemander un code",
       "rateLimitGeneric": "Trop de tentatives. Veuillez attendre avant de redemander un code",
       "invalidCode": "Code de vérification incorrect",
       "expiredCode": "Code de vérification expiré. Demandez un nouveau code",
@@ -300,56 +232,32 @@
         "name": "Gratuit"
       }
     },
-    "free": {
-      "title": "Gratuit",
-      "price": "0€",
-      "features": [
-        "10 étiquettes gratuites chaque jour",
-        "Tous les formats (A4, rouleaux, CSV)",
-        "Import Amazon, Shopify, ...",
-        "Support standard"
-      ]
-    },
     "premium": {
       "title": "Premium",
-      "price": "5€",
-      "priceAnnual": "40€",
-      "period": "/mois",
-      "periodAnnual": "/an",
-      "periodAnnualBilling": "/mois (facturation annuelle)",
       "perMonth": "/mois",
-      "description": "Étiquettes illimitées",
+      "periodAnnualBilling": "/mois (facturation annuelle)",
       "features": [
         "Étiquettes illimitées",
         "Tous les formats (A4, rouleaux, CSV)",
         "Import Amazon, Shopify, ...",
         "Support prioritaire"
       ],
-      "popular": "Le plus populaire",
-      "cta": "Passer à Premium",
-      "savings": "33% de réduction"
+      "cta": "Passer à Premium"
     },
     "limits": {
       "dailyLimit": "Limite quotidienne atteinte",
-      "limitSoon": "Plus que {count} étiquette{plural} gratuite{pluralFem}",
       "upgradeMessage": "Vous avez utilisé vos 10 étiquettes gratuites aujourd'hui. Passez à Premium pour continuer.",
       "upgradeSoonMessage": "Passez à Premium pour des étiquettes illimitées.",
       "resetTime": "Vos étiquettes gratuites se renouvellent demain à minuit.",
-      "remainingToday": "Il vous reste {count} étiquette(s) gratuite(s) aujourd'hui",
-      "addressesDetected": "{count} adresses détectées",
-      "labelsRemaining": "Il vous reste **{count} étiquette{plural} gratuite{pluralFem}** aujourd'hui. Vous pouvez imprimer {firstText} {count} {addressText} adresse{plural}.",
       "noLabelsLeft": "Vos étiquettes gratuites se rechargent demain.",
-      "printLimited": "Imprimer {count} étiquette{plural}",
       "resetTomorrow": "Vos 10 étiquettes gratuites se rechargent demain à minuit"
     },
     "upgrade": {
       "success": {
         "title": "Félicitations ! 🎉",
-        "message": "Votre compte a été mis à niveau vers Premium. Vous bénéficiez maintenant d'étiquettes illimitées !"
-      },
-      "error": {
-        "title": "Erreur lors de l'upgrade",
-        "message": "Une erreur s'est produite lors de la mise à niveau. Veuillez réessayer."
+        "subtitle": "Votre compte a été mis à niveau vers Premium. Vous bénéficiez maintenant d'étiquettes illimitées !",
+        "message": "Votre compte a été mis à niveau vers Premium. Vous bénéficiez maintenant d'étiquettes illimitées !",
+        "continue": "Continuer"
       },
       "alreadyPremium": {
         "title": "Déjà Premium",
@@ -367,39 +275,9 @@
       }
     },
     "page": {
-      "title": "Choisissez votre plan",
-      "subtitle": "Créez vos étiquettes d'expédition avec le plan qui vous convient",
       "billingToggle": {
         "monthly": "Mensuel",
         "annually": "Annuel"
-      },
-      "comparison": {
-        "feature": "Fonctionnalité",
-        "free": "Gratuit",
-        "premium": "Premium",
-        "title": "Comparaison détaillée",
-        "subtitle": "Découvrez toutes les fonctionnalités incluses dans chaque plan"
-      },
-      "cta": {
-        "free": "Commencer gratuitement",
-        "premium": "Passer à Premium",
-        "currentPlan": "Plan actuel",
-        "activePlan": "Plan actif"
-      },
-      "features": {
-        "dailyLabels": "Étiquettes par jour",
-        "formats": "Formats d'étiquettes",
-        "platforms": "Plateformes supportées",
-        "support": "Support",
-        "history": "Historique"
-      },
-      "values": {
-        "unlimited": "Illimitées",
-        "allFormats": "Tous les formats",
-        "basicSupport": "Support standard",
-        "prioritySupport": "Support prioritaire",
-        "noHistory": "Aucun historique",
-        "fullHistory": "Historique complet"
       }
     }
   },
@@ -497,59 +375,72 @@
     "links": {
       "account": "Mon compte"
     },
-    "copyright": "© 2024 Lalabel. Tous droits réservés."
+    "copyright": "© 2024 Lalabel. Tous droits réservés.",
+    "version": {
+      "label": "Version"
+    }
   },
   "subscription": {
     "title": "Gestion de l'abonnement",
     "details": "Détails de l'abonnement",
     "plan": "Plan",
     "price": "Prix",
-    "month": "mois",
     "usage": "usage",
     "renewsAt": "Se renouvelle le",
     "endsAt": "Se termine le",
     "paymentMethod": "Méthode de paiement",
     "manage": "Gérer l'abonnement",
     "updatePayment": "Modifier le paiement",
-    "upgrade": {
-      "title": "Passer au Premium",
-      "description": "Débloquez toutes les fonctionnalités et profitez d'étiquettes illimitées.",
-      "cta": "Passer au Premium"
+    "intervals": {
+      "month": "mois",
+      "year": "an",
+      "week": "semaine",
+      "day": "jour"
     },
-    "free": {
-      "description": "Vous utilisez actuellement le plan gratuit avec 10 étiquettes par jour."
+    "priceFormat": {
+      "month": "/ mois",
+      "year": "/ an",
+      "week": "/ semaine",
+      "day": "/ jour"
     },
-    "status": {
-      "free": "Gratuit"
+    "statusLabels": {
+      "active": "Actif",
+      "on_trial": "Essai",
+      "paused": "En pause",
+      "cancelled": "Annulé",
+      "expired": "Expiré",
+      "past_due": "Retard de paiement",
+      "unpaid": "Impayé"
+    },
+    "plans": {
+      "Mensuel": "Mensuel",
+      "Annuel": "Annuel",
+      "Monthly": "Mensuel",
+      "Yearly": "Annuel",
+      "Premium": "Premium"
     },
     "error": {
       "loading": "Erreur lors du chargement des informations d'abonnement"
     },
-    "checkout": {
-      "redirecting": {
-        "title": "Redirection...",
-        "message": "Vous allez être redirigé vers la page de paiement."
+    "status": {
+      "gracePeriod": "Période de grâce ({days}j restant{plural})",
+      "cancelled": {
+        "title": "Abonnement annulé",
+        "message": "Votre abonnement a été annulé, mais vous conservez l'accès Premium jusqu'à la fin de votre période payée ({days} jour{plural} restant{plural}).",
+        "action": "Vous pouvez reprendre votre abonnement à tout moment via le portail client."
+      },
+      "paymentIssue": {
+        "title": "Problème de paiement détecté",
+        "message": "Votre abonnement a rencontré un problème de paiement, mais vous conservez l'accès Premium pendant encore {days} jour{plural}.",
+        "action": "Pour éviter toute interruption, veuillez mettre à jour votre méthode de paiement avant le {date}."
       }
     }
   },
-  "version": {
-      "label": "Version"
-    },
-  "errors": {
-    "fileTooLarge": "Le fichier est trop volumineux (max 10MB)",
-    "fileEmpty": "Le fichier est vide",
-    "invalidFileType": "Seuls les fichiers .txt, .csv sont acceptés",
-    "invalidFormat": "Format de fichier invalide",
-    "lowConfidence": "Format de fichier non reconnu - confiance insuffisante",
-    "noAddresses": "Aucune adresse valide trouvée dans le fichier"
-  },
   "status": {
-    "processing": "Traitement en cours...",
     "fileProcessed": "Fichier traité avec succès",
     "addressExtracted": "adresse extraite",
     "addressesExtracted": "adresses extraites",
-    "pageNumber": "Page {number}",
-    "printTitle": "Impression des adresses - Lalabel"
+    "pageNumber": "Page {number}"
   },
   "csv": {
     "headers": {
@@ -561,14 +452,6 @@
       "city": "Ville",
       "country": "Pays"
     }
-  },
-  "api": {
-    "methodNotAllowed": "Method not allowed",
-    "unauthorized": "Unauthorized",
-    "invalidUserData": "Invalid user data",
-    "deleteAccountFailed": "Failed to delete account",
-    "accountDeletedSuccess": "Account deleted successfully",
-    "internalServerError": "Internal server error"
   },
   "account": {
     "title": "Mon compte",
@@ -618,6 +501,7 @@
   },
   "common": {
     "or": "ou",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "retry": "Réessayer"
   }
 }

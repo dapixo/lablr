@@ -207,7 +207,7 @@ export default function AccountPage() {
                       </>
                     ) : userPlan === 'premium' ? (
                       /* Utilisateur Premium */
-                      <div className="text-center py-4">
+                      <div className="text-center pt-4">
                         <div className="inline-flex items-center gap-2 text-blue-600 font-medium">
                           <i className="pi pi-infinity text-xl"></i>
                           <span className="text-lg">{t('account.planStatus.premiumStatus.unlimitedLabels')}</span>
