@@ -6,10 +6,19 @@ import { setupLemonSqueezy } from '@/lib/lemonsqueezy/client'
 import { LEMONSQUEEZY_CONFIG } from '@/lib/lemonsqueezy/config'
 import type { WebhookSubscriptionPayload } from '@/types/lemonsqueezy'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+/**
+ * Crée un client Supabase avec validation des variables d'environnement
+ */
+function createSupabaseClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!url || !key) {
+    throw new Error('Missing Supabase environment variables')
+  }
+
+  return createClient(url, key)
+}
 
 /**
  * Vérification de la signature du webhook Lemon Squeezy
@@ -40,6 +49,9 @@ function verifyWebhookSignature(body: string, signature: string, secret: string)
  */
 export async function POST(request: NextRequest) {
   try {
+    // Créer le client Supabase (évite l'erreur build Vercel)
+    const supabase = createSupabaseClient()
+
     const headersList = await headers()
     const signature = headersList.get('x-signature')
 
