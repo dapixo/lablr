@@ -37,6 +37,7 @@ export function useUsageTracking(): UsageTrackingHook {
     error: null,
   })
 
+
   /**
    * Récupère l'usage quotidien depuis l'API
    */
@@ -46,22 +47,23 @@ export function useUsageTracking(): UsageTrackingHook {
       return
     }
 
-    // Si l'utilisateur est Premium, pas de limite
-    if (userPlan === 'premium') {
-      setState({
-        dailyUsage: null,
-        labelsUsed: 0,
-        remainingLabels: Infinity,
-        isLimitReached: false,
-        loading: false,
-        error: null,
-      })
-      return
-    }
-
     try {
       setState((prev) => ({ ...prev, loading: true, error: null }))
 
+      // Si l'utilisateur est marqué Premium, pas de limite (plus besoin de vérifier l'API)
+      if (userPlan === 'premium') {
+        setState({
+          dailyUsage: null,
+          labelsUsed: 0,
+          remainingLabels: Infinity,
+          isLimitReached: false,
+          loading: false,
+          error: null,
+        })
+        return
+      }
+
+      // Pour les utilisateurs free, récupérer l'usage quotidien
       const response = await fetch('/api/usage', {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },

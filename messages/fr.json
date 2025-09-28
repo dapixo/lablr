@@ -208,6 +208,10 @@
       "description": "Une simple connexion vous permet d'imprimer jusqu'à 10 étiquettes gratuitement chaque jour. Besoin de plus ? Passez Premium pour seulement 4€/mois.",
       "privacy": "Vos données d'import ne sont jamais conservées"
     },
+    "required": {
+      "title": "Connexion requise",
+      "message": "Vous devez être connecté pour effectuer cette action."
+    },
     "form": {
       "email": "Adresse email",
       "password": "Mot de passe",
@@ -352,6 +356,16 @@
         "message": "Votre compte est déjà Premium avec des étiquettes illimitées."
       }
     },
+    "checkout": {
+      "redirecting": {
+        "title": "Redirection en cours...",
+        "message": "Vous allez être redirigé vers la page de paiement sécurisée."
+      },
+      "error": {
+        "title": "Erreur de paiement",
+        "message": "Impossible de créer la session de paiement. Veuillez réessayer."
+      }
+    },
     "page": {
       "title": "Choisissez votre plan",
       "subtitle": "Créez vos étiquettes d'expédition avec le plan qui vous convient",
@@ -483,11 +497,44 @@
     "links": {
       "account": "Mon compte"
     },
-    "copyright": "© 2024 Lalabel. Tous droits réservés.",
-    "version": {
-      "label": "Version"
+    "copyright": "© 2024 Lalabel. Tous droits réservés."
+  },
+  "subscription": {
+    "title": "Gestion de l'abonnement",
+    "details": "Détails de l'abonnement",
+    "plan": "Plan",
+    "price": "Prix",
+    "month": "mois",
+    "usage": "usage",
+    "renewsAt": "Se renouvelle le",
+    "endsAt": "Se termine le",
+    "paymentMethod": "Méthode de paiement",
+    "manage": "Gérer l'abonnement",
+    "updatePayment": "Modifier le paiement",
+    "upgrade": {
+      "title": "Passer au Premium",
+      "description": "Débloquez toutes les fonctionnalités et profitez d'étiquettes illimitées.",
+      "cta": "Passer au Premium"
+    },
+    "free": {
+      "description": "Vous utilisez actuellement le plan gratuit avec 10 étiquettes par jour."
+    },
+    "status": {
+      "free": "Gratuit"
+    },
+    "error": {
+      "loading": "Erreur lors du chargement des informations d'abonnement"
+    },
+    "checkout": {
+      "redirecting": {
+        "title": "Redirection...",
+        "message": "Vous allez être redirigé vers la page de paiement."
+      }
     }
   },
+  "version": {
+      "label": "Version"
+    },
   "errors": {
     "fileTooLarge": "Le fichier est trop volumineux (max 10MB)",
     "fileEmpty": "Le fichier est vide",

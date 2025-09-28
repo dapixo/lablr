@@ -46,3 +46,7 @@ SEO_STRATEGY.md
 # Test files
 test-*.txt
 test-*.csv
+
+.mcp.json
+/.serena
+/supabase/*

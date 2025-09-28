@@ -7,10 +7,11 @@ import { Divider } from 'primereact/divider'
 import { Tag } from 'primereact/tag'
 import { Toast } from 'primereact/toast'
 import type React from 'react'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import type { TranslationVariables } from '@/hooks/useTranslations'
 import { createInnerHTML, getPluralVariables, markdownToHtml } from '@/lib/i18n-helpers'
+import { useLemonSqueezyCheckout } from '@/hooks/useLemonSqueezyCheckout'
 
 interface UpgradeModalProps {
   visible: boolean
@@ -33,9 +34,9 @@ export function UpgradeModal({
   remainingLabels,
 }: UpgradeModalProps) {
   const [isAnnual, setIsAnnual] = useState(false)
-  const [isUpgrading, setIsUpgrading] = useState(false)
   const [upgradeSuccess, setUpgradeSuccess] = useState(false)
-  const { user, userPlan, refreshUserPlan } = useAuth()
+  const { user, userPlan } = useAuth()
+  const { createCheckout, isLoading: isUpgrading, error: checkoutError, clearError } = useLemonSqueezyCheckout()
   const toast = useRef<Toast>(null)
 
   /**
@@ -43,15 +44,22 @@ export function UpgradeModal({
    */
   const handleClose = useCallback(() => {
     setUpgradeSuccess(false)
+    clearError()
     onHide()
-  }, [onHide])
+  }, [onHide, clearError])
 
 
   /**
-   * Simule un upgrade vers Premium
+   * Gère l'upgrade vers Premium via Lemon Squeezy
    */
   const handleUpgradeToPremium = useCallback(async () => {
     if (!user) {
+      toast.current?.show({
+        severity: 'warn',
+        summary: t('auth.required.title'),
+        detail: t('auth.required.message'),
+        life: 3000,
+      })
       return
     }
 
@@ -65,45 +73,31 @@ export function UpgradeModal({
       return
     }
 
-    setIsUpgrading(true)
+    // Créer le checkout Lemon Squeezy
+    const success = await createCheckout(isAnnual ? 'yearly' : 'monthly')
 
-    try {
-      const response = await fetch('/api/upgrade-to-premium', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      })
-
-      const result = await response.json()
-
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to upgrade')
-      }
-
-      // Actualiser le plan utilisateur
-      await refreshUserPlan()
-
-      // Afficher le message de succès
+    if (success) {
+      // Informer l'utilisateur qu'il va être redirigé
       toast.current?.show({
-        severity: 'success',
-        summary: t('pricing.upgrade.success.title'),
-        detail: t('pricing.upgrade.success.message'),
-        life: 5000,
+        severity: 'info',
+        summary: t('pricing.checkout.redirecting.title'),
+        detail: t('pricing.checkout.redirecting.message'),
+        life: 3000,
       })
+    }
+  }, [user, userPlan, createCheckout, isAnnual, t])
 
-      // Marquer l'upgrade comme réussi (l'utilisateur fermera manuellement)
-      setUpgradeSuccess(true)
-    } catch (error) {
-      console.error('Error upgrading to premium:', error)
+  // Afficher les erreurs de checkout
+  useEffect(() => {
+    if (checkoutError) {
       toast.current?.show({
         severity: 'error',
-        summary: t('pricing.upgrade.error.title'),
-        detail: t('pricing.upgrade.error.message'),
+        summary: t('pricing.checkout.error.title'),
+        detail: checkoutError,
         life: 5000,
       })
-    } finally {
-      setIsUpgrading(false)
     }
-  }, [user, userPlan, refreshUserPlan, t, onHide])
+  }, [checkoutError, t])
 
   const headerContent = useMemo(
     () => (

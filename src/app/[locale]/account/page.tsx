@@ -9,6 +9,7 @@ import { Toast } from 'primereact/toast'
 import { useEffect, useRef, useState } from 'react'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
+import { SubscriptionManager } from '@/components/SubscriptionManager'
 import { useAuth } from '@/hooks/useAuth'
 import { useTranslations } from '@/hooks/useTranslations'
 import { useUsageTracking } from '@/hooks/useUsageTracking'
@@ -90,12 +91,12 @@ export default function AccountPage() {
               </div>
             </div>
 
-            {/* Status du compte */}
+            {/* Status du compte et Gestion d'abonnement */}
             <Card className="mb-6">
               <div className="space-y-6">
                 <div>
                   <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                    {t('account.planStatus.title')}
+                    {userPlan === 'premium' ? t('subscription.title') : t('account.planStatus.title')}
                   </h2>
                 </div>
 
@@ -246,6 +247,13 @@ export default function AccountPage() {
                     </div>
                   )}
                 </div>
+
+                {/* Gestion des abonnements - intégrée pour les utilisateurs Premium */}
+                {userPlan === 'premium' && (
+                  <div className="pt-6 border-t border-gray-200">
+                    <SubscriptionManager t={t} embedded={true} />
+                  </div>
+                )}
               </div>
             </Card>
 

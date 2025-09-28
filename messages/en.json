@@ -208,6 +208,10 @@
       "description": "A simple login lets you print up to 10 labels for free every day. Need more? Go Premium for just €4/month.",
       "privacy": "Your import data is never stored"
     },
+    "required": {
+      "title": "Login required",
+      "message": "You must be logged in to perform this action."
+    },
     "form": {
       "email": "Email address",
       "password": "Password",
@@ -352,6 +356,16 @@
         "message": "Your account is already Premium with unlimited labels."
       }
     },
+    "checkout": {
+      "redirecting": {
+        "title": "Redirecting...",
+        "message": "You will be redirected to the secure payment page."
+      },
+      "error": {
+        "title": "Payment Error",
+        "message": "Unable to create payment session. Please try again."
+      }
+    },
     "page": {
       "title": "Choose your plan",
       "subtitle": "Create your shipping labels with the plan that fits your needs",
@@ -483,11 +497,43 @@
     "links": {
       "account": "My Account"
     },
-    "copyright": "© 2024 Lalabel. All rights reserved.",
-    "version": {
-      "label": "Version"
+    "copyright": "© 2024 Lalabel. All rights reserved."
+  },
+  "subscription": {
+    "title": "Subscription Management",
+    "plan": "Plan",
+    "price": "Price",
+    "month": "month",
+    "usage": "usage",
+    "renewsAt": "Renews on",
+    "endsAt": "Ends on",
+    "paymentMethod": "Payment method",
+    "manage": "Manage subscription",
+    "updatePayment": "Update payment",
+    "upgrade": {
+      "title": "Upgrade to Premium",
+      "description": "Unlock all features and enjoy unlimited labels.",
+      "cta": "Upgrade to Premium"
+    },
+    "free": {
+      "description": "You are currently using the free plan with 10 labels per day."
+    },
+    "status": {
+      "free": "Free"
+    },
+    "error": {
+      "loading": "Error loading subscription information"
+    },
+    "checkout": {
+      "redirecting": {
+        "title": "Redirecting...",
+        "message": "You will be redirected to the payment page."
+      }
     }
   },
+  "version": {
+      "label": "Version"
+    },
   "errors": {
     "fileTooLarge": "File is too large (max 10MB)",
     "fileEmpty": "File is empty",

@@ -1,7 +1,7 @@
 'use client'
 
 import type { AuthError, User } from '@supabase/supabase-js'
-import { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { validateEmailDomain, EMAIL_VALIDATION_ERRORS } from '@/lib/disposable-email-domains'
 import type { UserPlan } from '@/types/user'
@@ -58,17 +58,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [userPlan, setUserPlan] = useState<UserPlan>('free')
   const [planLoading, setPlanLoading] = useState(false)
   const [planError, setPlanError] = useState<string | null>(null)
+  const hasInitiallyFetched = useRef<Set<string>>(new Set()) // Track pour quels users on a déjà fetch
 
   /**
    * Récupère le plan utilisateur de manière non-bloquante
    * 🎯 Lazy loading - ne bloque pas l'authentification
    */
   const fetchUserPlan = useCallback(async (userId: string) => {
+    // Éviter les appels redondants pour le même utilisateur
+    if (hasInitiallyFetched.current.has(userId)) {
+      debugLog('🚀 Skipping fetchUserPlan - already fetched for user:', userId)
+      return
+    }
+
     setPlanLoading(true)
     setPlanError(null)
 
     try {
       debugLog('📡 Fetching user plan for:', userId)
+      hasInitiallyFetched.current.add(userId)
 
       const { data, error } = await supabase
         .from('profiles')
@@ -136,6 +144,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUserPlan('free')
           setPlanError(null)
           setPlanLoading(false)
+          // Reset le cache quand l'utilisateur se déconnecte
+          hasInitiallyFetched.current.clear()
         }
       }
     )
@@ -147,7 +157,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [fetchUserPlan, supabase.auth])
 
   /**
-   * Rafraîchissement manuel du plan utilisateur
+   * Rafraîchissement manuel du plan utilisateur (force le refresh)
    */
   const refreshUserPlan = useCallback(async () => {
     if (!user?.id) {
@@ -155,6 +165,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return
     }
 
+    // Forcer le refresh en réinitialisant le cache
+    hasInitiallyFetched.current.delete(user.id)
     await fetchUserPlan(user.id)
   }, [user?.id, fetchUserPlan])
 

@@ -6,11 +6,12 @@ import { Card } from 'primereact/card'
 import { Tag } from 'primereact/tag'
 import { Toast } from 'primereact/toast'
 import type React from 'react'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AuthModal } from '@/components/auth/AuthModal'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { useAuth } from '@/hooks/useAuth'
+import { useLemonSqueezyCheckout } from '@/hooks/useLemonSqueezyCheckout'
 
 type TranslationFunction = (key: string) => string
 
@@ -84,8 +85,8 @@ function createPricingPlan(
 export function PricingPage({ t }: PricingPageProps) {
   const [isAnnual, setIsAnnual] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
-  const [isUpgrading, setIsUpgrading] = useState(false)
-  const { user, userPlan, loading, refreshUserPlan } = useAuth()
+  const { user, userPlan, loading } = useAuth()
+  const { createCheckout, isLoading: isUpgrading, error: checkoutError, clearError } = useLemonSqueezyCheckout()
   const toast = useRef<Toast>(null)
 
   const { freePlan, premiumPlan } = useMemo(
@@ -115,42 +116,31 @@ export function PricingPage({ t }: PricingPageProps) {
       return
     }
 
-    setIsUpgrading(true)
+    // Créer le checkout Lemon Squeezy
+    const success = await createCheckout(isAnnual ? 'yearly' : 'monthly')
 
-    try {
-      const response = await fetch('/api/upgrade-to-premium', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      })
-
-      const result = await response.json()
-
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to upgrade')
-      }
-
-      // Actualiser le plan utilisateur
-      await refreshUserPlan()
-
-      // Afficher le message de succès
+    if (success) {
+      // Informer l'utilisateur qu'il va être redirigé
       toast.current?.show({
-        severity: 'success',
-        summary: t('pricing.upgrade.success.title'),
-        detail: t('pricing.upgrade.success.message'),
-        life: 5000,
+        severity: 'info',
+        summary: t('pricing.checkout.redirecting.title'),
+        detail: t('pricing.checkout.redirecting.message'),
+        life: 3000,
       })
-    } catch (error) {
-      console.error('Error upgrading to premium:', error)
+    }
+  }, [user, userPlan, createCheckout, isAnnual, t])
+
+  // Afficher les erreurs de checkout
+  useEffect(() => {
+    if (checkoutError) {
       toast.current?.show({
         severity: 'error',
-        summary: t('pricing.upgrade.error.title'),
-        detail: t('pricing.upgrade.error.message'),
+        summary: t('pricing.checkout.error.title'),
+        detail: checkoutError,
         life: 5000,
       })
-    } finally {
-      setIsUpgrading(false)
     }
-  }, [user, userPlan, refreshUserPlan, t])
+  }, [checkoutError, t])
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-blue-50">
