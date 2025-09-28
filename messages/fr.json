@@ -604,6 +604,16 @@
       "title": "Zone de danger",
       "description": "Cette action est irréversible et supprimera définitivement votre compte et toutes les données associées.",
       "deleteAccount": "Supprimer mon compte"
+    },
+    "payment": {
+      "success": {
+        "title": "🎉 Paiement réussi !",
+        "message": "Votre abonnement Premium est maintenant actif. Profitez d'étiquettes illimitées !"
+      },
+      "cancelled": {
+        "title": "Paiement annulé",
+        "message": "Votre paiement a été annulé. Vous restez sur le plan gratuit avec 10 étiquettes par jour."
+      }
     }
   },
   "common": {

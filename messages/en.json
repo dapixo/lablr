@@ -501,6 +501,7 @@
   },
   "subscription": {
     "title": "Subscription Management",
+    "details": "Subscription Details",
     "plan": "Plan",
     "price": "Price",
     "month": "month",
@@ -603,6 +604,16 @@
       "title": "Danger Zone",
       "description": "This action is irreversible and will permanently delete your account and all associated data.",
       "deleteAccount": "Delete My Account"
+    },
+    "payment": {
+      "success": {
+        "title": "🎉 Payment Successful!",
+        "message": "Your Premium subscription is now active. Enjoy unlimited labels!"
+      },
+      "cancelled": {
+        "title": "Payment Cancelled",
+        "message": "Your payment was cancelled. You remain on the free plan with 10 labels per day."
+      }
     }
   },
   "common": {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
@@ -18,7 +18,8 @@ import { getPluralVariables } from '@/lib/i18n-helpers'
 export default function AccountPage() {
   const { locale } = useParams()
   const router = useRouter()
-  const { user, userPlan, loading, deleteAccount } = useAuth()
+  const searchParams = useSearchParams()
+  const { user, userPlan, loading, deleteAccount, refreshUserPlan } = useAuth()
   const t = useTranslations(locale as string)
   const toast = useRef<Toast>(null)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -60,6 +61,45 @@ export default function AccountPage() {
       rejectLabel: t('userMenu.confirmDelete.reject'),
     })
   }
+
+  // Gestion des paramètres d'URL (success/cancelled)
+  useEffect(() => {
+    const success = searchParams.get('success')
+    const cancelled = searchParams.get('cancelled')
+
+    if (success === 'true' && user) {
+      // 🎉 Paiement réussi
+      toast.current?.show({
+        severity: 'success',
+        summary: t('account.payment.success.title'),
+        detail: t('account.payment.success.message'),
+        life: 5000,
+      })
+
+      // 🔄 Refresh du plan utilisateur pour s'assurer qu'il est à jour
+      refreshUserPlan()
+
+      // 🧹 Nettoyer l'URL après affichage
+      const url = new URL(window.location.href)
+      url.searchParams.delete('success')
+      window.history.replaceState({}, '', url.toString())
+    }
+
+    if (cancelled === 'true' && user) {
+      // ⚠️ Paiement annulé
+      toast.current?.show({
+        severity: 'info',
+        summary: t('account.payment.cancelled.title'),
+        detail: t('account.payment.cancelled.message'),
+        life: 4000,
+      })
+
+      // 🧹 Nettoyer l'URL après affichage
+      const url = new URL(window.location.href)
+      url.searchParams.delete('cancelled')
+      window.history.replaceState({}, '', url.toString())
+    }
+  }, [searchParams, user, t, refreshUserPlan])
 
   // Redirection si pas d'utilisateur
   useEffect(() => {
@@ -270,9 +310,9 @@ export default function AccountPage() {
 
                 {/* Nom complet */}
                 <div className="border-b border-gray-200 pb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <div className="block text-sm font-medium text-gray-700 mb-2">
                     {t('account.userInfo.fullName')}
-                  </label>
+                  </div>
                   <p className="text-gray-900 text-lg">
                     {user.user_metadata?.full_name || user.email?.split('@')[0] || 'N/A'}
                   </p>
@@ -280,17 +320,17 @@ export default function AccountPage() {
 
                 {/* Email */}
                 <div className="border-b border-gray-200 pb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <div className="block text-sm font-medium text-gray-700 mb-2">
                     {t('account.userInfo.email')}
-                  </label>
+                  </div>
                   <p className="text-gray-900 text-lg">{user.email}</p>
                 </div>
 
                 {/* Date de création */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <div className="block text-sm font-medium text-gray-700 mb-2">
                     {t('account.userInfo.memberSince')}
-                  </label>
+                  </div>
                   <p className="text-gray-600">
                     {new Date(user.created_at).toLocaleDateString(locale as string, {
                       year: 'numeric',
