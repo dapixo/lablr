@@ -234,15 +234,18 @@
     },
     "premium": {
       "title": "Premium",
-      "perMonth": "/month",
+      "price": "5€",
+      "period": "/month",
       "periodAnnualBilling": "/month (annual billing)",
-      "features": [
-        "Unlimited labels",
-        "All formats (A4, rolls, CSV)",
-        "Import Amazon, Shopify, ...",
-        "Priority support"
-      ],
-      "cta": "Upgrade to Premium"
+      "popular": "Most popular",
+      "savings": "Save 33%",
+      "cta": "Upgrade to Premium",
+      "features": {
+        "0": "Unlimited labels",
+        "1": "All formats (A4, rolls, CSV)",
+        "2": "Import Amazon, Shopify, eBay...",
+        "3": "Priority support"
+      }
     },
     "limits": {
       "dailyLimit": "Daily limit reached",
@@ -274,10 +277,46 @@
         "message": "Unable to create payment session. Please try again."
       }
     },
+    "free": {
+      "title": "Free",
+      "price": "€0",
+      "features": {
+        "0": "10 labels per day",
+        "1": "All printing formats",
+        "2": "Multi-platform import",
+        "3": "Community support"
+      }
+    },
     "page": {
+      "title": "Transparent Pricing",
+      "subtitle": "Start free, upgrade to Premium when you want. No commitment, cancel anytime.",
       "billingToggle": {
         "monthly": "Monthly",
         "annually": "Annually"
+      },
+      "cta": {
+        "free": "Start for free",
+        "premium": "Upgrade to Premium",
+        "currentPlan": "Current plan",
+        "activePlan": "Active plan"
+      },
+      "comparison": {
+        "title": "Compare Our Plans",
+        "subtitle": "Choose the option that best fits your shipping needs",
+        "feature": "Feature",
+        "free": "Free",
+        "premium": "Premium"
+      },
+      "features": {
+        "dailyLabels": "Labels per day",
+        "formats": "Printing formats",
+        "platforms": "Supported platforms",
+        "support": "Customer support"
+      },
+      "values": {
+        "unlimited": "Unlimited",
+        "basicSupport": "Basic support",
+        "prioritySupport": "Priority support"
       }
     }
   },

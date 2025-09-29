@@ -234,15 +234,18 @@
     },
     "premium": {
       "title": "Premium",
-      "perMonth": "/mois",
+      "price": "5€",
+      "period": "/mois",
       "periodAnnualBilling": "/mois (facturation annuelle)",
-      "features": [
-        "Étiquettes illimitées",
-        "Tous les formats (A4, rouleaux, CSV)",
-        "Import Amazon, Shopify, ...",
-        "Support prioritaire"
-      ],
-      "cta": "Passer à Premium"
+      "popular": "Plus populaire",
+      "savings": "Économisez 33%",
+      "cta": "Passer à Premium",
+      "features": {
+        "0": "Étiquettes illimitées",
+        "1": "Tous les formats (A4, rouleaux, CSV)",
+        "2": "Import Amazon, Shopify, eBay...",
+        "3": "Support prioritaire"
+      }
     },
     "limits": {
       "dailyLimit": "Limite quotidienne atteinte",
@@ -274,10 +277,46 @@
         "message": "Impossible de créer la session de paiement. Veuillez réessayer."
       }
     },
+    "free": {
+      "title": "Gratuit",
+      "price": "0€",
+      "features": {
+        "0": "10 étiquettes par jour",
+        "1": "Tous les formats d'impression",
+        "2": "Import multi-plateformes",
+        "3": "Support communautaire"
+      }
+    },
     "page": {
+      "title": "Tarifs Transparents",
+      "subtitle": "Commencez gratuitement, passez à Premium quand vous voulez. Aucun engagement, résiliable à tout moment.",
       "billingToggle": {
         "monthly": "Mensuel",
         "annually": "Annuel"
+      },
+      "cta": {
+        "free": "Commencer gratuitement",
+        "premium": "Passer à Premium",
+        "currentPlan": "Plan actuel",
+        "activePlan": "Plan actif"
+      },
+      "comparison": {
+        "title": "Comparez nos Plans",
+        "subtitle": "Choisissez l'option qui correspond le mieux à vos besoins d'expédition",
+        "feature": "Fonctionnalité",
+        "free": "Gratuit",
+        "premium": "Premium"
+      },
+      "features": {
+        "dailyLabels": "Étiquettes par jour",
+        "formats": "Formats d'impression",
+        "platforms": "Plateformes supportées",
+        "support": "Support client"
+      },
+      "values": {
+        "unlimited": "Illimité",
+        "basicSupport": "Support basique",
+        "prioritySupport": "Support prioritaire"
       }
     }
   },
