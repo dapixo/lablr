@@ -573,30 +573,33 @@ const FormatCard = React.memo(function FormatCard({...}))
 
 ### 💳 Système de Paiement Lemon Squeezy Production-Ready (🆕 V3.8)
 - ✅ **Architecture webhook robuste** : Handler Next.js avec signature HMAC SHA-256 verification
-- ✅ **Gestion complète des statuts** : Support active, past_due, unpaid, cancelled, expired avec logique métier
+- ✅ **Gestion complète des statuts** : Support active, past_due, unpaid, cancelled, expired, paused avec logique métier
 - ✅ **Période de grâce 7 jours** : Best practice Lemon Squeezy pour payment failures et cancellations
 - ✅ **Synchronisation temps réel** : Mise à jour automatique des plans utilisateur via webhooks
 - ✅ **Base de données optimisée** : Tables plans, subscriptions, webhook_events avec relations FK
 - ✅ **Interface utilisateur complète** : SubscriptionManager avec gestion portail client intégré
 - ✅ **Audit trail complet** : Logging détaillé et table webhook_events pour monitoring
-- ✅ **Documentation exhaustive** : Guide d'implémentation 350+ lignes pour futurs projets
+- ✅ **Mode pause intelligent** : Gestion accès jusqu'à période payée avec cleanup automatique
+- ✅ **Event-first logic** : Priorité event_name vs status pour éviter bugs logiques critiques
 
 ### 🔧 Optimisations Technique et Performance V3.8 (🆕)
+- ✅ **Fix production critique** : Correction naked return statement ligne 114 webhook handler
+- ✅ **TypeScript bullet-proof** : Élimination erreurs 'possibly null' avec null checks stricts
+- ✅ **Gestion subscription_payment_failed** : Support events sans variant_id
 - ✅ **API calls optimisés** : Réduction ~70% des appels redondants avec cache intelligent
 - ✅ **Hook useUsageTracking simplifié** : Suppression logique subscription redondante
-- ✅ **AuthContext optimisé** : Cache Set-based pour éviter fetchs répétés par utilisateur
+- ✅ **AuthContext optimisé** : Cache Set-based + cleanup automatique subscriptions expirées
 - ✅ **Error handling robuste** : Try/catch systématiques avec fallbacks gracieux
-- ✅ **TypeScript strict** : Interfaces complètes pour Lemon Squeezy avec types safety
-- ✅ **Clean Code respecté** : Architecture DRY sans duplication, fonctions pures
-- ✅ **Code audit complet** : Analyse performance, sécurité et maintainabilité validée
+- ✅ **Build production validé** : TypeScript strict + bundle 128kB optimisé
 
 ### 🎯 Architecture Scalable et Maintenable V3.8
-- ✅ **Webhook handler modulaire** : Fonctions séparées par statut pour maintainabilité
+- ✅ **Webhook handler modulaire** : Event-first processing avec fonctions séparées par statut
 - ✅ **Configuration centralisée** : Variables d'environnement et constantes externalisées
 - ✅ **Grace period intelligent** : Calcul automatique des jours restants avec UI contextuelle
 - ✅ **Multi-variants support** : Architecture prête pour plans mensuel/annuel multiples
 - ✅ **Monitoring production** : Console logs structurés et webhook events pour debugging
 - ✅ **Security-first** : Validation stricte des données, signature verification obligatoire
+- ✅ **Cleanup automatique** : checkAndCleanExpiredSubscriptions() sur login utilisateur
 
 ## Évolutions Futures
 

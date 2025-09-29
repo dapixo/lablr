@@ -354,12 +354,16 @@ export function SubscriptionManager({ t, embedded = false }: SubscriptionManager
                   <p className="text-sm font-medium text-gray-900">
                     {subscription.status === 'cancelled'
                       ? t('subscription.endsAt')
+                      : subscription.status === 'paused'
+                      ? t('subscription.accessUntil')
                       : t('subscription.renewsAt')}
                   </p>
                   <p className="text-gray-600">
                     {formatDate(
                       subscription.status === 'cancelled'
                         ? subscription.endsAt
+                        : subscription.status === 'paused'
+                        ? subscription.endsAt || subscription.renewsAt
                         : subscription.renewsAt
                     )}
                   </p>

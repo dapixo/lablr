@@ -45,10 +45,12 @@ export async function GET() {
         grace_period_ends_at
       `)
       .eq('user_id', user.id)
-      .in('status', ['active', 'past_due', 'unpaid', 'cancelled']) // Inclure tous les statuts avec accès
-      .single()
+      .in('status', ['active', 'past_due', 'unpaid', 'cancelled', 'paused']) // Inclure tous les statuts avec accès
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle() // Évite l'erreur si 0 ou multiple résultats
 
-    if (subscriptionError) {
+    if (subscriptionError || !subscription) {
       console.error('Subscription query error:', subscriptionError)
       // Utilisateur Premium mais pas d'abonnement trouvé
       return NextResponse.json({

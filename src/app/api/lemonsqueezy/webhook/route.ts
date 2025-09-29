@@ -97,9 +97,21 @@ export async function POST(request: NextRequest) {
       try {
         setupLemonSqueezy()
 
-        const attributes = payload.data.attributes
-        const variantId = attributes.variant_id.toString()
-        const userId = payload.meta.custom_data?.user_id
+        // 🚨 GÉRER subscription_payment_failed séparément (pas de variant_id)
+        if (eventName === 'subscription_payment_failed') {
+          const userId = payload.meta.custom_data?.user_id
+          console.log(`💳 Payment failed for user ${userId}`)
+          console.log(`ℹ️  This is informational - no action taken. Waiting for past_due status.`)
+          // Pas d'action - attendre que LS passe en past_due
+        } else {
+          const attributes = payload.data.attributes
+          const variantId = attributes.variant_id?.toString()
+          const userId = payload.meta.custom_data?.user_id
+
+          if (!variantId) {
+            processingError = `Missing variant_id in ${eventName} webhook`
+            console.error('Missing variant_id for event:', eventName)
+          } else {
 
         // Vérifier que le variant correspond à nos plans configurés
         const validVariants = [
@@ -115,7 +127,41 @@ export async function POST(request: NextRequest) {
           // SOLUTION SIMPLE : Juste marquer l'utilisateur comme Premium
           console.log(`Processing subscription for user ${userId}, status: ${attributes.status}`)
 
-          if (attributes.status === 'active') {
+          // 🔥 TRAITER D'ABORD PAR EVENT_NAME puis par status
+          if (eventName === 'subscription_expired') {
+            // EXPIRED : Maintenant on rétrograde vraiment l'utilisateur
+            console.log(`⏰ Subscription expired for user ${userId}, downgrading to Free`)
+
+            const { error: profileError } = await supabase
+              .from('profiles')
+              .update({ plan: 'free' })
+              .eq('user_id', userId)
+
+            if (profileError) {
+              processingError = `Failed to downgrade user profile: ${profileError.message}`
+            } else {
+              console.log(`⬇️ User ${userId} downgraded to Free`)
+
+              // Mettre à jour le statut de subscription
+              const { error: subscriptionError } = await supabase
+                .from('subscriptions')
+                .update({
+                  status: 'expired',
+                  status_formatted: 'Expired',
+                  ends_at: attributes.ends_at,
+                  grace_period_starts_at: null,
+                  grace_period_ends_at: null,
+                  updated_at: new Date().toISOString(),
+                })
+                .eq('lemon_squeezy_id', payload.data.id)
+
+              if (subscriptionError) {
+                console.error('Failed to update subscription status:', subscriptionError)
+              } else {
+                console.log(`✅ Subscription ${payload.data.id} expired, user downgraded`)
+              }
+            }
+          } else if (attributes.status === 'active') {
             // Mettre à jour le profil utilisateur pour le marquer Premium
             const { error: profileError } = await supabase.from('profiles').upsert(
               {
@@ -186,7 +232,7 @@ export async function POST(request: NextRequest) {
                 console.log(`✅ Subscription created for user ${userId}`)
               }
             }
-          } else if (attributes.status === 'past_due' || attributes.status === 'unpaid') {
+          } else if ((attributes.status as string) === 'past_due' || (attributes.status as string) === 'unpaid') {
             // PÉRIODE DE GRÂCE : Garder l'accès Premium pendant 7 jours
             const now = new Date()
             const gracePeriodEnd = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000) // +7 jours
@@ -242,39 +288,93 @@ export async function POST(request: NextRequest) {
             }
 
             // L'utilisateur reste Premium - la rétrogradation se fera via webhook 'expired'
-          } else if (attributes.status === 'expired') {
-            // EXPIRED : Maintenant on rétrograde vraiment l'utilisateur
-            console.log(`⏰ Subscription expired for user ${userId}, downgrading to Free`)
+          } else if (eventName === 'subscription_paused' || attributes.status === 'paused') {
+            // PAUSED : User garde accès jusqu'à la fin de la période déjà payée
+            const endsAt = attributes.ends_at || attributes.renews_at
+            console.log(`⏸️ Subscription paused for user ${userId}, access until: ${endsAt}`)
 
-            const { error: profileError } = await supabase
-              .from('profiles')
-              .update({ plan: 'free' })
-              .eq('user_id', userId)
+            // Récupérer le plan_id
+            const { data: plan } = await supabase
+              .from('plans')
+              .select('id')
+              .eq('variant_id', parseInt(variantId))
+              .single()
 
-            if (profileError) {
-              processingError = `Failed to downgrade user profile: ${profileError.message}`
+            if (!plan) {
+              processingError = `Plan not found for variant_id: ${variantId}`
+              console.error('Plan lookup error:', processingError)
             } else {
-              console.log(`⬇️ User ${userId} downgraded to Free`)
+              // Mettre à jour la subscription avec statut paused
+              const subscriptionData = {
+                lemon_squeezy_id: payload.data.id,
+                order_id: attributes.order_id,
+                subscription_item_id: attributes.first_subscription_item?.id || null,
+                user_id: userId,
+                plan_id: plan.id,
+                name: attributes.user_name,
+                email: attributes.user_email,
+                status: attributes.status,
+                status_formatted: attributes.status_formatted,
+                price: variantId === process.env.LEMONSQUEEZY_VARIANT_YEARLY ? '48' : '5',
+                trial_ends_at: attributes.trial_ends_at,
+                renews_at: attributes.renews_at,
+                ends_at: attributes.ends_at,
+                is_paused: true, // Marquer comme en pause
+                is_usage_based: attributes.first_subscription_item?.is_usage_based || false,
+                card_brand: attributes.card_brand,
+                card_last_four: attributes.card_last_four,
+                urls: attributes.urls,
+                customer_id: attributes.customer_id,
+                product_id: attributes.product_id,
+                variant_id: parseInt(variantId),
+                updated_at: new Date().toISOString(),
+              }
 
-              // Mettre à jour le statut de subscription
               const { error: subscriptionError } = await supabase
                 .from('subscriptions')
-                .update({
-                  status: attributes.status,
-                  status_formatted: attributes.status_formatted,
-                  ends_at: attributes.ends_at,
-                  grace_period_starts_at: null,
-                  grace_period_ends_at: null,
-                  updated_at: new Date().toISOString(),
+                .upsert(subscriptionData, {
+                  onConflict: 'lemon_squeezy_id',
                 })
-                .eq('lemon_squeezy_id', payload.data.id)
 
               if (subscriptionError) {
-                console.error('Failed to update subscription status:', subscriptionError)
+                processingError = `Failed to update paused subscription: ${subscriptionError.message}`
+                console.error('Subscription pause error:', subscriptionError)
               } else {
-                console.log(`✅ Subscription ${payload.data.id} expired, user downgraded`)
+                console.log(`✅ Subscription paused for user ${userId} - access until ${endsAt}`)
               }
             }
+
+            // L'utilisateur RESTE Premium jusqu'à ends_at (période déjà payée)
+            // La rétrogradation se fera automatiquement via checkAndCleanExpiredSubscriptions
+          } else if ((attributes.status as string) === 'past_due' || (attributes.status as string) === 'unpaid') {
+            // PÉRIODE DE GRÂCE : Garder l'accès Premium pendant 7 jours
+            const now = new Date()
+            const gracePeriodEnd = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000) // +7 jours
+
+            console.log(`⚠️ Payment issue for user ${userId}, status: ${attributes.status}`)
+            console.log(`🕐 Grace period until: ${gracePeriodEnd.toISOString()}`)
+
+            // Mettre à jour le statut de subscription avec période de grâce
+            const { error: subscriptionError } = await supabase
+              .from('subscriptions')
+              .update({
+                status: attributes.status,
+                status_formatted: attributes.status_formatted,
+                grace_period_starts_at: now.toISOString(),
+                grace_period_ends_at: gracePeriodEnd.toISOString(),
+                updated_at: new Date().toISOString(),
+              })
+              .eq('lemon_squeezy_id', payload.data.id)
+
+            if (subscriptionError) {
+              console.error('Failed to update subscription with grace period:', subscriptionError)
+            } else {
+              console.log(
+                `✅ Grace period set for user ${userId} until ${gracePeriodEnd.toISOString()}`
+              )
+            }
+
+            // L'utilisateur RESTE Premium pendant la période de grâce
           } else {
             // Pour les autres statuts (updated, paused, etc.)
             // Récupérer le plan_id à partir du variant_id
@@ -329,6 +429,8 @@ export async function POST(request: NextRequest) {
             }
           }
         }
+        } // Fermeture du bloc else pour variant_id check
+        } // Fermeture du bloc else principal
       } catch (error) {
         processingError = `Error processing subscription event: ${error}`
         console.error('Subscription processing error:', error)

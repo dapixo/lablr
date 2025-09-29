@@ -64,6 +64,96 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const hasInitiallyFetched = useRef<Set<string>>(new Set()) // Track pour quels users on a déjà fetch
 
   /**
+   * Vérifie et nettoie automatiquement les abonnements expirés
+   * 🎯 Appelée avant chaque vérification de plan pour maintenir la cohérence
+   */
+  const checkAndCleanExpiredSubscriptions = useCallback(
+    async (userId: string) => {
+      try {
+        debugLog('🔍 Checking for expired subscriptions for user:', userId)
+
+        // Récupérer les subscriptions avec ends_at ou grace_period_ends_at passé
+        const { data: subs, error: fetchError } = await supabase
+          .from('subscriptions')
+          .select('lemon_squeezy_id, status, ends_at, grace_period_ends_at')
+          .eq('user_id', userId)
+
+        if (fetchError) {
+          debugLog('❌ Error fetching subscriptions:', fetchError)
+          return
+        }
+
+        if (!subs || subs.length === 0) {
+          debugLog('✅ No subscriptions found')
+          return
+        }
+
+        const now = new Date()
+        let shouldDowngrade = false
+
+        for (const sub of subs) {
+          let isExpired = false
+          let reason = ''
+
+          // Cas 1: Période de grâce expirée (past_due/unpaid)
+          if (sub.grace_period_ends_at && new Date(sub.grace_period_ends_at) < now) {
+            isExpired = true
+            reason = `Grace period expired (${sub.grace_period_ends_at})`
+          }
+          // Cas 2: Subscription annulée et ends_at passé
+          else if (sub.status === 'cancelled' && sub.ends_at && new Date(sub.ends_at) < now) {
+            isExpired = true
+            reason = `Cancelled subscription ended (${sub.ends_at})`
+          }
+          // Cas 3: Subscription en pause et période payée expirée
+          else if (sub.status === 'paused' && sub.ends_at && new Date(sub.ends_at) < now) {
+            isExpired = true
+            reason = `Paused subscription period ended (${sub.ends_at})`
+          }
+
+          if (isExpired) {
+            debugLog(`⏰ Subscription ${sub.lemon_squeezy_id} expired: ${reason}`)
+
+            // Marquer comme expired dans la DB
+            await supabase
+              .from('subscriptions')
+              .update({
+                status: 'expired',
+                status_formatted: 'Expired',
+                grace_period_starts_at: null,
+                grace_period_ends_at: null,
+                updated_at: new Date().toISOString(),
+              })
+              .eq('lemon_squeezy_id', sub.lemon_squeezy_id)
+
+            shouldDowngrade = true
+          }
+        }
+
+        // Rétrograder l'utilisateur si nécessaire
+        if (shouldDowngrade) {
+          debugLog(`⬇️ Downgrading user ${userId} to free plan`)
+
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .update({ plan: 'free' })
+            .eq('user_id', userId)
+
+          if (profileError) {
+            debugLog('❌ Error downgrading user:', profileError)
+          } else {
+            debugLog('✅ User automatically downgraded to free plan')
+          }
+        }
+
+      } catch (error) {
+        debugLog('❌ Error in checkAndCleanExpiredSubscriptions:', error)
+      }
+    },
+    [supabase]
+  )
+
+  /**
    * Récupère le plan utilisateur de manière non-bloquante
    * 🎯 Lazy loading - ne bloque pas l'authentification
    */
@@ -81,6 +171,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         debugLog('📡 Fetching user plan for:', userId)
         hasInitiallyFetched.current.add(userId)
+
+        // 🔥 NOUVEAU: Vérifier et nettoyer les abonnements expirés AVANT de récupérer le plan
+        await checkAndCleanExpiredSubscriptions(userId)
 
         const { data, error } = await supabase
           .from('profiles')

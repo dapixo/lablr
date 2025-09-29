@@ -388,6 +388,7 @@
     "usage": "usage",
     "renewsAt": "Se renouvelle le",
     "endsAt": "Se termine le",
+    "accessUntil": "Accès jusqu'au",
     "paymentMethod": "Méthode de paiement",
     "manage": "Gérer l'abonnement",
     "updatePayment": "Modifier le paiement",
