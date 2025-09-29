@@ -221,6 +221,8 @@
       "invalidEmail": "Invalid email address",
       "disposableEmail": "Temporary/disposable email addresses are not allowed. Please use a permanent email address",
       "rateLimitGeneric": "Too many attempts. Please wait before requesting a new code",
+      "tooManyRequests": "Too many attempts. Please wait a few minutes",
+      "rateLimit": "For security purposes, please wait {seconds} seconds before requesting a new code",
       "invalidCode": "Incorrect verification code",
       "expiredCode": "Verification code expired. Request a new code",
       "unexpected": "An unexpected error occurred"
@@ -242,8 +244,8 @@
       "cta": "Upgrade to Premium",
       "features": {
         "0": "Unlimited labels",
-        "1": "All formats (A4, rolls, CSV)",
-        "2": "Import Amazon, Shopify, eBay...",
+        "1": "All printing formats",
+        "2": "Perfect for high volume",
         "3": "Priority support"
       }
     },
@@ -283,12 +285,12 @@
       "features": {
         "0": "10 labels per day",
         "1": "All printing formats",
-        "2": "Multi-platform import",
-        "3": "Community support"
+        "2": "Perfect for small shipments",
+        "3": "Standard support"
       }
     },
     "page": {
-      "title": "Transparent Pricing",
+      "title": "Our Pricing",
       "subtitle": "Start free, upgrade to Premium when you want. No commitment, cancel anytime.",
       "billingToggle": {
         "monthly": "Monthly",
@@ -299,24 +301,6 @@
         "premium": "Upgrade to Premium",
         "currentPlan": "Current plan",
         "activePlan": "Active plan"
-      },
-      "comparison": {
-        "title": "Compare Our Plans",
-        "subtitle": "Choose the option that best fits your shipping needs",
-        "feature": "Feature",
-        "free": "Free",
-        "premium": "Premium"
-      },
-      "features": {
-        "dailyLabels": "Labels per day",
-        "formats": "Printing formats",
-        "platforms": "Supported platforms",
-        "support": "Customer support"
-      },
-      "values": {
-        "unlimited": "Unlimited",
-        "basicSupport": "Basic support",
-        "prioritySupport": "Priority support"
       }
     }
   },

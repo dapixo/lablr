@@ -221,6 +221,8 @@
       "invalidEmail": "Adresse email invalide",
       "disposableEmail": "Les adresses email temporaires/jetables ne sont pas autorisées. Veuillez utiliser une adresse email permanente",
       "rateLimitGeneric": "Trop de tentatives. Veuillez attendre avant de redemander un code",
+      "tooManyRequests": "Trop de tentatives. Veuillez attendre quelques minutes",
+      "rateLimit": "Pour des raisons de sécurité, veuillez attendre {seconds} secondes avant de redemander un code",
       "invalidCode": "Code de vérification incorrect",
       "expiredCode": "Code de vérification expiré. Demandez un nouveau code",
       "unexpected": "Une erreur inattendue s'est produite"
@@ -242,8 +244,8 @@
       "cta": "Passer à Premium",
       "features": {
         "0": "Étiquettes illimitées",
-        "1": "Tous les formats (A4, rouleaux, CSV)",
-        "2": "Import Amazon, Shopify, eBay...",
+        "1": "Tous les formats d'impression",
+        "2": "Idéal pour les gros volumes",
         "3": "Support prioritaire"
       }
     },
@@ -283,12 +285,12 @@
       "features": {
         "0": "10 étiquettes par jour",
         "1": "Tous les formats d'impression",
-        "2": "Import multi-plateformes",
-        "3": "Support communautaire"
+        "2": "Parfait pour les petites expéditions",
+        "3": "Support standard"
       }
     },
     "page": {
-      "title": "Tarifs Transparents",
+      "title": "Nos Tarifs",
       "subtitle": "Commencez gratuitement, passez à Premium quand vous voulez. Aucun engagement, résiliable à tout moment.",
       "billingToggle": {
         "monthly": "Mensuel",
@@ -299,24 +301,6 @@
         "premium": "Passer à Premium",
         "currentPlan": "Plan actuel",
         "activePlan": "Plan actif"
-      },
-      "comparison": {
-        "title": "Comparez nos Plans",
-        "subtitle": "Choisissez l'option qui correspond le mieux à vos besoins d'expédition",
-        "feature": "Fonctionnalité",
-        "free": "Gratuit",
-        "premium": "Premium"
-      },
-      "features": {
-        "dailyLabels": "Étiquettes par jour",
-        "formats": "Formats d'impression",
-        "platforms": "Plateformes supportées",
-        "support": "Support client"
-      },
-      "values": {
-        "unlimited": "Illimité",
-        "basicSupport": "Support basique",
-        "prioritySupport": "Support prioritaire"
       }
     }
   },

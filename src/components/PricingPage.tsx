@@ -85,6 +85,7 @@ function createPricingPlan(
 export function PricingPage({ t }: PricingPageProps) {
   const [isAnnual, setIsAnnual] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
+  const [pendingUpgrade, setPendingUpgrade] = useState(false)
   const { user, userPlan, loading } = useAuth()
   const { createCheckout, isLoading: isUpgrading, error: checkoutError } = useLemonSqueezyCheckout()
   const toast = useRef<Toast>(null)
@@ -102,6 +103,7 @@ export function PricingPage({ t }: PricingPageProps) {
    */
   const handleUpgradeToPremium = useCallback(async () => {
     if (!user) {
+      setPendingUpgrade(true)
       setShowAuthModal(true)
       return
     }
@@ -129,6 +131,26 @@ export function PricingPage({ t }: PricingPageProps) {
       })
     }
   }, [user, userPlan, createCheckout, isAnnual, t])
+
+  // Déclencher l'upgrade automatiquement après connexion
+  useEffect(() => {
+    if (user && pendingUpgrade && userPlan !== 'premium') {
+      setPendingUpgrade(false)
+      // Déclencher le checkout automatiquement
+      const performUpgrade = async () => {
+        const success = await createCheckout(isAnnual ? 'yearly' : 'monthly')
+        if (success) {
+          toast.current?.show({
+            severity: 'info',
+            summary: t('pricing.checkout.redirecting.title'),
+            detail: t('pricing.checkout.redirecting.message'),
+            life: 3000,
+          })
+        }
+      }
+      performUpgrade()
+    }
+  }, [user, pendingUpgrade, userPlan, createCheckout, isAnnual, t])
 
   // Afficher les erreurs de checkout
   useEffect(() => {
@@ -317,95 +339,6 @@ export function PricingPage({ t }: PricingPageProps) {
           </div>
         </div>
 
-        {/* Feature Comparison Table */}
-        <div className="mt-20">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              {t('pricing.page.comparison.title')}
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              {t('pricing.page.comparison.subtitle')}
-            </p>
-          </div>
-
-          <Card className="overflow-hidden shadow-xl rounded-2xl">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gradient-to-r from-gray-50 to-blue-50">
-                  <tr>
-                    <th className="px-8 py-6 text-left font-bold text-gray-900 text-lg">
-                      {t('pricing.page.comparison.feature')}
-                    </th>
-                    <th className="px-8 py-6 text-center font-bold text-gray-900 text-lg">
-                      {t('pricing.page.comparison.free')}
-                    </th>
-                    <th className="px-8 py-6 text-center font-bold text-blue-600 text-lg">
-                      {t('pricing.page.comparison.premium')}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  <tr className="hover:bg-gray-50 transition-colors">
-                    <td className="px-8 py-6 font-semibold text-gray-900 text-base">
-                      {t('pricing.page.features.dailyLabels')}
-                    </td>
-                    <td className="px-8 py-6 text-center text-gray-700 text-base">
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
-                        10
-                      </span>
-                    </td>
-                    <td className="px-8 py-6 text-center text-blue-600 font-bold text-base">
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                        {t('pricing.page.values.unlimited')}
-                      </span>
-                    </td>
-                  </tr>
-                  <tr className="bg-gray-50 hover:bg-gray-100 transition-colors">
-                    <td className="px-8 py-6 font-semibold text-gray-900 text-base">
-                      {t('pricing.page.features.formats')}
-                    </td>
-                    <td className="px-8 py-6 text-center text-gray-700 text-base">
-                      <div className="flex justify-center">
-                        <Check className="h-6 w-6 text-green-500" />
-                      </div>
-                    </td>
-                    <td className="px-8 py-6 text-center text-blue-600 font-bold text-base">
-                      <div className="flex justify-center">
-                        <Check className="h-6 w-6 text-blue-500" />
-                      </div>
-                    </td>
-                  </tr>
-                  <tr className="hover:bg-gray-50 transition-colors">
-                    <td className="px-8 py-6 font-semibold text-gray-900 text-base">
-                      {t('pricing.page.features.platforms')}
-                    </td>
-                    <td className="px-8 py-6 text-center text-gray-700 text-base">
-                      <div className="flex justify-center">
-                        <Check className="h-6 w-6 text-green-500" />
-                      </div>
-                    </td>
-                    <td className="px-8 py-6 text-center text-blue-600 font-bold text-base">
-                      <div className="flex justify-center">
-                        <Check className="h-6 w-6 text-blue-500" />
-                      </div>
-                    </td>
-                  </tr>
-                  <tr className="bg-gray-50 hover:bg-gray-100 transition-colors">
-                    <td className="px-8 py-6 font-semibold text-gray-900 text-base">
-                      {t('pricing.page.features.support')}
-                    </td>
-                    <td className="px-8 py-6 text-center text-gray-700 text-base">
-                      <span className="text-sm">{t('pricing.page.values.basicSupport')}</span>
-                    </td>
-                    <td className="px-8 py-6 text-center text-blue-600 font-bold text-base">
-                      <span className="text-sm">{t('pricing.page.values.prioritySupport')}</span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </Card>
-        </div>
       </div>
 
       {/* Footer */}
