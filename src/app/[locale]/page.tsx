@@ -163,6 +163,73 @@ export default function Home() {
             {/* File Upload */}
             <FileUpload onFileContent={handleFileContent} t={t} />
 
+            {/* Stats Card avec informations de détection */}
+            {fileName && parseResult && (
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-4">
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                      addresses.length > 0
+                        ? 'bg-green-50'
+                        : 'bg-orange-50'
+                    }`}>
+                      <i className={`text-xl ${
+                        addresses.length > 0
+                          ? 'pi pi-check text-green-500'
+                          : 'pi pi-exclamation-triangle text-orange-500'
+                      }`}></i>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">{t('status.fileProcessed')}</p>
+                      <p className="font-semibold text-gray-900">{fileName}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className={`text-3xl font-bold mb-1 ${
+                      addresses.length > 0 ? 'text-blue-500' : 'text-orange-500'
+                    }`}>
+                      {addresses.length}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      {addresses.length === 0
+                        ? t('status.noAddressFound')
+                        : addresses.length === 1
+                        ? t('status.addressExtracted')
+                        : t('status.addressesExtracted')}
+                    </p>
+                  </div>
+                </div>
+                {addresses.length === 0 && (
+                  <div className="mt-4 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <i className="pi pi-info-circle text-orange-500 text-sm mt-0.5"></i>
+                      <div className="text-sm text-orange-800 flex-1">
+                        <p className="font-medium mb-1">{t('status.noAddressFound')}</p>
+                        <p className="mb-3">{t('status.checkFileFormat')}</p>
+                        <div className="space-y-2">
+                          <p className="text-xs text-orange-700">
+                            {t('fileAnalysis.helpImprove')}
+                          </p>
+                          <p className="text-xs text-orange-600 italic">
+                            {t('fileAnalysis.privacy')}
+                          </p>
+                          <div className="flex justify-start">
+                            <a
+                              href={`mailto:support@lalabel.app?subject=${encodeURIComponent(t('fileAnalysis.emailSubject'))}&body=${encodeURIComponent(t('fileAnalysis.emailBody'))}`}
+                              className="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-100 hover:bg-orange-200 text-orange-800 text-xs font-medium rounded-md transition-colors duration-200 border border-orange-300 hover:border-orange-400"
+                            >
+                              <i className="pi pi-send text-xs"></i>
+                              {t('fileAnalysis.sendFile')}
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Results */}
             {(addresses.length > 0 || errors.length > 0) && (
               <>
@@ -178,33 +245,6 @@ export default function Home() {
                   t={t}
                 />
               </>
-            )}
-
-            {/* Stats Card avec informations de détection */}
-            {fileName && parseResult && (
-              <div className="bg-white rounded-xl shadow-sm p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center">
-                      <i className="pi pi-check text-green-500 text-xl"></i>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600 mb-1">{t('status.fileProcessed')}</p>
-                      <p className="font-semibold text-gray-900">{fileName}</p>
-                    </div>
-                  </div>
-                  {addresses.length > 0 && (
-                    <div className="text-right">
-                      <p className="text-3xl font-bold text-blue-500 mb-1">{addresses.length}</p>
-                      <p className="text-sm text-gray-600">
-                        {addresses.length === 1
-                          ? t('status.addressExtracted')
-                          : t('status.addressesExtracted')}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
             )}
           </div>
         </div>

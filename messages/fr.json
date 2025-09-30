@@ -464,7 +464,16 @@
     "fileProcessed": "Fichier traité avec succès",
     "addressExtracted": "adresse extraite",
     "addressesExtracted": "adresses extraites",
+    "noAddressFound": "Aucune adresse trouvée",
+    "checkFileFormat": "Vérifiez que votre fichier contient des colonnes d'adresses (nom, adresse, ville, code postal).",
     "pageNumber": "Page {number}"
+  },
+  "fileAnalysis": {
+    "helpImprove": "Aidez-nous à améliorer notre système de reconnaissance en nous envoyant votre fichier :",
+    "privacy": "Vos données seront utilisées uniquement pour améliorer l'outil (pas de stockage permanent, pas d'usage commercial).",
+    "sendFile": "Envoyer le fichier",
+    "emailSubject": "[Lalabel] Fichier sans adresses détectées - Demande d'amélioration",
+    "emailBody": "Bonjour,\n\nJ'ai tenté d'importer un fichier sur Lalabel mais aucune adresse n'a été détectée.\n\nInformations sur le fichier :\n- Type de plateforme (Amazon, Shopify, eBay, autre) : \n- Format du fichier (CSV, TSV, TXT) : \n- Nombre approximatif de lignes : \n- Description du contenu : \n\nJe joins le fichier en pièce jointe pour vous aider à améliorer le système de reconnaissance.\n\n🔒 CONFIDENTIALITÉ :\nJe comprends que ce fichier sera utilisé uniquement pour améliorer l'outil Lalabel et analyser les formats non reconnus. Les données ne seront ni stockées définitivement, ni utilisées à des fins commerciales, ni partagées avec des tiers. Vous me tiendrez informé des améliorations apportées grâce à mon aide.\n\nMerci de développer un outil aussi utile pour les vendeurs en ligne !\n\nCordialement"
   },
   "csv": {
     "headers": {

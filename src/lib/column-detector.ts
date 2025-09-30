@@ -237,11 +237,28 @@ export function detectColumns(headers: string[]): DetectionResult {
 
 // Fonction pour détecter le séparateur
 export function detectSeparator(line: string): string {
-  const separators = ['\t', ',', ';', '|']
-  const counts = separators.map((sep) => line.split(sep).length - 1)
-  const maxCount = Math.max(...counts)
-  const bestSeparatorIndex = counts.indexOf(maxCount)
+  // Supprimer le BOM UTF-8 s'il est présent au début de la ligne
+  let cleanedLine = line
+  if (cleanedLine.charCodeAt(0) === 0xFEFF) {
+    cleanedLine = cleanedLine.slice(1)
+  }
 
+  const separators = ['\t', ',', ';', '|']
+  const counts = separators.map((sep) => cleanedLine.split(sep).length - 1)
+
+  // Détecter les espaces multiples comme séparateur (format pseudo-TSV)
+  const multiSpacePattern = /\s{2,}/g // 2 espaces ou plus
+  const multiSpaceMatches = (cleanedLine.match(multiSpacePattern) || []).length
+
+  // Comparer avec les séparateurs traditionnels
+  const maxTraditionalCount = Math.max(...counts)
+
+  // Si les espaces multiples donnent plus de colonnes, les utiliser
+  if (multiSpaceMatches > maxTraditionalCount && multiSpaceMatches > 5) {
+    return 'MULTI_SPACE' // Indicateur spécial pour espaces multiples
+  }
+
+  const bestSeparatorIndex = counts.indexOf(maxTraditionalCount)
   return separators[bestSeparatorIndex] || '\t'
 }
 
@@ -281,9 +298,25 @@ export function analyzeFileStructure(content: string): DetectionResult {
 
 // Parser robuste pour les headers
 function parseHeadersRobustly(line: string, separator: string): string[] {
-  const headers = line.split(separator).map((h) => {
-    let cleaned = h.trim()
-    // Nettoyer les quotes
+  // Supprimer le BOM UTF-8 s'il est présent au début de la ligne
+  let cleanedLine = line
+  if (cleanedLine.charCodeAt(0) === 0xFEFF) {
+    cleanedLine = cleanedLine.slice(1)
+  }
+
+  let headers: string[]
+
+  // Gestion spéciale pour les espaces multiples
+  if (separator === 'MULTI_SPACE') {
+    // Diviser selon les espaces multiples (2+ espaces consécutifs)
+    headers = cleanedLine.split(/\s{2,}/).map((h) => h.trim())
+  } else {
+    headers = cleanedLine.split(separator).map((h) => h.trim())
+  }
+
+  // Nettoyer les quotes pour tous les headers
+  return headers.map((h) => {
+    let cleaned = h
     if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
       cleaned = cleaned.slice(1, -1)
     }
@@ -292,6 +325,4 @@ function parseHeadersRobustly(line: string, separator: string): string[] {
     }
     return cleaned
   })
-
-  return headers
 }

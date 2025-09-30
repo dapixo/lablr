@@ -1,4 +1,3 @@
-import { ERROR_MESSAGES } from '@/constants'
 import type { Address, ParsedAddresses } from '@/types/address'
 import { type ColumnMapping, type DetectionResult, detectSeparator } from './column-detector'
 import { findAddressColumns } from './direct-column-finder'
@@ -89,10 +88,7 @@ export function parseUniversalFile(content: string): UniversalParseResult {
     }
   }
 
-  // Ajouter un message si aucune adresse trouvée
-  if (addresses.length === 0 && errors.length === 0) {
-    errors.push(ERROR_MESSAGES.NO_ADDRESSES_FOUND)
-  }
+  // Note: Le message "aucune adresse trouvée" est maintenant géré par la Stats Card dans l'UI
 
   return {
     addresses,
@@ -103,6 +99,39 @@ export function parseUniversalFile(content: string): UniversalParseResult {
   }
 }
 
+// Correction du mapping quand les données ont moins de colonnes que les headers
+function correctMappingForMissingColumns(
+  mapping: ColumnMapping,
+  headers: string[],
+  columns: string[]
+): ColumnMapping {
+  // Si les données ont le même nombre de colonnes que les headers, pas de correction
+  if (columns.length >= headers.length) {
+    return mapping
+  }
+
+  // Détection du pattern Amazon Seller avec colonnes manquantes
+  if (headers.length === 29 && columns.length === 20) {
+    // Pattern typique: 9 colonnes manquantes à la fin du fichier Amazon
+    // Les colonnes d'adresse sont décalées vers la gauche
+
+    const correctedMapping: ColumnMapping = { ...mapping }
+
+    // Ajustement spécifique pour Amazon Seller avec 20 colonnes au lieu de 29
+    if (mapping.fullName === 16) correctedMapping.fullName = 15  // recipient-name
+    if (mapping.addressLine1 === 17) correctedMapping.addressLine1 = 16  // ship-address-1
+    if (mapping.addressLine2 === 18) correctedMapping.addressLine2 = undefined  // ship-address-2 souvent vide
+    if (mapping.city === 20) correctedMapping.city = 17  // ship-city
+    if (mapping.postalCode === 22) correctedMapping.postalCode = 18  // ship-postal-code
+    if (mapping.country === 23) correctedMapping.country = 19  // ship-country
+
+    return correctedMapping
+  }
+
+  // Autres patterns de correction peuvent être ajoutés ici
+  return mapping
+}
+
 // Extraction des données d'adresse à partir des colonnes
 function extractAddressFromColumns(
   columns: string[],
@@ -110,6 +139,9 @@ function extractAddressFromColumns(
   headers: string[]
 ): Partial<Address> | null {
   const data: Partial<Address> = {}
+
+  // Corriger le mapping si nécessaire
+  const correctedMapping = correctMappingForMissingColumns(mapping, headers, columns)
 
   // Fonction helper pour obtenir une colonne de façon sûre
   const getColumn = (index: number | undefined): string => {
@@ -120,21 +152,21 @@ function extractAddressFromColumns(
   }
 
   // Extraction du nom
-  if (mapping.fullName !== undefined) {
-    const fullName = getColumn(mapping.fullName)
+  if (correctedMapping.fullName !== undefined) {
+    const fullName = getColumn(correctedMapping.fullName)
     if (fullName) {
       const nameParts = fullName.split(' ')
       data.firstName = nameParts[0] || ''
       data.lastName = nameParts.slice(1).join(' ') || ''
     }
   } else {
-    data.firstName = getColumn(mapping.firstName)
-    data.lastName = getColumn(mapping.lastName)
+    data.firstName = getColumn(correctedMapping.firstName)
+    data.lastName = getColumn(correctedMapping.lastName)
   }
 
   // Extraction de l'adresse - traiter directement les colonnes mappées
-  const rawAddress1 = getColumn(mapping.addressLine1)
-  const rawAddress2 = getColumn(mapping.addressLine2)
+  const rawAddress1 = getColumn(correctedMapping.addressLine1)
+  const rawAddress2 = getColumn(correctedMapping.addressLine2)
 
   // Déterminer s'il s'agit d'un fichier Shopify en analysant les headers
   const isShopify = columns.some(
@@ -144,9 +176,9 @@ function extractAddressFromColumns(
   )
 
   // Logique spécifique pour Shopify
-  if (isShopify && mapping.addressLine1 !== undefined) {
+  if (isShopify && correctedMapping.addressLine1 !== undefined) {
     // Pour Shopify, essayer d'abord la colonne "Shipping Street" (une colonne avant Address1)
-    const shippingStreetCol = getColumn(mapping.addressLine1 - 1)
+    const shippingStreetCol = getColumn(correctedMapping.addressLine1 - 1)
 
     if (
       shippingStreetCol &&
@@ -187,9 +219,9 @@ function extractAddressFromColumns(
   }
 
   // Extraction ville, état, code postal, pays
-  const rawCity = getColumn(mapping.city)
-  const rawPostalCode = getColumn(mapping.postalCode)
-  const rawCountry = getColumn(mapping.country)
+  const rawCity = getColumn(correctedMapping.city)
+  const rawPostalCode = getColumn(correctedMapping.postalCode)
+  const rawCountry = getColumn(correctedMapping.country)
 
   // Nettoyer la ville des données parasites
   data.city = cleanAddressField(rawCity)
@@ -329,6 +361,11 @@ function cleanQuotes(field: string): string {
  * Parse une ligne CSV en respectant les guillemets et échappements
  */
 function parseCSVLine(line: string, separator: string): string[] {
+  // Gestion spéciale pour les espaces multiples
+  if (separator === 'MULTI_SPACE') {
+    return line.split(/\s{2,}/).map((field) => cleanQuotes(field.trim())).filter(Boolean)
+  }
+
   const columns: string[] = []
   let current = ''
   let inQuotes = false

@@ -464,7 +464,16 @@
     "fileProcessed": "File processed successfully",
     "addressExtracted": "address extracted",
     "addressesExtracted": "addresses extracted",
+    "noAddressFound": "No addresses found",
+    "checkFileFormat": "Check that your file contains address columns (name, address, city, postal code).",
     "pageNumber": "Page {number}"
+  },
+  "fileAnalysis": {
+    "helpImprove": "Help us improve our recognition system by sending us your file:",
+    "privacy": "Your data will be used solely to improve the tool (no permanent storage, no commercial use).",
+    "sendFile": "Send file",
+    "emailSubject": "[Lalabel] File with no detected addresses - Improvement request",
+    "emailBody": "Hello,\n\nI tried to import a file on Lalabel but no addresses were detected.\n\nFile information:\n- Platform type (Amazon, Shopify, eBay, other): \n- File format (CSV, TSV, TXT): \n- Approximate number of lines: \n- Content description: \n\nI'm attaching the file to help you improve the recognition system.\n\n🔒 PRIVACY:\nI understand that this file will be used solely to improve the Lalabel tool and analyze unrecognized formats. The data will not be stored permanently, used for commercial purposes, or shared with third parties. You will keep me informed of improvements made thanks to my help.\n\nThank you for developing such a useful tool for online sellers!\n\nBest regards"
   },
   "csv": {
     "headers": {

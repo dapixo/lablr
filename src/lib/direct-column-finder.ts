@@ -7,6 +7,7 @@ const COLUMN_PATTERNS = {
     'shipping_name',
     'billing_name',
     'recipient_name',
+    'recipient-name', // Amazon Seller format
     'ship_to_name',
     'buyer_name',
     // Puis les noms génériques
@@ -48,6 +49,7 @@ const COLUMN_PATTERNS = {
     'shipping_address1',
     'billing_address1',
     'ship_address_1',
+    'ship-address-1', // Amazon Seller format
     'ship_address1',
     'street_address',
     'address_line_1',
@@ -62,6 +64,7 @@ const COLUMN_PATTERNS = {
     'shipping_address2',
     'billing_address2',
     'ship_address_2',
+    'ship-address-2', // Amazon Seller format
     'ship_address2',
     'address_line_2',
   ],
@@ -74,6 +77,7 @@ const COLUMN_PATTERNS = {
     'shipping_city',
     'billing_city',
     'ship_city',
+    'ship-city', // Amazon Seller format
   ],
   postalCode: [
     'postal_code',
@@ -85,6 +89,7 @@ const COLUMN_PATTERNS = {
     'shipping_zip',
     'billing_zip',
     'ship_postal_code',
+    'ship-postal-code', // Amazon Seller format
     'postal',
   ],
   state: [
@@ -96,6 +101,7 @@ const COLUMN_PATTERNS = {
     'shipping_province',
     'billing_province',
     'ship_state',
+    'ship-state', // Amazon Seller format
   ],
   country: [
     'country',
@@ -105,6 +111,7 @@ const COLUMN_PATTERNS = {
     'shipping_country',
     'billing_country',
     'ship_country',
+    'ship-country', // Amazon Seller format
   ],
 }
 

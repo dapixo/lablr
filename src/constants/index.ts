@@ -32,7 +32,6 @@ export const ERROR_MESSAGES = {
   INVALID_FILE_TYPE: `Seuls les fichiers ${ACCEPTED_FILE_TYPES.join(', ')} sont acceptés`,
   INVALID_TSV_FORMAT: 'Format de fichier invalide',
   LOW_CONFIDENCE: 'Format de fichier non reconnu - confiance insuffisante',
-  NO_ADDRESSES_FOUND: 'Aucune adresse valide trouvée dans le fichier',
 } as const
 
 // Pays supportés
