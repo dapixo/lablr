@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { checkRateLimit, withRateLimitHeaders } from '@/lib/rate-limit'
 
 export interface DailyUsage {
   id: string
@@ -23,7 +24,13 @@ export interface UsageRequest {
 /**
  * GET /api/usage - Récupère l'usage quotidien de l'utilisateur
  */
-export async function GET(): Promise<NextResponse<UsageResponse>> {
+export async function GET(request: NextRequest): Promise<NextResponse<UsageResponse>> {
+  // Appliquer rate limiting
+  const rateLimitResult = await checkRateLimit(request, 'usage')
+  if (!rateLimitResult.success) {
+    return rateLimitResult.response as NextResponse<UsageResponse>
+  }
+
   try {
     const supabase = await createClient()
 
@@ -72,10 +79,12 @@ export async function GET(): Promise<NextResponse<UsageResponse>> {
       return NextResponse.json({ success: false, error: 'Failed to fetch usage' }, { status: 500 })
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       data: usageData as DailyUsage,
     })
+
+    return withRateLimitHeaders(response, rateLimitResult.headers) as NextResponse<UsageResponse>
   } catch (error) {
     console.error('Unexpected error in GET /api/usage:', error)
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 })
@@ -86,6 +95,12 @@ export async function GET(): Promise<NextResponse<UsageResponse>> {
  * POST /api/usage - Incrémente l'usage quotidien
  */
 export async function POST(request: NextRequest): Promise<NextResponse<UsageResponse>> {
+  // Appliquer rate limiting
+  const rateLimitResult = await checkRateLimit(request, 'usage')
+  if (!rateLimitResult.success) {
+    return rateLimitResult.response as NextResponse<UsageResponse>
+  }
+
   try {
     const supabase = await createClient()
 
@@ -183,10 +198,12 @@ export async function POST(request: NextRequest): Promise<NextResponse<UsageResp
       resultData = updated
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       data: resultData as DailyUsage,
     })
+
+    return withRateLimitHeaders(response, rateLimitResult.headers) as NextResponse<UsageResponse>
   } catch (error) {
     console.error('Unexpected error in POST /api/usage:', error)
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 })

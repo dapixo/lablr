@@ -1,8 +1,15 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
+import { checkRateLimit, withRateLimitHeaders } from '@/lib/rate-limit'
 
 export async function DELETE(request: NextRequest) {
+  // Appliquer rate limiting strict pour les opérations d'authentification
+  const rateLimitResult = await checkRateLimit(request, 'auth')
+  if (!rateLimitResult.success) {
+    return rateLimitResult.response
+  }
+
   try {
     // Validate HTTP method
     if (request.method !== 'DELETE') {
@@ -41,7 +48,8 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ message: 'Failed to delete account' }, { status: 500 })
     }
 
-    return NextResponse.json({ message: 'Account deleted successfully' }, { status: 200 })
+    const response = NextResponse.json({ message: 'Account deleted successfully' }, { status: 200 })
+    return withRateLimitHeaders(response, rateLimitResult.headers)
   } catch (error) {
     console.error('Error deleting account:', error)
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 })

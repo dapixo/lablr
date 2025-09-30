@@ -5,6 +5,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { setupLemonSqueezy } from '@/lib/lemonsqueezy/client'
 import { LEMONSQUEEZY_CONFIG } from '@/lib/lemonsqueezy/config'
 import type { WebhookSubscriptionPayload } from '@/types/lemonsqueezy'
+import { checkRateLimit, withRateLimitHeaders } from '@/lib/rate-limit'
 
 /**
  * Crée un client Supabase avec validation des variables d'environnement
@@ -48,6 +49,11 @@ function verifyWebhookSignature(body: string, signature: string, secret: string)
  * Traitement des événements webhook Lemon Squeezy
  */
 export async function POST(request: NextRequest) {
+  // Appliquer rate limiting pour protéger contre le spam de webhooks
+  const rateLimitResult = await checkRateLimit(request, 'webhook')
+  if (!rateLimitResult.success) {
+    return rateLimitResult.response
+  }
   try {
     // Créer le client Supabase (évite l'erreur build Vercel)
     const supabase = createSupabaseClient()
@@ -456,7 +462,8 @@ export async function POST(request: NextRequest) {
     }
 
     console.log(`Successfully processed webhook event: ${eventName}`)
-    return NextResponse.json({ success: true })
+    const response = NextResponse.json({ success: true })
+    return withRateLimitHeaders(response, rateLimitResult.headers)
   } catch (error) {
     console.error('Webhook error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

@@ -1,10 +1,17 @@
-import { NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { checkRateLimit, withRateLimitHeaders } from '@/lib/rate-limit'
 
 /**
  * Récupération des données d'abonnement utilisateur
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
+  // Appliquer rate limiting
+  const rateLimitResult = await checkRateLimit(request, 'subscription')
+  if (!rateLimitResult.success) {
+    return rateLimitResult.response
+  }
+
   try {
     const supabase = await createClient()
     const {
@@ -170,7 +177,8 @@ export async function GET() {
       graceDaysRemaining: graceDaysRemaining,
     }
 
-    return NextResponse.json({ subscription: simpleSubscription })
+    const response = NextResponse.json({ subscription: simpleSubscription })
+    return withRateLimitHeaders(response, rateLimitResult.headers)
   } catch (error) {
     console.error('Subscription API error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
