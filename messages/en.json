@@ -358,9 +358,9 @@
       "integrations": "Integrations with other platforms"
     },
     "cta": {
-      "title": "Share your ideas!",
+      "title": "What would you like to see in Lalabel?",
       "description": "Contact us for any suggestion, format request or improvement. Your feedback helps us create the best label solution possible.",
-      "button": "Send feedback"
+      "button": "Share your ideas"
     },
     "email": {
       "subject": "[Lalabel] Improvement suggestion",

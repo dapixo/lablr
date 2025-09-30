@@ -358,9 +358,9 @@
       "integrations": "Intégrations avec d'autres plateformes"
     },
     "cta": {
-      "title": "Partagez vos idées !",
+      "title": "Qu'aimeriez-vous voir dans Lalabel ?",
       "description": "Contactez-nous pour toute suggestion, demande de format ou amélioration. Votre retour nous aide à créer la meilleure solution d'étiquettes possible.",
-      "button": "Envoyer un feedback"
+      "button": "Partagez vos idées"
     },
     "email": {
       "subject": "[Lalabel] Suggestion d'amélioration",

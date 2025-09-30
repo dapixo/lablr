@@ -84,31 +84,27 @@ ${t('feedback.email.thanks')}`)
           ))}
         </div>
 
-        {/* Suggestions */}
-        <div className="bg-white rounded-xl p-8 shadow-sm mb-8">
-          <h3 className="text-xl font-semibold text-gray-900 mb-6">
-            {t('feedback.suggestions.title')}
-          </h3>
-          <div className="grid sm:grid-cols-2 gap-4 mb-6">
-            {suggestions.map((suggestion, index) => (
-              <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50">
-                <Lightbulb className="h-4 w-4 text-amber-500 flex-shrink-0" />
-                <span className="text-gray-700">{suggestion}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* CTA */}
+        {/* Section unifiée: Suggestions + CTA */}
         <div className="text-center">
-          <Card className="p-8 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-            <h3 className="text-2xl font-bold mb-4">{t('feedback.cta.title')}</h3>
-            <p className="text-gray-600 mb-6 max-w-2xl mx-auto font-medium">
+          <Card className="p-8 shadow-sm hover:shadow-md transition-shadow">
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('feedback.cta.title')}</h3>
+            <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
               {t('feedback.cta.description')}
             </p>
+
+            {/* Suggestions intégrées */}
+            <div className="grid sm:grid-cols-2 gap-4 mb-8 max-w-3xl mx-auto">
+              {suggestions.map((suggestion, index) => (
+                <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+                  <Lightbulb className="h-4 w-4 text-amber-500 flex-shrink-0" />
+                  <span className="text-gray-700 text-sm">{suggestion}</span>
+                </div>
+              ))}
+            </div>
+
             <a
               href={mailtoLink}
-              className="inline-flex items-center bg-blue-600 text-white hover:bg-blue-700 font-semibold px-8 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 text-decoration-none"
+              className="inline-flex items-center bg-blue-600 text-white hover:bg-blue-700 font-semibold px-6 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
             >
               <Mail className="h-5 w-5 mr-2" />
               {t('feedback.cta.button')}
