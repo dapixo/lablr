@@ -12,8 +12,8 @@ const FAQHeader = React.memo(function FAQHeader({ t }: { t: (key: string) => str
   return (
     <div className="text-center mb-12">
       <div className="flex items-center justify-center gap-3 mb-4">
-        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
-          <i className="pi pi-question-circle text-white text-xl"></i>
+        <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
+          <i className="pi pi-question-circle text-blue-600 text-xl"></i>
         </div>
         <h2 className="text-3xl font-bold text-gray-900">{t('faq.title')}</h2>
       </div>
@@ -80,8 +80,8 @@ export const FAQ = React.memo(function FAQ({ t }: FAQProps) {
     [t]
   )
   return (
-    <section className="bg-white py-16">
-      <div className="container mx-auto px-4">
+    <section className="bg-gray-50 py-16">
+      <div className="container mx-auto px-4 md:px-6">
         <FAQHeader t={t} />
 
         {/* Accordion */}
@@ -100,14 +100,15 @@ export const FAQ = React.memo(function FAQ({ t }: FAQProps) {
           border-radius: 0.75rem;
           overflow: hidden;
           margin-bottom: 1rem;
+          background: white;
         }
         :global(.faq-accordion .p-accordion-header) {
           border: none;
           border-radius: 0.75rem;
-          background: #f9fafb;
+          background: white;
         }
         :global(.faq-accordion .p-accordion-header:hover) {
-          background: #f3f4f6;
+          background: #f9fafb;
         }
         :global(.faq-accordion .p-accordion-header.p-highlight) {
           background: #eff6ff;

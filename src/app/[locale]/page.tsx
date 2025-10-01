@@ -122,7 +122,14 @@ export default function Home() {
 
       {/* Main Content Area */}
       <main className="flex-1 bg-gradient-to-b from-white to-gray-50">
-        <div className="container mx-auto px-4 md:px-6">
+        {/* Background animé subtil */}
+        <div className="absolute top-0 left-0 w-full overflow-hidden pointer-events-none" style={{ height: '600px' }}>
+          <div className="absolute top-0 -left-4 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+          <div className="absolute top-0 -right-4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+          <div className="absolute -bottom-8 left-20 w-72 h-72 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+        </div>
+
+        <div className="container mx-auto px-4 md:px-6 relative">
           {/* Hero Banner - Conditionnel selon connexion */}
           {user ? (
             // Hero pour utilisateurs connectés (gratuit + premium) - Version compacte
