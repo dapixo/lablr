@@ -12,6 +12,7 @@ import { FileUpload } from '@/components/file-upload'
 import { Header } from '@/components/Header'
 import { PrintPreview } from '@/components/print-preview'
 import { HEADER_HEIGHT, SCROLL_DELAY } from '@/constants/ui'
+import { useAuth } from '@/hooks/useAuth'
 import { useTranslations } from '@/hooks/useTranslations'
 import { cleanAddressData } from '@/lib/address-parser'
 import { parseUniversalFile, type UniversalParseResult } from '@/lib/universal-parser'
@@ -21,6 +22,7 @@ export default function Home() {
   const params = useParams()
   const locale = (params?.locale as string) || 'fr'
   const t = useTranslations(locale)
+  const { userPlan } = useAuth()
   const [addresses, setAddresses] = useState<Address[]>([])
   const [errors, setErrors] = useState<string[]>([])
   const [fileName, setFileName] = useState<string>('')
@@ -121,8 +123,9 @@ export default function Home() {
       {/* Main Content Area */}
       <main className="flex-1 bg-gray-50">
         <div className="container mx-auto px-4 py-8">
-          {/* Welcome Section */}
-          {
+          {/* Hero Banner - Conditionnel selon le statut premium */}
+          {userPlan === 'premium' ? (
+            // Hero Premium - Version actuelle épurée
             <div className="bg-white rounded-xl shadow-sm p-8 mb-8 text-center">
               <div className="mb-6">
                 <i className="pi pi-cloud-upload text-6xl text-blue-500 mb-4 block"></i>
@@ -156,12 +159,92 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          }
+          ) : (
+            // Hero Non-Premium - Style micro-SaaS friendly
+            <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-xl shadow-sm p-8 mb-8">
+              <div className="text-center mb-8">
+                {/* Section Problème - Ton positif */}
+                <div className="mb-8">
+                  <div className="flex justify-center items-center gap-3 mb-6">
+                    <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                      <i className="pi pi-file text-blue-600 text-xl"></i>
+                    </div>
+                    <i className="pi pi-arrow-right text-gray-400 text-lg"></i>
+                    <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                      <i className="pi pi-print text-green-600 text-xl"></i>
+                    </div>
+                  </div>
+                  <h1 className="text-3xl font-bold text-gray-900 mb-4">
+                    {t('hero.problem.title')}
+                  </h1>
+                  <p className="text-gray-600 text-lg leading-relaxed max-w-3xl mx-auto mb-6">
+                    {t('hero.problem.description')}
+                  </p>
+                </div>
+
+                {/* Transition Solution */}
+                <div className="flex items-center justify-center gap-4 mb-8">
+                  <div className="h-px bg-gradient-to-r from-transparent via-blue-200 to-transparent flex-1"></div>
+                  <div className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-2 rounded-full font-medium text-sm shadow-lg">
+                    {t('hero.solution.transition')}
+                  </div>
+                  <div className="h-px bg-gradient-to-r from-transparent via-blue-200 to-transparent flex-1"></div>
+                </div>
+
+                {/* Solution Lalabel */}
+                <div className="bg-white rounded-xl p-8 shadow-lg border border-blue-100">
+                  <div className="flex items-center justify-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center shadow-lg">
+                      <i className="pi pi-sparkles text-white text-xl"></i>
+                    </div>
+                    <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                      {t('hero.solution.title')}
+                    </h2>
+                  </div>
+                  <p className="text-gray-600 text-lg leading-relaxed max-w-2xl mx-auto mb-6">
+                    {t('hero.solution.description')}
+                  </p>
+                </div>
+              </div>
+
+              {/* Bénéfices avec nouveau titre */}
+              <div className="mb-6">
+                <h3 className="text-xl font-semibold text-gray-800 text-center mb-6">
+                  {t('hero.benefits.title')}
+                </h3>
+                <div className="grid md:grid-cols-3 gap-6">
+                  <div className="text-center bg-white rounded-xl p-6 shadow-sm border border-blue-100">
+                    <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-3">
+                      <i className="pi pi-clock text-green-600 text-xl"></i>
+                    </div>
+                    <div className="text-2xl font-bold text-green-600 mb-2">95%</div>
+                    <p className="text-gray-600 text-sm">{t('hero.benefits.timeReduction')}</p>
+                  </div>
+                  <div className="text-center bg-white rounded-xl p-6 shadow-sm border border-blue-100">
+                    <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-3">
+                      <i className="pi pi-check-circle text-blue-600 text-xl"></i>
+                    </div>
+                    <div className="text-2xl font-bold text-blue-600 mb-2">3</div>
+                    <p className="text-gray-600 text-sm">{t('hero.benefits.simplicity')}</p>
+                  </div>
+                  <div className="text-center bg-white rounded-xl p-6 shadow-sm border border-blue-100">
+                    <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-3">
+                      <i className="pi pi-shield text-purple-600 text-xl"></i>
+                    </div>
+                    <div className="text-2xl font-bold text-purple-600 mb-2">0</div>
+                    <p className="text-gray-600 text-sm">{t('hero.benefits.accuracy')}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Content Sections */}
           <div className="space-y-6">
             {/* File Upload */}
-            <FileUpload onFileContent={handleFileContent} t={t} />
+            <div id="file-upload-section">
+              <FileUpload onFileContent={handleFileContent} t={t} />
+            </div>
 
             {/* Stats Card avec informations de détection */}
             {fileName && parseResult && (

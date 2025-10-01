@@ -39,30 +39,51 @@ export function Header({ t }: HeaderProps) {
   )
 
   return (
-    <header className="bg-white shadow-lg border-b sticky top-0 z-50">
+    <header className="bg-white shadow-sm border-b sticky top-0 z-50">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between py-4">
-          {/* Left Section - Brand */}
+        <div className="flex items-center justify-between py-3">
+          {/* Left Section - Brand Compact */}
           <Link
             href={`/${locale}`}
-            className="flex items-center gap-4 hover:opacity-80 transition-opacity"
+            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
           >
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
-              <i className="pi pi-tag text-white text-xl"></i>
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-md">
+              <i className="pi pi-tag text-white text-lg"></i>
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 leading-tight">{t('brand.name')}</h1>
-              <p className="text-sm text-gray-600 font-medium">{t('brand.tagline')}</p>
+              <h1 className="text-xl font-bold text-gray-900">{t('brand.name')}</h1>
+              <p className="text-xs text-gray-500 hidden sm:block">{t('brand.tagline')}</p>
             </div>
           </Link>
 
-          {/* Center Section - Navigation */}
-          <nav className="hidden md:flex items-center gap-6">
-            {/* Navigation items can be added here if needed */}
-          </nav>
+          {/* Right Section - Navigation + User + Language */}
+          <div className="flex items-center gap-2 md:gap-4">
+            {/* Navigation Links */}
+            <nav className="hidden lg:flex items-center gap-6 mr-4">
+              <Link
+                href={`/${locale}/pricing`}
+                className="text-sm text-gray-600 hover:text-blue-600 font-medium transition-colors duration-200"
+              >
+                {t('navigation.pricing')}
+              </Link>
+            </nav>
 
-          {/* Right Section - User Menu + Language Selector */}
-          <div className="flex items-center gap-4">
+            {/* CTA Button */}
+            <button
+              onClick={() => {
+                const fileUploadSection = document.getElementById('file-upload-section')
+                if (fileUploadSection) {
+                  fileUploadSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                }
+              }}
+              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 md:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1.5 shadow-md hover:shadow-lg"
+            >
+              <i className="pi pi-upload text-xs"></i>
+              <span className="hidden sm:inline">{t('navigation.getStarted')}</span>
+              <span className="sm:hidden">Import</span>
+            </button>
+
+            {/* User Auth */}
             {isHydrated && !loading && user ? (
               <UserMenu />
             ) : isHydrated && !loading ? (
@@ -71,7 +92,7 @@ export function Header({ t }: HeaderProps) {
                 className="text-sm text-gray-600 hover:text-blue-600 font-medium transition-colors duration-200 flex items-center gap-1.5"
               >
                 <i className="pi pi-sign-in text-xs"></i>
-                {t('auth.buttons.signIn')}
+                <span className="hidden md:inline">{t('auth.buttons.signIn')}</span>
               </Link>
             ) : null}
 
@@ -81,7 +102,7 @@ export function Header({ t }: HeaderProps) {
                 value={locale}
                 onChange={(e) => handleLanguageChange(e.target.value)}
                 disabled={isPending}
-                className="text-sm text-gray-600 bg-white border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                className="text-xs md:text-sm text-gray-600 bg-white border border-gray-300 rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="fr">Fr</option>
                 <option value="en">En</option>

@@ -4,16 +4,34 @@
     "tagline": "Professional address extraction solution"
   },
   "navigation": {
-    "pricing": "Pricing"
+    "pricing": "Pricing",
+    "getStarted": "Import"
   },
   "header": {
     "welcome": "Welcome to Lalabel",
     "description": "Import your data and transform them into professional shipping labels in just a few clicks."
   },
+  "hero": {
+    "problem": {
+      "title": "Simplify your shipping label creation",
+      "description": "Spending time manually formatting addresses from your Amazon, Shopify, eBay, Etsy reports or your own CSV/TXT files? Lalabel automates this process to save you valuable time."
+    },
+    "solution": {
+      "transition": "How it works",
+      "title": "Your files become professional labels",
+      "description": "Import your sales report (CSV, TXT) or personal file → Choose your print format → Get your labels. Simple, fast and error-free."
+    },
+    "benefits": {
+      "title": "Why choose Lalabel?",
+      "timeReduction": "time saved on formatting",
+      "simplicity": "steps only",
+      "accuracy": "formatting error"
+    }
+  },
   "steps": {
     "1": {
       "title": "1. Import",
-      "description": "Drop your address file (Amazon, Shopify, eBay...)"
+      "description": "Drop your CSV/TXT file (Amazon, Shopify, eBay, Etsy...)"
     },
     "2": {
       "title": "2. Configure",
