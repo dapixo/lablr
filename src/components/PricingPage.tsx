@@ -171,23 +171,23 @@ export function PricingPage({ t }: PricingPageProps) {
 
       {/* Hero Section */}
       <div className="bg-gradient-to-br from-blue-600 to-blue-800 text-white">
-        <div className="max-w-6xl mx-auto px-6 py-20 text-center">
-          <div className="mb-8">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/10 backdrop-blur-sm mb-6">
-              <Zap className="h-10 w-10 text-white" />
-            </div>
-            <h1 className="text-5xl font-bold mb-6">{t('pricing.page.title')}</h1>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
-              {t('pricing.page.subtitle')}
-            </p>
-          </div>
+        <div className="max-w-4xl mx-auto px-6 py-8 text-center">
+          <h1 className="text-3xl font-bold mb-2">{t('pricing.page.title')}</h1>
+          <p className="text-base text-blue-100 max-w-xl mx-auto">
+            {t('pricing.page.subtitle')}
+          </p>
+        </div>
+      </div>
 
-          {/* Enhanced Billing Toggle */}
-          <div className="inline-flex items-center bg-white/10 backdrop-blur-sm rounded-full p-2 gap-2 relative">
+      {/* Pricing Cards */}
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        {/* Billing Toggle */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center bg-white border border-gray-200 rounded-full p-1 gap-1 relative shadow-lg">
             <button
               onClick={() => setIsAnnual(false)}
               className={`px-6 py-3 rounded-full font-medium transition-all duration-200 ${
-                !isAnnual ? 'bg-white text-blue-600 shadow-lg' : 'text-blue-100 hover:text-white'
+                !isAnnual ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               {t('pricing.page.billingToggle.monthly')}
@@ -195,7 +195,7 @@ export function PricingPage({ t }: PricingPageProps) {
             <button
               onClick={() => setIsAnnual(true)}
               className={`px-6 py-3 rounded-full font-medium transition-all duration-200 ${
-                isAnnual ? 'bg-white text-blue-600 shadow-lg' : 'text-blue-100 hover:text-white'
+                isAnnual ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               {t('pricing.page.billingToggle.annually')}
@@ -205,15 +205,12 @@ export function PricingPage({ t }: PricingPageProps) {
                 value="-33%"
                 rounded
                 severity="success"
-                className="absolute -top-3 -right-3 font-bold shadow-lg"
+                className="absolute -top-3 -right-3 font-bold shadow-lg animate-pulse"
               />
             )}
           </div>
         </div>
-      </div>
 
-      {/* Pricing Cards */}
-      <div className="max-w-7xl mx-auto px-6 py-20">
         <div className="grid lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
           {/* Free Plan */}
           <div className="relative h-full">
