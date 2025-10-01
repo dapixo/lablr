@@ -1,13 +1,33 @@
+# Robots.txt for Lalabel - Shipping Label Generator
+# Updated: 2024
+
 User-agent: *
 Allow: /
 
-# Allow all search engines to crawl the site
+# Allow all search engines to crawl public pages
 Allow: /fr/
 Allow: /en/
+Allow: /fr/pricing
+Allow: /en/pricing
+Allow: /fr/login
+Allow: /en/login
 
-# Block private pages
+# Block private/admin pages
 Disallow: /api/
 Disallow: /_next/
+Disallow: /account/
+Disallow: /admin/
+
+# Block development files
+Disallow: /*.json$
+Disallow: /*.env$
+Disallow: /*.log$
+
+# Crawl delay (be nice to servers)
+Crawl-delay: 1
 
 # Sitemap location
 Sitemap: https://lalabel.app/sitemap.xml
+
+# Additional sitemaps (if needed in future)
+# Sitemap: https://lalabel.app/sitemap-blog.xml
