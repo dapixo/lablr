@@ -108,7 +108,7 @@ ${t('feedback.email.thanks')}`)
 
             <a
               href={mailtoLink}
-              className="inline-flex items-center bg-gradient-to-r from-blue-600 to-blue-500 text-white hover:from-blue-700 hover:to-blue-600 font-semibold px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
+              className="inline-flex items-center bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 text-white hover:from-blue-700 hover:via-blue-600 hover:to-blue-500 font-semibold px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
             >
               <Mail className="h-5 w-5 mr-2" />
               {t('feedback.cta.button')}

@@ -205,7 +205,7 @@ export function UpgradeModal({
                   onClick={() => setIsAnnual(false)}
                   className={`px-4 py-2 rounded-full font-medium transition-all duration-200 text-sm ${
                     !isAnnual
-                      ? 'bg-blue-600 text-white shadow-sm'
+                      ? 'bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 text-white shadow-sm'
                       : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
@@ -215,7 +215,7 @@ export function UpgradeModal({
                   onClick={() => setIsAnnual(true)}
                   className={`px-4 py-2 rounded-full font-medium transition-all duration-200 text-sm ${
                     isAnnual
-                      ? 'bg-blue-600 text-white shadow-sm'
+                      ? 'bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 text-white shadow-sm'
                       : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
@@ -248,7 +248,7 @@ export function UpgradeModal({
               <Button
                 onClick={handleUpgradeToPremium}
                 loading={isUpgrading}
-                className="w-full py-3 text-lg font-semibold bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 justify-center"
+                className="w-full py-3 text-lg font-semibold bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 text-white hover:from-blue-700 hover:via-blue-600 hover:to-blue-500 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 justify-center"
               >
                 <Crown className="w-5 h-5 mr-2" />
                 {t('pricing.premium.cta')}

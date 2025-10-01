@@ -187,7 +187,7 @@ export function PricingPage({ t }: PricingPageProps) {
             <button
               onClick={() => setIsAnnual(false)}
               className={`px-6 py-3 rounded-full font-medium transition-all duration-200 ${
-                !isAnnual ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 hover:text-gray-900'
+                !isAnnual ? 'bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 text-white shadow-md' : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               {t('pricing.page.billingToggle.monthly')}
@@ -195,7 +195,7 @@ export function PricingPage({ t }: PricingPageProps) {
             <button
               onClick={() => setIsAnnual(true)}
               className={`px-6 py-3 rounded-full font-medium transition-all duration-200 ${
-                isAnnual ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 hover:text-gray-900'
+                isAnnual ? 'bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 text-white shadow-md' : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               {t('pricing.page.billingToggle.annually')}
@@ -251,7 +251,7 @@ export function PricingPage({ t }: PricingPageProps) {
 
                 {!loading && !user && (
                   <Button
-                    className="w-full py-4 text-lg font-semibold bg-blue-600 text-white hover:bg-blue-700 rounded-xl transition-all duration-200 justify-center mt-auto"
+                    className="w-full py-4 text-lg font-semibold bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 text-white hover:from-blue-700 hover:via-blue-600 hover:to-blue-500 rounded-xl transition-all duration-200 justify-center mt-auto"
                     onClick={() => setShowAuthModal(true)}
                   >
                     {t('pricing.page.cta.free')}
@@ -326,7 +326,7 @@ export function PricingPage({ t }: PricingPageProps) {
                   <Button
                     onClick={handleUpgradeToPremium}
                     loading={isUpgrading}
-                    className="w-full py-4 text-lg font-semibold bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 justify-center mt-auto"
+                    className="w-full py-4 text-lg font-semibold bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 text-white hover:from-blue-700 hover:via-blue-600 hover:to-blue-500 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 justify-center mt-auto"
                   >
                     {t('pricing.page.cta.premium')}
                   </Button>
