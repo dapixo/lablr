@@ -10,6 +10,7 @@ import type React from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useLemonSqueezyCheckout } from '@/hooks/useLemonSqueezyCheckout'
+import { useAnalytics } from '@/hooks/useAnalytics'
 import type { TranslationVariables } from '@/hooks/useTranslations'
 import { createInnerHTML, getPluralVariables, markdownToHtml } from '@/lib/i18n-helpers'
 
@@ -41,6 +42,7 @@ export function UpgradeModal({
     error: checkoutError,
     clearError,
   } = useLemonSqueezyCheckout()
+  const { trackUpgradeAttempt } = useAnalytics()
   const toast = useRef<Toast>(null)
 
   /**
@@ -75,6 +77,13 @@ export function UpgradeModal({
       return
     }
 
+    // Track tentative d'upgrade
+    trackUpgradeAttempt({
+      source: 'limit_modal',
+      remainingLabels,
+      triggeredBy: remainingLabels === 0 ? 'limit_reached' : 'proactive'
+    })
+
     // Créer le checkout Lemon Squeezy
     const success = await createCheckout(isAnnual ? 'yearly' : 'monthly')
 
@@ -87,7 +96,7 @@ export function UpgradeModal({
         life: 3000,
       })
     }
-  }, [user, userPlan, createCheckout, isAnnual, t])
+  }, [user, userPlan, createCheckout, isAnnual, t, trackUpgradeAttempt, remainingLabels])
 
   // Afficher les erreurs de checkout
   useEffect(() => {

@@ -10,6 +10,7 @@ import { UpgradeModal } from '@/components/UpgradeModal'
 import { PREVIEW_DIMENSIONS, PREVIEW_MAX_LABELS_ROLL, PREVIEW_MAX_PAGES } from '@/constants'
 import { useAuth } from '@/hooks/useAuth'
 import { useUsageTracking } from '@/hooks/useUsageTracking'
+import { useAnalytics } from '@/hooks/useAnalytics'
 import { PRINT_CONFIGS } from '@/lib/print/config'
 import { downloadCSV, generateDebugPrintCSS, getPrintCSS } from '@/lib/print-formats'
 import { printAddresses } from '@/lib/print-utils'
@@ -40,6 +41,7 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
   const { user, userPlan, loading } = useAuth()
   const { remainingLabels, canPrintLabels, getMaxPrintableLabels, trackLabelUsage } =
     useUsageTracking()
+  const { trackLabelGenerated } = useAnalytics()
 
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
@@ -125,6 +127,14 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
         // Track l'usage après impression réussie
         if (user) {
           await trackLabelUsage(addressesToPrint.length)
+
+          // Track analytics business
+          trackLabelGenerated({
+            format: selectedFormat.value,
+            count: addressesToPrint.length,
+            userPlan: userPlan || 'free',
+            remainingLabels: userPlan === 'premium' ? undefined : remainingLabels
+          })
         }
       } catch (error) {
         // En cas d'erreur, reset le flag immédiatement
@@ -132,7 +142,7 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
         throw error
       }
     },
-    [addresses, selectedFormat.value, user, trackLabelUsage, resetPrintFlag, debugMode]
+    [addresses, selectedFormat.value, user, trackLabelUsage, resetPrintFlag, debugMode, trackLabelGenerated, userPlan, remainingLabels]
   )
 
   const handlePrint = useCallback(() => {

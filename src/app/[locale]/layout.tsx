@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { PrimeReactProvider } from 'primereact/api'
+import { Analytics } from '@vercel/analytics/react'
 import { StructuredData } from '@/components/SEO/StructuredData'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { locales } from '@/i18n/config'
@@ -144,6 +145,7 @@ export default async function LocaleLayout({
       <PrimeReactProvider>
         <AuthProvider>{children}</AuthProvider>
       </PrimeReactProvider>
+      <Analytics />
     </>
   )
 }
