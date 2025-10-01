@@ -4,6 +4,7 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
+import { InputText } from 'primereact/inputtext'
 import { Skeleton } from 'primereact/skeleton'
 import { Toast } from 'primereact/toast'
 import { Suspense, useEffect, useRef, useState } from 'react'
@@ -19,11 +20,79 @@ function AccountPageContent() {
   const { locale } = useParams()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { user, userPlan, loading, deleteAccount, refreshUserPlan } = useAuth()
+  const { user, userPlan, loading, deleteAccount, refreshUserPlan, updateUserName } = useAuth()
   const t = useTranslations(locale as string)
   const toast = useRef<Toast>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   const { labelsUsed, remainingLabels, loading: usageLoading } = useUsageTracking()
+
+  // États pour l'édition du nom
+  const [isEditingName, setIsEditingName] = useState(false)
+  const [editedName, setEditedName] = useState('')
+  const [isUpdatingName, setIsUpdatingName] = useState(false)
+
+  // Initialiser le nom édité quand l'utilisateur change
+  useEffect(() => {
+    if (user?.user_metadata?.full_name) {
+      setEditedName(user.user_metadata.full_name)
+    } else if (user?.email) {
+      setEditedName(user.email.split('@')[0])
+    }
+  }, [user])
+
+  const handleStartEditName = () => {
+    setIsEditingName(true)
+    setEditedName(user?.user_metadata?.full_name || user?.email?.split('@')[0] || '')
+  }
+
+  const handleCancelEditName = () => {
+    setIsEditingName(false)
+    setEditedName(user?.user_metadata?.full_name || user?.email?.split('@')[0] || '')
+  }
+
+  const handleSaveName = async () => {
+    if (!editedName.trim()) {
+      toast.current?.show({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: t('account.userInfo.editName.errors.empty'),
+        life: 3000,
+      })
+      return
+    }
+
+    setIsUpdatingName(true)
+    try {
+      const { error } = await updateUserName(editedName.trim())
+
+      if (error) {
+        toast.current?.show({
+          severity: 'error',
+          summary: 'Erreur',
+          detail: error.message,
+          life: 4000,
+        })
+      } else {
+        toast.current?.show({
+          severity: 'success',
+          summary: 'Succès',
+          detail: t('account.userInfo.editName.success'),
+          life: 3000,
+        })
+        setIsEditingName(false)
+      }
+    } catch (error) {
+      console.error('Update name error:', error)
+      toast.current?.show({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: 'Une erreur est survenue lors de la mise à jour',
+        life: 4000,
+      })
+    } finally {
+      setIsUpdatingName(false)
+    }
+  }
 
   const handleDeleteAccount = () => {
     confirmDialog({
@@ -332,12 +401,64 @@ function AccountPageContent() {
 
                 {/* Nom complet */}
                 <div className="border-b border-gray-200 pb-4">
-                  <div className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('account.userInfo.fullName')}
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-sm font-medium text-gray-700">
+                      {t('account.userInfo.fullName')}
+                    </div>
+                    {!isEditingName && (
+                      <Button
+                        icon="pi pi-pencil"
+                        size="small"
+                        text
+                        severity="secondary"
+                        onClick={handleStartEditName}
+                        tooltip={t('account.userInfo.editName.tooltip')}
+                        className="p-2"
+                      />
+                    )}
                   </div>
-                  <p className="text-gray-900 text-lg">
-                    {user.user_metadata?.full_name || user.email?.split('@')[0] || 'N/A'}
-                  </p>
+
+                  {isEditingName ? (
+                    <div className="space-y-3">
+                      <InputText
+                        value={editedName}
+                        onChange={(e) => setEditedName(e.target.value)}
+                        placeholder={t('account.userInfo.editName.placeholder')}
+                        className="w-full"
+                        disabled={isUpdatingName}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleSaveName()
+                          } else if (e.key === 'Escape') {
+                            handleCancelEditName()
+                          }
+                        }}
+                      />
+                      <div className="flex gap-2">
+                        <Button
+                          label={t('account.userInfo.editName.save')}
+                          icon="pi pi-check"
+                          size="small"
+                          onClick={handleSaveName}
+                          loading={isUpdatingName}
+                          className="p-button-success"
+                        />
+                        <Button
+                          label={t('account.userInfo.editName.cancel')}
+                          icon="pi pi-times"
+                          size="small"
+                          severity="secondary"
+                          outlined
+                          onClick={handleCancelEditName}
+                          disabled={isUpdatingName}
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-gray-900 text-lg">
+                      {user.user_metadata?.full_name || user.email?.split('@')[0] || 'N/A'}
+                    </p>
+                  )}
                 </div>
 
                 {/* Email */}

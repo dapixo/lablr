@@ -508,7 +508,20 @@
       "title": "Informations utilisateur",
       "fullName": "Nom complet",
       "email": "Adresse email",
-      "memberSince": "Membre depuis"
+      "memberSince": "Membre depuis",
+      "editName": {
+        "tooltip": "Modifier le nom",
+        "placeholder": "Entrez votre nom complet",
+        "save": "Sauvegarder",
+        "cancel": "Annuler",
+        "success": "Nom mis à jour avec succès",
+        "errors": {
+          "empty": "Le nom ne peut pas être vide",
+          "tooLong": "Le nom ne peut pas dépasser 100 caractères",
+          "invalidCharacters": "Le nom contient des caractères non autorisés",
+          "controlCharacters": "Le nom contient des caractères invalides"
+        }
+      }
     },
     "dangerZone": {
       "title": "Zone de danger",

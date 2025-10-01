@@ -39,6 +39,7 @@ interface AuthContextType {
   verifyOtpCode: (email: string, code: string) => Promise<{ error: AuthError | null }>
   signOut: () => Promise<{ error: AuthError | null }>
   deleteAccount: () => Promise<{ error: AuthError | null }>
+  updateUserName: (fullName: string) => Promise<{ error: AuthError | null }>
   refreshUserPlan: () => Promise<void>
   clearError: () => void
 }
@@ -461,6 +462,74 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [user?.id, supabase.auth])
 
   /**
+   * Mise à jour du nom utilisateur
+   */
+  const updateUserName = useCallback(async (fullName: string) => {
+    if (!user?.id) {
+      const error = new Error('No user logged in') as AuthError
+      setError(error.message)
+      return { error }
+    }
+
+    const trimmedName = fullName.trim()
+
+    if (!trimmedName) {
+      const error = new Error('Le nom ne peut pas être vide') as AuthError
+      setError(error.message)
+      return { error }
+    }
+
+    // Validation sécurité : longueur max
+    if (trimmedName.length > 100) {
+      const error = new Error('Le nom ne peut pas dépasser 100 caractères') as AuthError
+      setError(error.message)
+      return { error }
+    }
+
+    // Validation sécurité : caractères autorisés (lettres, espaces, traits d'union, apostrophes)
+    const nameRegex = /^[\p{L}\p{M}\s\-'\.]+$/u
+    if (!nameRegex.test(trimmedName)) {
+      const error = new Error('Le nom contient des caractères non autorisés') as AuthError
+      setError(error.message)
+      return { error }
+    }
+
+    // Validation sécurité : pas de caractères de contrôle
+    if (/[\x00-\x1F\x7F-\x9F]/.test(trimmedName)) {
+      const error = new Error('Le nom contient des caractères invalides') as AuthError
+      setError(error.message)
+      return { error }
+    }
+
+    try {
+      // Mise à jour des métadonnées utilisateur Supabase
+      const { data, error } = await supabase.auth.updateUser({
+        data: {
+          full_name: trimmedName
+        }
+      })
+
+      if (error) {
+        setError(error.message)
+        return { error }
+      }
+
+      // Mise à jour locale immédiate (l'auth listener se chargera du reste)
+      if (data.user) {
+        setUser(data.user)
+      }
+
+      debugLog('✅ User name updated successfully:', fullName)
+      setError(null)
+      return { error: null }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to update user name'
+      setError(errorMessage)
+      return { error: new Error(errorMessage) as AuthError }
+    }
+  }, [user?.id, supabase.auth])
+
+  /**
    * Clear error state
    */
   const clearError = useCallback(() => {
@@ -485,6 +554,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     verifyOtpCode,
     signOut,
     deleteAccount,
+    updateUserName,
     refreshUserPlan,
     clearError,
   }
