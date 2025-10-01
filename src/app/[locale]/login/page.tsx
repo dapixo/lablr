@@ -199,9 +199,9 @@ export default function LoginPage() {
           <Card className="p-8">
             {/* Header du formulaire */}
             <div className="text-center mb-8">
-              <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-4">
+              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <i
-                  className={`pi ${step === 'code' ? 'pi-key' : 'pi-envelope'} text-blue-500 text-xl`}
+                  className={`pi ${step === 'code' ? 'pi-key' : 'pi-envelope'} text-white text-xl`}
                 ></i>
               </div>
               <h1 className="text-2xl font-bold text-gray-900 mb-2">
@@ -215,16 +215,6 @@ export default function LoginPage() {
             {step === 'code' ? (
               /* Formulaire de saisie du code */
               <div className="space-y-6">
-                <div className="text-center">
-                  <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-4">
-                    <i className="pi pi-envelope text-green-500 text-2xl"></i>
-                  </div>
-                  <p className="text-gray-700 font-medium mb-2">{t('auth.otp.codeSent')}</p>
-                  <p className="text-sm text-gray-500 mb-4">
-                    {t('auth.otp.codeSentTo').replace('{email}', email)}
-                  </p>
-                </div>
-
                 <form onSubmit={handleCodeSubmit} className="space-y-5">
                   <div className="flex justify-center otp-container">
                     <InputOtp
@@ -275,7 +265,7 @@ export default function LoginPage() {
                     icon={loading ? undefined : 'pi pi-check'}
                     loading={loading}
                     disabled={loading || otpCode.length < 6}
-                    className="w-full py-3 text-base font-semibold"
+                    className="w-full py-3 text-base font-semibold bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 text-white hover:from-blue-700 hover:via-blue-600 hover:to-blue-500 border-0 shadow-lg hover:shadow-xl transition-all duration-200"
                   />
                 </form>
 
@@ -290,7 +280,7 @@ export default function LoginPage() {
                     outlined
                     onClick={handleResendCode}
                     disabled={loading || !canResend}
-                    className="w-full"
+                    className="w-full border-blue-500 text-blue-600 hover:bg-blue-50"
                   />
                   <Button
                     label={t('auth.otp.changeEmail')}
@@ -334,7 +324,7 @@ export default function LoginPage() {
                   icon={loading ? undefined : 'pi pi-send'}
                   loading={loading}
                   disabled={loading}
-                  className="w-full py-3 text-base font-semibold"
+                  className="w-full py-3 text-base font-semibold bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 text-white hover:from-blue-700 hover:via-blue-600 hover:to-blue-500 border-0 shadow-lg hover:shadow-xl transition-all duration-200"
                 />
               </form>
             )}

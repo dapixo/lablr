@@ -194,7 +194,9 @@ function AccountPageContent() {
             {/* Page Header */}
             <div className="bg-white rounded-xl shadow-sm p-8 mb-8 text-center">
               <div className="mb-6">
-                <i className="pi pi-user text-6xl text-blue-500 mb-4 block"></i>
+                <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <i className="pi pi-user text-white text-3xl"></i>
+                </div>
                 <h1 className="text-3xl font-bold text-gray-900 mb-3">{t('account.title')}</h1>
                 <p className="text-gray-600 text-lg leading-relaxed">{t('account.description')}</p>
               </div>
@@ -234,7 +236,7 @@ function AccountPageContent() {
                       /* Contenu réel */
                       <>
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
+                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-md">
                             <i className="pi pi-star text-white text-lg"></i>
                           </div>
                           <div>
@@ -366,7 +368,7 @@ function AccountPageContent() {
                           <Button
                             label={t('account.planStatus.upgradeToPremium')}
                             icon="pi pi-star"
-                            className="p-button-success"
+                            className="bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 text-white hover:from-blue-700 hover:via-blue-600 hover:to-blue-500 border-0 shadow-lg hover:shadow-xl transition-all duration-200"
                             onClick={() => router.push(`/${locale}/pricing`)}
                             size="small"
                           />
@@ -441,7 +443,7 @@ function AccountPageContent() {
                           size="small"
                           onClick={handleSaveName}
                           loading={isUpdatingName}
-                          className="p-button-success"
+                          className="bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 text-white hover:from-blue-700 hover:via-blue-600 hover:to-blue-500 border-0 shadow-md hover:shadow-lg transition-all duration-200"
                         />
                         <Button
                           label={t('account.userInfo.editName.cancel')}

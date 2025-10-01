@@ -210,8 +210,6 @@
       "resendCode": "Resend code",
       "changeEmail": "Change email",
       "verify": "Verify",
-      "codeSent": "Code sent!",
-      "codeSentTo": "A verification code has been sent to {email}",
       "codeLabel": "Verification code",
       "howItWorks": {
         "title": "How it works?",

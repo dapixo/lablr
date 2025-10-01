@@ -284,16 +284,6 @@ export function AuthModal({ visible, onHide, onSuccess, t }: AuthModalProps) {
         {step === 'code' ? (
           /* Formulaire de saisie du code */
           <div className="space-y-6">
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-4">
-                <i className="pi pi-envelope text-green-500 text-2xl"></i>
-              </div>
-              <p className="text-gray-700 font-medium mb-2">{t('auth.otp.codeSent')}</p>
-              <p className="text-sm text-gray-500 mb-4">
-                {t('auth.otp.codeSentTo').replace('{email}', email)}
-              </p>
-            </div>
-
             <form id="auth-form" onSubmit={handleCodeSubmit} className="space-y-4">
               <div className="space-y-4">
                 <label className="block text-sm font-medium text-gray-700 flex items-center justify-center gap-2">
