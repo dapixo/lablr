@@ -8,24 +8,18 @@
     "getStarted": "Importer"
   },
   "header": {
-    "welcome": "Bienvenue sur Lalabel",
+    "welcome": "Bienvenue sur",
+    "welcomeBrand": "Lalabel",
     "description": "Importez vos données et transformez-les en étiquettes d'expédition professionnelles en quelques clics."
   },
   "hero": {
-    "problem": {
-      "title": "Simplifiez la création de vos étiquettes d'expédition",
-      "description": "Vous passez du temps à formater manuellement vos adresses depuis vos rapports Amazon, Shopify, eBay, Etsy ou vos propres fichiers CSV/TXT ? Lalabel automatise ce processus pour vous faire gagner un temps précieux."
+    "title": {
+      "part1": "Transformez vos fichiers de ventes",
+      "part2": "en étiquettes d'expédition parfaites."
     },
-    "solution": {
-      "transition": "Comment ça marche",
-      "title": "Vos fichiers deviennent des étiquettes professionnelles",
-      "description": "Importez votre rapport de ventes (CSV, TXT) ou fichier personnel → Choisissez votre format d'impression → Obtenez vos étiquettes. Simple, rapide et sans erreur."
-    },
-    "benefits": {
-      "title": "Pourquoi choisir Lalabel ?",
-      "timeReduction": "de temps économisé sur la mise en forme",
-      "simplicity": "étapes seulement",
-      "accuracy": "erreur de formatage"
+    "subtitle": "Lalabel transforme automatiquement vos rapports Amazon, Shopify, eBay ou CSV personnalisés en étiquettes d'expédition prêtes à imprimer — en quelques clics et sans erreur.",
+    "cta": {
+      "primary": "Essayer gratuitement"
     }
   },
   "steps": {

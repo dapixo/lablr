@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import type React from 'react'
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import packageJson from '../../package.json'
