@@ -11,7 +11,7 @@ export {
 export { generateDebugPrintCSS, generatePrintCSS as getPrintCSS } from '@/lib/print/css-generator'
 
 // Re-export des utilitaires pour compatibilité
-export { generateAddressesHTML } from '@/lib/print-utils'
+// generateAddressesHTML supprimé - utiliser html-generator directement
 
 import type { Address } from '@/types/address'
 

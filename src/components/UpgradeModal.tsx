@@ -34,7 +34,6 @@ export function UpgradeModal({
   remainingLabels,
 }: UpgradeModalProps) {
   const [isAnnual, setIsAnnual] = useState(false)
-  const [upgradeSuccess, setUpgradeSuccess] = useState(false)
   const { user, userPlan } = useAuth()
   const {
     createCheckout,
@@ -45,10 +44,9 @@ export function UpgradeModal({
   const toast = useRef<Toast>(null)
 
   /**
-   * Ferme la modal et reset l'état de succès
+   * Ferme la modal et clear les erreurs
    */
   const handleClose = useCallback(() => {
-    setUpgradeSuccess(false)
     clearError()
     onHide()
   }, [onHide, clearError])
@@ -106,38 +104,24 @@ export function UpgradeModal({
   const headerContent = useMemo(
     () => (
       <div className="flex items-center gap-3">
-        <div
-          className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-lg ${
-            upgradeSuccess
-              ? 'bg-gradient-to-br from-green-500 to-green-600'
-              : 'bg-gradient-to-br from-orange-500 to-red-600'
-          }`}
-        >
-          {upgradeSuccess ? (
-            <Check className="h-5 w-5 text-white" />
-          ) : (
-            <Crown className="h-5 w-5 text-white" />
-          )}
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg bg-gradient-to-br from-orange-500 to-red-600">
+          <Crown className="h-5 w-5 text-white" />
         </div>
         <div>
           <span className="text-xl font-bold text-gray-900">
-            {upgradeSuccess
-              ? t('pricing.upgrade.success.title')
-              : remainingLabels === 0
-                ? t('pricing.limits.dailyLimit')
-                : t('pricing.limits.limitSoon', getPluralVariables(remainingLabels))}
+            {remainingLabels === 0
+              ? t('pricing.limits.dailyLimit')
+              : t('pricing.limits.limitSoon', getPluralVariables(remainingLabels))}
           </span>
           <p className="text-sm text-gray-500 mt-1">
-            {upgradeSuccess
-              ? t('pricing.upgrade.success.subtitle')
-              : remainingLabels === 0
-                ? t('pricing.limits.upgradeMessage')
-                : t('pricing.limits.upgradeSoonMessage')}
+            {remainingLabels === 0
+              ? t('pricing.limits.upgradeMessage')
+              : t('pricing.limits.upgradeSoonMessage')}
           </p>
         </div>
       </div>
     ),
-    [t, remainingLabels, upgradeSuccess]
+    [t, remainingLabels]
   )
 
   const premiumFeatures = useMemo(
@@ -160,25 +144,6 @@ export function UpgradeModal({
       draggable={false}
       resizable={false}
     >
-      {upgradeSuccess ? (
-        /* Interface de succès */
-        <div className="text-center py-8">
-          <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-4">
-            <Check className="h-8 w-8 text-green-500" />
-          </div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">
-            {t('pricing.upgrade.success.title')}
-          </h3>
-          <p className="text-gray-600 mb-6">{t('pricing.upgrade.success.message')}</p>
-          <Button
-            label={t('pricing.upgrade.success.continue')}
-            icon="pi pi-arrow-right"
-            onClick={handleClose}
-            className="w-full py-3 text-base font-semibold"
-          />
-        </div>
-      ) : (
-        <>
           {/* Situation actuelle */}
           <div className="bg-gradient-to-r from-orange-50 to-red-50 border-l-4 border-orange-500 p-4 rounded-lg mb-6">
             <div className="flex items-start gap-3">
@@ -313,8 +278,6 @@ export function UpgradeModal({
               <p className="text-sm text-gray-600">🕐 {t('pricing.limits.resetTomorrow')}</p>
             </div>
           )}
-        </>
-      )}
 
       {/* Toast pour les notifications */}
       <Toast ref={toast} />

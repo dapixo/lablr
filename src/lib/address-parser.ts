@@ -1,4 +1,3 @@
-import { AMAZON_REPORT_MIN_COLUMNS } from '@/constants'
 import type { Address, ParsedAddresses } from '@/types/address'
 
 export function parseAmazonSellerReport(content: string): ParsedAddresses {
@@ -27,11 +26,6 @@ export function parseAmazonSellerReport(content: string): ParsedAddresses {
     try {
       // Split by tabs (TSV format) - Amazon uses tab-separated values
       const columns = line.split('\t')
-
-      if (columns.length < AMAZON_REPORT_MIN_COLUMNS) {
-        // Not enough columns for a valid Amazon order line
-        continue
-      }
 
       // Extract address information from Amazon columns
       // Based on Amazon seller report format:

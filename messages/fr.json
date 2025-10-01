@@ -258,12 +258,6 @@
       "resetTomorrow": "Vos 10 étiquettes gratuites se rechargent demain à minuit"
     },
     "upgrade": {
-      "success": {
-        "title": "Félicitations ! 🎉",
-        "subtitle": "Votre compte a été mis à niveau vers Premium. Vous bénéficiez maintenant d'étiquettes illimitées !",
-        "message": "Votre compte a été mis à niveau vers Premium. Vous bénéficiez maintenant d'étiquettes illimitées !",
-        "continue": "Continuer"
-      },
       "alreadyPremium": {
         "title": "Déjà Premium",
         "message": "Votre compte est déjà Premium avec des étiquettes illimitées."

@@ -2,7 +2,7 @@
 
 import { Accordion, AccordionTab } from 'primereact/accordion'
 import React, { useMemo } from 'react'
-import { FAQ_DATA } from '@/constants/faq'
+import { FAQ_IDS } from '@/constants/faq'
 
 interface FAQProps {
   t: (key: string) => string
@@ -57,20 +57,20 @@ const FAQCallToAction = React.memo(function FAQCallToAction({ t }: { t: (key: st
 export const FAQ = React.memo(function FAQ({ t }: FAQProps) {
   const faqItems = useMemo(
     () =>
-      FAQ_DATA.map((faq) => (
+      FAQ_IDS.map((faqId) => (
         <AccordionTab
-          key={faq.id}
+          key={faqId}
           header={
             <span className="font-semibold text-gray-900">
-              {t(`faq.questions.${faq.id}.question`)}
+              {t(`faq.questions.${faqId}.question`)}
             </span>
           }
         >
           <div className="text-gray-600 leading-relaxed p-4">
-            {t(`faq.questions.${faq.id}.answer`)
+            {t(`faq.questions.${faqId}.answer`)
               .split('\n')
               .map((paragraph, idx) => (
-                <p key={`${faq.id}-p-${idx}`} className={idx > 0 ? 'mt-3' : ''}>
+                <p key={`${faqId}-p-${idx}`} className={idx > 0 ? 'mt-3' : ''}>
                   {paragraph.trim()}
                 </p>
               ))}

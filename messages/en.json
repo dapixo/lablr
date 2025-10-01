@@ -258,12 +258,6 @@
       "resetTomorrow": "Your 10 free labels reset tomorrow at midnight"
     },
     "upgrade": {
-      "success": {
-        "title": "Congratulations! 🎉",
-        "subtitle": "Your account has been upgraded to Premium. You now enjoy unlimited labels!",
-        "message": "Your account has been upgraded to Premium. You now enjoy unlimited labels!",
-        "continue": "Continue"
-      },
       "alreadyPremium": {
         "title": "Already Premium",
         "message": "Your account is already Premium with unlimited labels."

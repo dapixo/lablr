@@ -2,13 +2,6 @@ import { generateAddressesHTML as generateHTML } from '@/lib/print/html-generato
 import { generateCSV } from '@/lib/print-formats'
 import type { Address, PrintFormat } from '@/types/address'
 
-/**
- * Génère le HTML pour l'impression des adresses selon le format spécifié
- * @deprecated Utiliser generateHTML depuis html-generator.ts
- */
-export function generateAddressesHTML(addresses: Address[], format: PrintFormat): string {
-  return generateHTML(addresses, format)
-}
 
 /**
  * Lance l'impression directement depuis la page actuelle sans ouvrir d'onglet
@@ -28,7 +21,7 @@ export function printAddresses(addresses: Address[], format: PrintFormat, printC
   document.head.appendChild(printStyleElement)
 
   // Générer le HTML des adresses
-  const addressesHTML = generateAddressesHTML(addresses, format)
+  const addressesHTML = generateHTML(addresses, format)
 
   // Appliquer les styles d'impression
   printStyleElement.textContent = `
