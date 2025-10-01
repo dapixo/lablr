@@ -242,6 +242,7 @@
       "popular": "Plus populaire",
       "savings": "Économisez 33%",
       "cta": "Passer à Premium",
+      "perMonth": "/mois",
       "features": {
         "0": "Étiquettes illimitées",
         "1": "Tous les formats d'impression",
@@ -252,10 +253,14 @@
     "limits": {
       "dailyLimit": "Limite quotidienne atteinte",
       "upgradeMessage": "Vous avez utilisé vos 10 étiquettes gratuites aujourd'hui. Passez à Premium pour continuer.",
-      "upgradeSoonMessage": "Passez à Premium pour des étiquettes illimitées.",
-      "resetTime": "Vos étiquettes gratuites se renouvellent demain à minuit.",
-      "noLabelsLeft": "Vos étiquettes gratuites se rechargent demain.",
-      "resetTomorrow": "Vos 10 étiquettes gratuites se rechargent demain à minuit"
+      "upgradeSoonMessage": "Passez à l'abonnement Premium pour faire des impressions d'étiquettes illimitées.",
+      "resetTime": "Vos 10 impressions d’étiquettes gratuites se renouvellent automatiquement demain à minuit.",
+      "noLabelsLeft": "Vos 10 impressions d’étiquettes gratuites se renouvellent automatiquement demain à minuit.",
+      "resetTomorrow": "Vos 10 étiquettes gratuites se rechargent demain à minuit",
+      "limitSoon": "Plus que {count} étiquette{plural} gratuite{plural}",
+      "addressesDetected": "{count} adresse{plural} détectée{plural}",
+      "labelsRemaining": "Vous avez droit à l’impression de 10 étiquettes gratuitement par jour. Il vous reste {count} impression{plural} d’étiquette{plural} gratuite{plural} pour aujourd’hui.",
+      "printLimited": "Impression limitée à {count} étiquette{plural}"
     },
     "upgrade": {
       "alreadyPremium": {
@@ -392,7 +397,7 @@
     "links": {
       "account": "Mon compte"
     },
-    "copyright": "© 2024 Lalabel. Tous droits réservés.",
+    "copyright": "© 2025 Lalabel. Tous droits réservés.",
     "version": {
       "label": "Version"
     }

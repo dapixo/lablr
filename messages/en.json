@@ -242,6 +242,7 @@
       "popular": "Most popular",
       "savings": "Save 33%",
       "cta": "Upgrade to Premium",
+      "perMonth": "/month",
       "features": {
         "0": "Unlimited labels",
         "1": "All printing formats",
@@ -252,10 +253,14 @@
     "limits": {
       "dailyLimit": "Daily limit reached",
       "upgradeMessage": "You've used your 10 free labels today. Upgrade to Premium to continue.",
-      "upgradeSoonMessage": "Upgrade to Premium for unlimited labels.",
-      "resetTime": "Your free labels reset tomorrow at midnight.",
-      "noLabelsLeft": "Your free labels reload tomorrow.",
-      "resetTomorrow": "Your 10 free labels reset tomorrow at midnight"
+      "upgradeSoonMessage": "Upgrade to Premium for unlimited label printing.",
+      "resetTime": "Your 10 free label prints automatically reset tomorrow at midnight.",
+      "noLabelsLeft": "Your 10 free label prints automatically reset tomorrow at midnight.",
+      "resetTomorrow": "Your 10 free labels reset tomorrow at midnight",
+      "limitSoon": "Only {{count}} free label{{plural}} left",
+      "addressesDetected": "{{count}} address{{plural}} detected",
+      "labelsRemaining": "You can print 10 labels for free per day. You have {{count}} free label print{{plural}} remaining for today.",
+      "printLimited": "Printing limited to {{count}} label{{plural}}"
     },
     "upgrade": {
       "alreadyPremium": {
