@@ -107,6 +107,24 @@ export function Footer({ t }: FooterProps) {
               <p className="text-gray-600 text-sm">{t('footer.copyright')}</p>
               <div className="flex flex-wrap items-center gap-4">
                 <Link
+                  href={`/${locale}/terms`}
+                  className="text-blue-600 hover:text-blue-800 font-medium transition-colors text-sm"
+                >
+                  {t('footer.links.terms')}
+                </Link>
+                <Link
+                  href={`/${locale}/privacy`}
+                  className="text-blue-600 hover:text-blue-800 font-medium transition-colors text-sm"
+                >
+                  {t('footer.links.privacy')}
+                </Link>
+                <Link
+                  href={`/${locale}/refund`}
+                  className="text-blue-600 hover:text-blue-800 font-medium transition-colors text-sm"
+                >
+                  {t('footer.links.refund')}
+                </Link>
+                <Link
                   href={`/${locale}/pricing`}
                   className="text-blue-600 hover:text-blue-800 font-medium transition-colors text-sm"
                 >

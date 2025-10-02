@@ -410,7 +410,10 @@
       "compatibility": "Compatible con todos los dispositivos"
     },
     "links": {
-      "account": "Mi cuenta"
+      "account": "Mi cuenta",
+      "terms": "Términos y Condiciones",
+      "privacy": "Política de Privacidad",
+      "refund": "Política de Reembolso"
     },
     "copyright": "© 2025 Lalabel. Todos los derechos reservados.",
     "version": {
@@ -566,5 +569,91 @@
     "or": "o",
     "cancel": "Cancelar",
     "retry": "Reintentar"
+  },
+  "terms": {
+    "title": "Términos y Condiciones",
+    "effectiveDate": "Fecha de vigencia",
+    "date": "Septiembre 2025",
+    "intro": "Estos Términos y Condiciones (\"Términos\") rigen su uso del sitio web ubicado en lalabel.app (el \"Sitio Web\"), proporcionado por Lalabel (\"nosotros\", \"nuestro\" o \"nos\"). Al acceder al Sitio Web, usted acepta cumplir con estos Términos. Si no está de acuerdo, por favor no use Lalabel.",
+    "refundPolicy": {
+      "title": "Política de Reembolso",
+      "content": "Lalabel viene con una garantía de devolución de dinero de 14 días. Si no está satisfecho, puede solicitar un reembolso dentro de los 14 días posteriores a la compra contactándonos en contact@lalabel.app"
+    },
+    "intellectualProperty": {
+      "title": "Propiedad Intelectual",
+      "content": "Todo el contenido, código y materiales proporcionados en el Sitio Web y en el software son propiedad de Lalabel y están protegidos por las leyes de propiedad intelectual. No puede reproducirlos o distribuirlos sin permiso."
+    },
+    "disclaimer": {
+      "title": "Descargo de Responsabilidad",
+      "content": "El Software se proporciona \"tal cual\" sin garantía de ningún tipo. No garantizamos que estará libre de errores o que cumplirá con sus requisitos específicos."
+    },
+    "limitationOfLiability": {
+      "title": "Limitación de Responsabilidad",
+      "content": "En la máxima medida permitida por la ley, Lalabel no será responsable de daños indirectos, incidentales o consecuentes resultantes del uso del Software o del Sitio Web."
+    },
+    "governingLaw": {
+      "title": "Ley Aplicable",
+      "content": "Estos Términos se rigen por la ley francesa."
+    },
+    "contact": {
+      "title": "Contacto",
+      "content": "Para cualquier pregunta, contáctenos en"
+    }
+  },
+  "refund": {
+    "title": "Política de Reembolso",
+    "effectiveDate": "Fecha de vigencia",
+    "date": "Enero 2025",
+    "intro": "Queremos que se sienta seguro al comprar Lalabel.",
+    "guarantee": {
+      "title": "Garantía de Devolución de Dinero de 14 Días",
+      "point1": "Puede solicitar un reembolso completo dentro de los 14 días posteriores a la compra si no está satisfecho.",
+      "point2": "Las solicitudes de reembolso deben enviarse a contact@lalabel.app con los detalles de su pedido.",
+      "point3": "Los reembolsos se emitirán a su método de pago original.",
+      "point4": "Después de 14 días, todas las ventas son finales.",
+      "point5": "Esta política no afecta sus derechos legales según las leyes aplicables de protección al consumidor."
+    },
+    "contact": {
+      "title": "Contáctenos",
+      "content": "Para cualquier pregunta sobre reembolsos, envíenos un correo electrónico a"
+    }
+  },
+  "privacy": {
+    "title": "Política de Privacidad",
+    "effectiveDate": "Fecha de vigencia",
+    "date": "Septiembre 2025",
+    "intro": "Respetamos su privacidad. Esta política de privacidad explica cómo manejamos sus datos cuando utiliza nuestro sitio web y software.",
+    "informationWeCollect": {
+      "title": "Información que Recopilamos",
+      "purchase": {
+        "title": "Información de Compra",
+        "content": "Cuando compra Lalabel, nuestro procesador de pagos (LemonSqueezy o equivalente) recopila su nombre, dirección de correo electrónico e información de pago. No almacenamos sus datos de pago."
+      },
+      "analytics": {
+        "title": "Análisis y Cookies",
+        "content": "Podemos utilizar herramientas de análisis básicas para comprender el uso del sitio web."
+      }
+    },
+    "informationWeDoNotCollect": {
+      "title": "Información que No Recopilamos",
+      "content": "Lalabel procesa sus archivos TXT/CSV completamente de forma local en su navegador. No los cargamos, almacenamos ni accedemos a ellos."
+    },
+    "howWeUseInformation": {
+      "title": "Cómo Utilizamos su Información",
+      "support": "Para brindarle soporte.",
+      "updates": "Para comunicar actualizaciones importantes o mejoras del producto."
+    },
+    "yourChoices": {
+      "title": "Sus Opciones",
+      "content": "Puede solicitar la eliminación de sus datos personales o darse de baja de las comunicaciones contactándonos."
+    },
+    "security": {
+      "title": "Seguridad",
+      "content": "Tomamos medidas razonables para proteger sus datos, aunque ningún método es 100% seguro."
+    },
+    "contact": {
+      "title": "Contacto",
+      "content": "Si tiene alguna pregunta, contáctenos en"
+    }
   }
 }

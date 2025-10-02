@@ -410,7 +410,10 @@
       "compatibility": "Compatible with all devices"
     },
     "links": {
-      "account": "My account"
+      "account": "My account",
+      "terms": "Terms and Conditions",
+      "privacy": "Privacy Policy",
+      "refund": "Refund Policy"
     },
     "copyright": "© 2024 Lalabel. All rights reserved.",
     "version": {
@@ -566,5 +569,91 @@
     "or": "or",
     "cancel": "Cancel",
     "retry": "Retry"
+  },
+  "terms": {
+    "title": "Terms and Conditions",
+    "effectiveDate": "Effective Date",
+    "date": "September 2025",
+    "intro": "These Terms and Conditions (\"Terms\") govern your use of the website located at lalabel.app (the \"Website\"), provided by Lalabel (\"we,\" \"our,\" or \"us\"). By accessing the Website, you agree to comply with these Terms. If you do not agree, please do not use Lalabel.",
+    "refundPolicy": {
+      "title": "Refund Policy",
+      "content": "Lalabel comes with a 14-day money-back guarantee. If you are not satisfied, you may request a refund within 14 days of purchase by contacting us at contact@lalabel.app"
+    },
+    "intellectualProperty": {
+      "title": "Intellectual Property",
+      "content": "All content, code, and materials provided on the Website and in the software are owned by Lalabel and protected by intellectual property laws. You may not reproduce or distribute them without permission."
+    },
+    "disclaimer": {
+      "title": "Disclaimer",
+      "content": "The Software is provided \"as is\" without warranty of any kind. We do not guarantee that it will be error-free or meet your specific requirements."
+    },
+    "limitationOfLiability": {
+      "title": "Limitation of Liability",
+      "content": "To the maximum extent permitted by law, Lalabel shall not be liable for indirect, incidental, or consequential damages resulting from the use of the Software or Website."
+    },
+    "governingLaw": {
+      "title": "Governing Law",
+      "content": "These Terms are governed by French law."
+    },
+    "contact": {
+      "title": "Contact",
+      "content": "For any questions, contact us at"
+    }
+  },
+  "refund": {
+    "title": "Refund Policy",
+    "effectiveDate": "Effective Date",
+    "date": "January 2025",
+    "intro": "We want you to feel confident when purchasing Lalabel.",
+    "guarantee": {
+      "title": "14-Day Money-Back Guarantee",
+      "point1": "You may request a full refund within 14 days of purchase if you are not satisfied.",
+      "point2": "Refund requests must be sent to contact@lalabel.app with your order details.",
+      "point3": "Refunds will be issued to your original payment method.",
+      "point4": "After 14 days, all sales are final.",
+      "point5": "This policy does not affect your legal rights under applicable consumer protection laws."
+    },
+    "contact": {
+      "title": "Contact Us",
+      "content": "For any questions about refunds, please email us at"
+    }
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "effectiveDate": "Effective Date",
+    "date": "September 2025",
+    "intro": "We respect your privacy. This privacy policy explains how we handle your data when you use our website and software.",
+    "informationWeCollect": {
+      "title": "Information We Collect",
+      "purchase": {
+        "title": "Purchase Information",
+        "content": "When you purchase Lalabel, our payment processor (LemonSqueezy or equivalent) collects your name, email address, and payment information. We do not store your payment data."
+      },
+      "analytics": {
+        "title": "Analytics and Cookies",
+        "content": "We may use basic analytics tools to understand website usage."
+      }
+    },
+    "informationWeDoNotCollect": {
+      "title": "Information We Do Not Collect",
+      "content": "Lalabel processes your TXT/CSV files entirely locally in your browser. We do not upload, store, or access them."
+    },
+    "howWeUseInformation": {
+      "title": "How We Use Your Information",
+      "support": "To provide you with support.",
+      "updates": "To communicate important updates or product improvements."
+    },
+    "yourChoices": {
+      "title": "Your Choices",
+      "content": "You can request deletion of your personal data or unsubscribe from communications by contacting us."
+    },
+    "security": {
+      "title": "Security",
+      "content": "We take reasonable steps to protect your data, although no method is 100% secure."
+    },
+    "contact": {
+      "title": "Contact",
+      "content": "If you have any questions, contact us at"
+    }
   }
 }
