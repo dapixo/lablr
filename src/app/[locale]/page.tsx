@@ -121,19 +121,22 @@ export default function Home() {
       <Header t={t} />
 
       {/* Main Content Area */}
-      <main className="flex-1 bg-gradient-to-b from-white to-gray-50">
-        {/* Background animé */}
-        <div className="absolute top-0 left-0 w-full overflow-hidden pointer-events-none" style={{ height: '700px' }}>
+      <main className="flex-1 relative -mt-16">
+        {/* Background animé avec transition progressive - commence sous le header */}
+        <div className="absolute top-0 left-0 right-0 overflow-hidden pointer-events-none" style={{ height: 'calc(100vh + 64px)' }}>
           <div className="absolute inset-0">
             <div className="absolute top-0 -left-4 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
             <div className="absolute top-0 -right-4 w-96 h-96 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
             <div className="absolute -bottom-8 left-20 w-96 h-96 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
           </div>
-          {/* Gradient fade vers le bas */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white"></div>
+          {/* Gradient fade progressif vers le bas - plus long pour transition douce */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/50 to-white"></div>
         </div>
 
-        <div className="container mx-auto px-4 md:px-6 relative">
+        {/* Background de la section suivante */}
+        <div className="absolute top-0 left-0 right-0 bottom-0 bg-gradient-to-b from-transparent via-white to-gray-50 -z-10"></div>
+
+        <div className="container mx-auto px-4 md:px-6 relative pt-16">
           {/* Hero Banner - Conditionnel selon connexion */}
           {loading ? (
             // Skeleton loader pendant le chargement
