@@ -16,6 +16,7 @@ export const disposableEmailDomains = new Set([
   'monmail.fr.nf',
   'hide.biz.st',
   'mymail.infos.st',
+  'jephy-webmail.com',
 
   // Services internationaux très populaires
   '10minutemail.com',
