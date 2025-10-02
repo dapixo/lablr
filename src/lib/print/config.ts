@@ -34,6 +34,18 @@ export interface FormatConfig {
   }
 }
 
+// Feature flags pour activer/désactiver les formats d'impression
+export const FORMAT_FLAGS: Record<PrintFormat, boolean> = {
+  A4: false,
+  A4_COMPACT: false,
+  A4_LABELS_10: true,
+  A4_LABELS_14: true,
+  A4_LABELS_16: true,
+  A4_LABELS_21: true,
+  ROLL_57x32: true,
+  CSV_EXPORT: true,
+}
+
 // Configuration unifiée de tous les formats d'impression
 export const PRINT_CONFIGS: Record<PrintFormat, FormatConfig> = {
   A4: {
@@ -193,4 +205,14 @@ export function getFormatConfig(format: PrintFormat): FormatConfig {
 // Fonction utilitaire pour vérifier si un format est valide
 export function isValidFormat(value: string): value is PrintFormat {
   return PRINT_FORMAT_ORDER.includes(value as PrintFormat)
+}
+
+// Fonction utilitaire pour obtenir les formats actifs
+export function getEnabledFormats(): PrintFormat[] {
+  return PRINT_FORMAT_ORDER.filter((format) => FORMAT_FLAGS[format])
+}
+
+// Fonction utilitaire pour vérifier si un format est actif
+export function isFormatEnabled(format: PrintFormat): boolean {
+  return FORMAT_FLAGS[format]
 }

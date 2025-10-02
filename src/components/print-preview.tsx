@@ -11,7 +11,7 @@ import { PREVIEW_DIMENSIONS, PREVIEW_MAX_LABELS_ROLL, PREVIEW_MAX_PAGES } from '
 import { useAuth } from '@/hooks/useAuth'
 import { useUsageTracking } from '@/hooks/useUsageTracking'
 import { useAnalytics } from '@/hooks/useAnalytics'
-import { PRINT_CONFIGS } from '@/lib/print/config'
+import { PRINT_CONFIGS, getEnabledFormats } from '@/lib/print/config'
 import { downloadCSV, generateDebugPrintCSS, getPrintCSS } from '@/lib/print-formats'
 import { printAddresses } from '@/lib/print-utils'
 import { STORAGE_KEYS, useCollapsiblePanel, usePersistedSelection } from '@/lib/storage'
@@ -87,7 +87,7 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
 
   // Fonction de validation pour les formats
   const isValidFormat = useCallback((value: string): value is PrintFormat => {
-    return getOrderedFormats().includes(value as PrintFormat)
+    return getEnabledFormats().includes(value as PrintFormat)
   }, [])
 
   // États avec hooks personnalisés
@@ -235,7 +235,7 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
               role="radiogroup"
               aria-label={t('print.formatAriaLabel')}
             >
-              {getOrderedFormats().map((format) => (
+              {getEnabledFormats().map((format) => (
                 <FormatCard
                   key={format}
                   format={format}
@@ -869,18 +869,7 @@ function getFormatIcon(format: PrintFormat): string {
   }
 }
 
-function getOrderedFormats(): PrintFormat[] {
-  return [
-    'A4', // Formats A4 groupés
-    'A4_COMPACT',
-    'A4_LABELS_10',
-    'A4_LABELS_14',
-    'A4_LABELS_16',
-    'A4_LABELS_21',
-    'ROLL_57x32', // Formats rouleau
-    'CSV_EXPORT', // Export
-  ]
-}
+// Fonction supprimée - utiliser getEnabledFormats() depuis @/lib/print/config
 
 function getFormatCardStyles(isSelected: boolean) {
   const baseCardStyles =

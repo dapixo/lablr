@@ -5,6 +5,9 @@ export {
   PRINT_FORMAT_ICONS,
   PRINT_FORMAT_LABELS,
   PRINT_FORMAT_ORDER,
+  FORMAT_FLAGS,
+  getEnabledFormats,
+  isFormatEnabled,
 } from '@/lib/print/config'
 
 // Re-export du générateur CSS pour compatibilité
