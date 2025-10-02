@@ -110,10 +110,39 @@ export function UpgradeModal({
     }
   }, [checkoutError, t])
 
+  // Système de couleurs progressif selon le niveau d'alerte
+  const alertLevel = useMemo(() => {
+    if (remainingLabels === 0) {
+      return {
+        bgGradient: 'from-red-600 via-red-500 to-orange-500',
+        borderColor: 'border-red-400',
+        cardBg: 'from-red-50 to-orange-50',
+        iconColor: 'text-red-500',
+        textColor: 'text-red-700'
+      }
+    }
+    if (remainingLabels <= 3) {
+      return {
+        bgGradient: 'from-orange-600 via-orange-500 to-amber-500',
+        borderColor: 'border-orange-400',
+        cardBg: 'from-orange-50 to-amber-50',
+        iconColor: 'text-orange-500',
+        textColor: 'text-orange-700'
+      }
+    }
+    return {
+      bgGradient: 'from-blue-600 via-blue-500 to-blue-400',
+      borderColor: 'border-blue-400',
+      cardBg: 'from-blue-50 to-indigo-50',
+      iconColor: 'text-blue-500',
+      textColor: 'text-blue-700'
+    }
+  }, [remainingLabels])
+
   const headerContent = useMemo(
     () => (
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg bg-gradient-to-br from-orange-500 to-red-600">
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-lg bg-gradient-to-br ${alertLevel.bgGradient}`}>
           <Crown className="h-5 w-5 text-white" />
         </div>
         <div>
@@ -130,7 +159,7 @@ export function UpgradeModal({
         </div>
       </div>
     ),
-    [t, remainingLabels]
+    [t, remainingLabels, alertLevel]
   )
 
   const premiumFeatures = useMemo(
@@ -154,13 +183,13 @@ export function UpgradeModal({
       resizable={false}
     >
           {/* Situation actuelle */}
-          <div className="bg-gradient-to-r from-orange-50 to-red-50 border-l-4 border-orange-500 p-4 rounded-lg mb-6">
+          <div className={`bg-gradient-to-r ${alertLevel.cardBg} border-l-4 ${alertLevel.borderColor} p-4 rounded-lg mb-6`}>
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0 mt-1">
-                <Zap className="h-5 w-5 text-orange-500" />
+                <Zap className={`h-5 w-5 ${alertLevel.iconColor}`} />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 mb-2">
+                <h3 className={`font-semibold mb-2 ${alertLevel.textColor}`}>
                   {t('pricing.limits.addressesDetected', getPluralVariables(totalAddresses))}
                 </h3>
                 <p className="text-sm text-gray-700 mb-3">
@@ -277,7 +306,7 @@ export function UpgradeModal({
                   onPrintLimited()
                   onHide()
                 }}
-                className="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-medium"
+                className="flex-1 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 hover:from-blue-700 hover:via-blue-600 hover:to-blue-500 text-white font-medium border-0"
               />
             )}
           </div>

@@ -1,7 +1,6 @@
 'use client'
 
 import { Button } from 'primereact/button'
-import { Card } from 'primereact/card'
 import { Dialog } from 'primereact/dialog'
 import { InputOtp } from 'primereact/inputotp'
 import { InputText } from 'primereact/inputtext'
@@ -187,7 +186,7 @@ export function AuthModal({ visible, onHide, onSuccess, t }: AuthModalProps) {
   const headerContent = useMemo(
     () => (
       <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
+        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600 via-blue-500 to-blue-400 flex items-center justify-center shadow-lg">
           <i className={`pi ${step === 'code' ? 'pi-key' : 'pi-envelope'} text-white text-sm`}></i>
         </div>
         <div>
@@ -219,7 +218,7 @@ export function AuthModal({ visible, onHide, onSuccess, t }: AuthModalProps) {
             icon={loading ? undefined : 'pi pi-send'}
             loading={loading}
             disabled={loading}
-            className="flex-1"
+            className="flex-1 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 hover:from-blue-700 hover:via-blue-600 hover:to-blue-500 text-white border-0"
             form="auth-form"
           />
         )}
@@ -230,7 +229,7 @@ export function AuthModal({ visible, onHide, onSuccess, t }: AuthModalProps) {
             icon={loading ? undefined : 'pi pi-check'}
             loading={loading}
             disabled={loading || otpCode.length < 6}
-            className="flex-1"
+            className="flex-1 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 hover:from-blue-700 hover:via-blue-600 hover:to-blue-500 text-white border-0"
             form="auth-form"
           />
         )}
@@ -336,24 +335,29 @@ export function AuthModal({ visible, onHide, onSuccess, t }: AuthModalProps) {
           </div>
         ) : (
           <>
-            {/* Message d'introduction avec icône */}
-            <Card className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500">
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0">
-                  <i className="pi pi-info-circle text-blue-500 text-xl"></i>
+            {/* Message d'introduction avec design moderne */}
+            <div className="mb-6 relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 via-blue-500 to-blue-400 p-6 shadow-xl">
+              {/* Pattern décoratif en fond */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute -right-8 -top-8 w-32 h-32 bg-white rounded-full blur-2xl"></div>
+                <div className="absolute -left-8 -bottom-8 w-32 h-32 bg-white rounded-full blur-2xl"></div>
+              </div>
+
+              <div className="relative">
+                <div className="flex items-center mb-3">
+                  <h3 className="text-xl font-bold text-white">{t('auth.welcome.title')}</h3>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">{t('auth.welcome.title')}</h3>
-                  <p className="text-sm text-gray-600 leading-relaxed mb-3">
-                    {t('auth.welcome.description')}
-                  </p>
-                  <div className="flex items-center gap-2 text-xs text-gray-500">
-                    <i className="pi pi-shield-check text-green-500"></i>
-                    <span>{t('auth.welcome.privacy')}</span>
-                  </div>
+
+                <p className="text-blue-50 text-sm leading-relaxed mb-4">
+                  {t('auth.welcome.description')}
+                </p>
+
+                <div className="flex items-center gap-2 text-xs text-blue-100 bg-white/10 rounded-lg px-3 py-2 backdrop-blur-sm">
+                  <i className="pi pi-shield-check text-white"></i>
+                  <span className="font-medium">{t('auth.welcome.privacy')}</span>
                 </div>
               </div>
-            </Card>
+            </div>
 
             {/* Formulaire d'email */}
             <form id="auth-form" onSubmit={handleEmailSubmit} className="space-y-4">
