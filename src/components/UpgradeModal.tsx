@@ -253,7 +253,7 @@ export function UpgradeModal({
               </div>
 
               <div className="flex items-baseline justify-center gap-1 mb-2">
-                <span className="text-4xl font-bold text-blue-600">{isAnnual ? '€4' : '€5'}</span>
+                <span className="text-4xl font-bold text-blue-600">{isAnnual ? '€4' : '€6'}</span>
                 <span className="text-gray-600">
                   {isAnnual
                     ? t('pricing.premium.periodAnnualBilling')

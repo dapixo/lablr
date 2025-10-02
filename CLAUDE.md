@@ -148,10 +148,10 @@ src/
 - **Performance optimisée** : Mémorisation avec `useMemo` et chargement à la demande
 
 ### 9. Système Freemium Complet (🆕 V3.3)
-- **Modèle économique** : 10 étiquettes gratuites par jour, Premium €5/mois ou €48/an
+- **Modèle économique** : 10 étiquettes gratuites par jour, Premium €6/mois ou €48/an
 - **Modal d'upgrade intelligente** : Affichage conditionnel selon étiquettes restantes
 - **Messages contextuels** : "Plus que X étiquettes" vs "Limite atteinte"
-- **Toggle mensuel/annuel** : Prix adaptatif (€5/mois vs €4/mois facturé annuellement)
+- **Toggle mensuel/annuel** : Prix adaptatif (€6/mois vs €4/mois facturé annuellement)
 - **Sécurité renforcée** : Vérification des limites après authentification
 - **Base de données** : Table `daily_usage` avec reset automatique à minuit
 - **Hook optimisé** : `useUsageTracking` avec API calls minimales
@@ -442,7 +442,7 @@ const FormatCard = React.memo(function FormatCard({...}))
 ## Évolutions Récentes (✅ V3.2)
 
 ### 💰 Modèle Freemium et Page Pricing (🆕 V3.2)
-- ✅ **Modèle économique** : 10 étiquettes gratuites/jour, Premium €5/mois ou €40/an (33% d'économie)
+- ✅ **Modèle économique** : 10 étiquettes gratuites/jour, Premium €6/mois ou €48/an (33% d'économie)
 - ✅ **Page pricing professionnelle** : Toggle mensuel/annuel avec discount badge animé
 - ✅ **Design cards optimisé** : Comparaison Free vs Premium avec hauteurs uniformes
 - ✅ **Auth conditionnelle** : Bouton "Commencer gratuitement" uniquement pour non-connectés

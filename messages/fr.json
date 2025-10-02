@@ -251,7 +251,7 @@
     },
     "premium": {
       "title": "Premium",
-      "price": "5€",
+      "price": "6€",
       "period": "/mois",
       "periodAnnualBilling": "(facturation annuelle)",
       "popular": "Plus populaire",
@@ -349,7 +349,7 @@
       },
       "pricing": {
         "question": "Comment fonctionne le modèle freemium ?",
-        "answer": "Lalabel vous offre 10 étiquettes gratuites chaque jour, renouvelées automatiquement. C'est parfait pour les petites expéditions. Si vous avez besoin de plus, notre plan Premium à 5€/mois (ou 48€/an) vous donne accès à des étiquettes illimitées avec support prioritaire."
+        "answer": "Lalabel vous offre 10 étiquettes gratuites chaque jour, renouvelées automatiquement. C'est parfait pour les petites expéditions. Si vous avez besoin de plus, notre plan Premium à partir de 4€/mois. vous donne accès à des étiquettes illimitées avec support prioritaire."
       }
     }
   },

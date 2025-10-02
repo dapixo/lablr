@@ -251,7 +251,7 @@
     },
     "premium": {
       "title": "Premium",
-      "price": "5€",
+      "price": "6€",
       "period": "/month",
       "periodAnnualBilling": "(annual billing)",
       "popular": "Most popular",
@@ -349,7 +349,7 @@
       },
       "pricing": {
         "question": "How does the freemium model work?",
-        "answer": "Lalabel offers you 10 free labels every day, automatically renewed. It's perfect for small shipments. If you need more, our Premium plan at $5/month (or $48/year) gives you access to unlimited labels with priority support."
+        "answer": "Lalabel offers you 10 free labels every day, automatically renewed. It's perfect for small shipments. If you need more, our Premium plan starting from €4/month gives you access to unlimited labels with priority support."
       }
     }
   },
