@@ -71,7 +71,7 @@ function createPricingPlan(
   return {
     title: t(`${baseKey}.title`),
     price: isAnnual ? PRICING_CONFIG.annualPrice : t(`${baseKey}.price`),
-    period: isAnnual ? t(`${baseKey}.periodAnnualBilling`) : t(`${baseKey}.period`),
+    period: isAnnual ? t(`${baseKey}.periodAnnualBilling`) : '',
     features,
     popular: t(`${baseKey}.popular`),
     cta: t(`${baseKey}.cta`),
@@ -83,7 +83,7 @@ function createPricingPlan(
  * Composant de page de tarification avec plans Free et Premium
  */
 export function PricingPage({ t }: PricingPageProps) {
-  const [isAnnual, setIsAnnual] = useState(false)
+  const [isAnnual, setIsAnnual] = useState(true)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [pendingUpgrade, setPendingUpgrade] = useState(false)
   const { user, userPlan, loading } = useAuth()
@@ -170,10 +170,18 @@ export function PricingPage({ t }: PricingPageProps) {
       <Header t={t} />
 
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-blue-600 to-blue-800 text-white">
-        <div className="max-w-4xl mx-auto px-6 py-8 text-center">
-          <h1 className="text-3xl font-bold mb-2">{t('pricing.page.title')}</h1>
-          <p className="text-base text-blue-100 max-w-xl mx-auto">
+      <div className="bg-white py-12">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mx-auto mb-6 shadow-lg">
+            <Zap className="h-8 w-8 text-white" />
+          </div>
+          <h1 className="text-4xl font-bold mb-4">
+            <span className="text-gray-900">{t('pricing.page.title').split(' ')[0]} </span>
+            <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
+              {t('pricing.page.title').split(' ').slice(1).join(' ')}
+            </span>
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             {t('pricing.page.subtitle')}
           </p>
         </div>
@@ -181,39 +189,9 @@ export function PricingPage({ t }: PricingPageProps) {
 
       {/* Pricing Cards */}
       <div className="max-w-7xl mx-auto px-6 py-12">
-        {/* Billing Toggle */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center bg-white border border-gray-200 rounded-full p-1 gap-1 relative shadow-lg">
-            <button
-              onClick={() => setIsAnnual(false)}
-              className={`px-6 py-3 rounded-full font-medium transition-all duration-200 ${
-                !isAnnual ? 'bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 text-white shadow-md' : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              {t('pricing.page.billingToggle.monthly')}
-            </button>
-            <button
-              onClick={() => setIsAnnual(true)}
-              className={`px-6 py-3 rounded-full font-medium transition-all duration-200 ${
-                isAnnual ? 'bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 text-white shadow-md' : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              {t('pricing.page.billingToggle.annually')}
-            </button>
-            {isAnnual && (
-              <Tag
-                value="-33%"
-                rounded
-                severity="success"
-                className="absolute -top-3 -right-3 font-bold shadow-lg animate-pulse"
-              />
-            )}
-          </div>
-        </div>
-
-        <div className="grid lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto items-center">
           {/* Free Plan */}
-          <div className="relative h-full">
+          <div className="relative">
             {!loading && user && userPlan === 'free' && (
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
                 <Tag
@@ -225,20 +203,20 @@ export function PricingPage({ t }: PricingPageProps) {
               </div>
             )}
             <Card
-              className={`${CARD_STYLES.free.base} ${
-                !loading && user ? CARD_STYLES.free.withUser : CARD_STYLES.free.withoutUser
+              className={`p-8 shadow-lg rounded-2xl bg-white border border-gray-200 hover:shadow-xl transition-all duration-300 ${
+                !loading && user && userPlan === 'free' ? 'border-2 border-blue-500' : ''
               }`}
             >
-              <div className="text-center h-full flex flex-col">
-                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-6">
-                  <Check className="h-8 w-8 text-gray-600" />
+              <div className="text-center flex flex-col">
+                <div className="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                  <Check className="h-7 w-7 text-gray-600" />
                 </div>
-                <h3 className="text-3xl font-bold text-gray-900 mb-3">{freePlan.title}</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">{freePlan.title}</h3>
                 <div className="mb-6">
-                  <span className="text-5xl font-bold text-gray-900">{freePlan.price}</span>
+                  <span className="text-4xl font-bold text-gray-900">{freePlan.price}</span>
                 </div>
 
-                <div className="flex-1 space-y-4 text-left mb-8">
+                <div className="space-y-3 text-left mb-6">
                   {freePlan.features.map((feature, index) => (
                     <div key={index} className="flex items-start gap-4">
                       <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-1">
@@ -251,7 +229,7 @@ export function PricingPage({ t }: PricingPageProps) {
 
                 {!loading && !user && (
                   <Button
-                    className="w-full py-4 text-lg font-semibold bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 text-white hover:from-blue-700 hover:via-blue-600 hover:to-blue-500 rounded-xl transition-all duration-200 justify-center mt-auto"
+                    className="w-full py-3 text-base font-semibold bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 text-white hover:from-blue-700 hover:via-blue-600 hover:to-blue-500 rounded-xl transition-all duration-200 justify-center"
                     onClick={() => setShowAuthModal(true)}
                   >
                     {t('pricing.page.cta.free')}
@@ -262,46 +240,75 @@ export function PricingPage({ t }: PricingPageProps) {
           </div>
 
           {/* Premium Plan */}
-          <div className="relative h-full">
+          <div className="relative">
             {/* Popular Badge ou Current Plan Badge */}
-            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
-              {!loading && user && userPlan === 'premium' ? (
+            {!loading && user && userPlan === 'premium' ? (
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-30">
                 <Tag
                   value={t('pricing.page.cta.currentPlan')}
                   rounded
                   severity="success"
                   className="font-bold shadow-lg"
                 />
-              ) : (
+              </div>
+            ) : (
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-30">
                 <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-2 rounded-full text-sm font-bold flex items-center gap-2 shadow-lg">
                   <Star className="h-4 w-4 fill-current" />
                   {premiumPlan.popular}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
 
-            <Card className={CARD_STYLES.premium}>
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-blue-600/20 rounded-full -translate-y-16 translate-x-16"></div>
+            <Card className="p-10 shadow-2xl border-2 border-blue-500 rounded-2xl bg-gradient-to-br from-white to-blue-50 hover:shadow-3xl transition-all duration-300 relative overflow-hidden">
+              {/* Rond décoratif bleu - en arrière-plan, coupé par overflow */}
+              <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-blue-400/20 to-blue-600/20 rounded-full -translate-y-1/2 translate-x-1/2"></div>
 
-              {/* Badge de réduction - Style bandeau diagonal */}
+              {/* Badge de réduction -33% en haut à droite - au-dessus du rond */}
               {isAnnual && (
                 <div className="absolute top-4 right-4 z-20">
-                  <div className="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1 rounded-lg shadow-lg transform rotate-12 font-bold text-sm">
-                    🎉 {PRICING_CONFIG.discountPercentage}
+                  <div className="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1.5 rounded-lg shadow-lg transform rotate-12 font-bold text-sm">
+                    🎉 -33%
                   </div>
                 </div>
               )}
 
               <div className="text-center relative h-full flex flex-col">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mx-auto mb-6">
+                <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mx-auto mb-6 shadow-lg">
                   <Zap className="h-8 w-8 text-white" />
                 </div>
                 <h3 className="text-3xl font-bold text-gray-900 mb-3">{premiumPlan.title}</h3>
+
+                {/* Toggle de facturation intégré */}
+                <div className="flex justify-center mb-4">
+                  <div className="inline-flex items-center bg-gray-100 rounded-full p-1 gap-1">
+                    <button
+                      onClick={() => setIsAnnual(false)}
+                      className={`px-4 py-1.5 rounded-full font-medium transition-all duration-200 text-xs ${
+                        !isAnnual ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600'
+                      }`}
+                    >
+                      {t('pricing.page.billingToggle.monthly')}
+                    </button>
+                    <button
+                      onClick={() => setIsAnnual(true)}
+                      className={`px-4 py-1.5 rounded-full font-medium transition-all duration-200 text-xs ${
+                        isAnnual ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600'
+                      }`}
+                    >
+                      {t('pricing.page.billingToggle.annually')}
+                    </button>
+                  </div>
+                </div>
+
                 <div className="mb-6">
-                  <span className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
-                    {premiumPlan.price}
-                  </span>
-                  <span className="text-gray-600 ml-2 text-lg">{premiumPlan.period}</span>
+                  <div>
+                    <span className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
+                      {premiumPlan.price}
+                    </span>
+                    <span className="text-2xl text-gray-600 ml-2">/mois</span>
+                  </div>
+                  <div className="text-xs text-gray-500 mt-2">{premiumPlan.period}</div>
                 </div>
 
                 <div className="flex-1 space-y-4 text-left mb-8">

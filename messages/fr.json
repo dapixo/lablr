@@ -248,7 +248,7 @@
       "title": "Premium",
       "price": "5€",
       "period": "/mois",
-      "periodAnnualBilling": "/mois (facturation annuelle)",
+      "periodAnnualBilling": "(facturation annuelle)",
       "popular": "Plus populaire",
       "savings": "Économisez 33%",
       "cta": "Passer à Premium",
