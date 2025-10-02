@@ -1,13 +1,20 @@
 'use client'
 
 import { Check, Star, Zap } from 'lucide-react'
+import dynamic from 'next/dynamic'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
+import { Skeleton } from 'primereact/skeleton'
 import { Tag } from 'primereact/tag'
 import { Toast } from 'primereact/toast'
 import type React from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { AuthModal } from '@/components/auth/AuthModal'
+
+// Lazy loading du AuthModal pour améliorer FCP
+const AuthModal = dynamic(() => import('@/components/auth/AuthModal').then(mod => ({ default: mod.AuthModal })), {
+  loading: () => <Skeleton width="100%" height="400px" />,
+  ssr: false,
+})
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { useAuth } from '@/hooks/useAuth'

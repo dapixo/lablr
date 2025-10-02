@@ -1,12 +1,23 @@
 'use client'
 
 import { Eye, Settings } from 'lucide-react'
+import dynamic from 'next/dynamic'
 import { useSearchParams } from 'next/navigation'
 import { Button } from 'primereact/button'
 import { Panel } from 'primereact/panel'
+import { Skeleton } from 'primereact/skeleton'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { AuthModal } from '@/components/auth/AuthModal'
-import { UpgradeModal } from '@/components/UpgradeModal'
+
+// Lazy loading des modals pour améliorer FCP
+const AuthModal = dynamic(() => import('@/components/auth/AuthModal').then(mod => ({ default: mod.AuthModal })), {
+  loading: () => <Skeleton width="100%" height="400px" />,
+  ssr: false,
+})
+
+const UpgradeModal = dynamic(() => import('@/components/UpgradeModal').then(mod => ({ default: mod.UpgradeModal })), {
+  loading: () => <Skeleton width="100%" height="300px" />,
+  ssr: false,
+})
 import { PREVIEW_DIMENSIONS, PREVIEW_MAX_LABELS_ROLL, PREVIEW_MAX_PAGES } from '@/constants'
 import { useAuth } from '@/hooks/useAuth'
 import { useUsageTracking } from '@/hooks/useUsageTracking'

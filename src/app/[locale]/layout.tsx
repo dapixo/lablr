@@ -142,6 +142,12 @@ export default async function LocaleLayout({
 
   return (
     <>
+      {/* Préchargement des ressources critiques pour améliorer FCP */}
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      <link rel="dns-prefetch" href="https://api.supabase.co" />
+      <link rel="dns-prefetch" href="https://api.lemonsqueezy.com" />
+
       <StructuredData locale={locale} />
       <PrimeReactProvider>
         <AuthProvider>{children}</AuthProvider>
