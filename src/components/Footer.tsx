@@ -142,6 +142,7 @@ export function Footer({ t }: FooterProps) {
                 >
                   <option value="fr">Français</option>
                   <option value="en">English</option>
+                  <option value="es">Español</option>
                 </select>
               )}
               <div className="flex items-center gap-2 text-xs text-gray-500">

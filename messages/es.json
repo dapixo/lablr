@@ -1,0 +1,570 @@
+{
+  "brand": {
+    "name": "Lalabel",
+    "tagline": "Solución profesional de extracción de direcciones"
+  },
+  "navigation": {
+    "pricing": "Precios",
+    "getStarted": "Importar",
+    "account": "Mi cuenta",
+    "myAccount": "Mi cuenta",
+    "signOut": "Cerrar sesión",
+    "faq": "FAQ",
+    "upgrade": "Mejorar"
+  },
+  "header": {
+    "welcome": "Bienvenido a",
+    "welcomeBrand": "Lalabel",
+    "description": "Importa tus datos y transfórmalos en etiquetas de envío profesionales en unos pocos clics."
+  },
+  "hero": {
+    "title": {
+      "part1": "Transforma tus archivos de ventas",
+      "part2": "en etiquetas de envío perfectas."
+    },
+    "subtitle": "Lalabel transforma automáticamente tus reportes de Amazon, Shopify, eBay o CSV personalizados en etiquetas de envío listas para imprimir — en unos pocos clics y sin errores.",
+    "cta": {
+      "primary": "Probar gratis"
+    }
+  },
+  "steps": {
+    "1": {
+      "title": "1. Importa",
+      "description": "Arrastra tu archivo CSV/TXT (Amazon, Shopify, eBay, Etsy...)"
+    },
+    "2": {
+      "title": "2. Configura",
+      "description": "Elige tu formato de impresión"
+    },
+    "3": {
+      "title": "3. Imprime",
+      "description": "Obtén tus etiquetas perfectamente formateadas"
+    }
+  },
+  "upload": {
+    "header": "Importar archivo de direcciones",
+    "description": "Arrastra o selecciona tu archivo de direcciones (.txt, .csv - Amazon Seller, Shopify, eBay, etc.)",
+    "drag": "Arrastra tu archivo aquí",
+    "browse": "o haz clic para explorar tus archivos",
+    "processing": "Procesando...",
+    "error": {
+      "reading": "Error al leer el archivo"
+    }
+  },
+  "addresses": {
+    "title": "Direcciones extraídas ({count})",
+    "totalFormat": "({filtered} de {total})",
+    "pageInfo": "Página {current} de {total}",
+    "addButton": "Agregar una dirección",
+    "search": {
+      "placeholder": "Buscar por nombre, dirección, ciudad, país..."
+    },
+    "pagination": {
+      "template": "Mostrando de {first} a {last} de {totalRecords} direcciones"
+    },
+    "errors": {
+      "title": "Errores de análisis ({count})"
+    },
+    "noResults": {
+      "title": "No se encontraron resultados",
+      "description": "Prueba con otras palabras clave o verifica la ortografía"
+    }
+  },
+  "editor": {
+    "title": {
+      "edit": "Editar dirección",
+      "add": "Agregar dirección"
+    },
+    "firstName": "Nombre *",
+    "lastName": "Apellido",
+    "address1": "Dirección *",
+    "address2": "Complemento de dirección",
+    "postalCode": "Código postal *",
+    "city": "Ciudad *",
+    "country": "País *",
+    "placeholders": {
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "address1": "123 calle de la Paz",
+      "address2": "Edif A, Apto 12",
+      "postalCode": "75001",
+      "city": "París",
+      "country": "Seleccionar un país"
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "save": "Guardar"
+    }
+  },
+  "userMenu": {
+    "tooltip": "Menú de usuario ({email})",
+    "ariaLabel": "Menú de usuario",
+    "signOut": "Cerrar sesión",
+    "account": "Mi cuenta",
+    "confirmDelete": {
+      "message": "¿Estás absolutamente seguro de que deseas eliminar tu cuenta? Esta acción es irreversible.",
+      "header": "Eliminar cuenta",
+      "accept": "Eliminar definitivamente",
+      "reject": "Cancelar"
+    },
+    "toast": {
+      "signOutError": {
+        "summary": "Error",
+        "detail": "No se pudo cerrar sesión"
+      },
+      "deleteError": {
+        "summary": "Error",
+        "detail": "No se pudo eliminar la cuenta"
+      },
+      "deleteSuccess": {
+        "summary": "Éxito",
+        "detail": "Cuenta eliminada con éxito"
+      }
+    }
+  },
+  "confirm": {
+    "deleteAddress": {
+      "title": "Eliminar dirección",
+      "message": "¿Estás seguro de que deseas eliminar esta dirección? Esta acción es irreversible.",
+      "accept": "Eliminar",
+      "reject": "Cancelar"
+    }
+  },
+  "print": {
+    "title": "Opciones de impresión",
+    "description": "Elige el formato de impresión para tus {count} direcciones",
+    "formatTitle": "Formato de impresión",
+    "formatAriaLabel": "Elegir un formato de impresión",
+    "buttons": {
+      "print": "Imprimir",
+      "download": "Descargar CSV"
+    },
+    "preview": {
+      "title": "Vista previa - {format}",
+      "description": "Vista realista del resultado de impresión (escala reducida)",
+      "csvTitle": "Vista previa - Exportar CSV",
+      "csvDescription": "Vista previa de los datos que se exportarán",
+      "rollDescription": "Vista previa del rollo de etiquetas (una etiqueta por dirección)",
+      "pagination": "... y {count} página{s} adicionales ({total} direcciones en total)",
+      "rollPagination": "... y {count} etiqueta{s} adicionales",
+      "csvPagination": "... y {count} línea{s} adicionales ({total} direcciones en total)",
+      "emptyLabel": "Etiqueta vacía"
+    }
+  },
+  "formats": {
+    "A4": {
+      "label": "A4 - Formato estándar",
+      "description": "Una dirección por línea, formato clásico"
+    },
+    "A4_COMPACT": {
+      "label": "A4 - Formato compacto",
+      "description": "Formato compacto de 2 columnas, ahorra papel"
+    },
+    "A4_LABELS_10": {
+      "label": "A4 - 10 etiquetas adhesivas",
+      "description": "10 etiquetas por página"
+    },
+    "A4_LABELS_14": {
+      "label": "A4 - 14 etiquetas adhesivas",
+      "description": "14 etiquetas por página"
+    },
+    "A4_LABELS_16": {
+      "label": "A4 - 16 etiquetas adhesivas",
+      "description": "16 etiquetas por página"
+    },
+    "A4_LABELS_21": {
+      "label": "A4 - 21 etiquetas adhesivas",
+      "description": "21 etiquetas por página"
+    },
+    "ROLL_57x32": {
+      "label": "Rollo - Etiquetas",
+      "description": "Una etiqueta por dirección"
+    },
+    "CSV_EXPORT": {
+      "label": "Exportar CSV",
+      "description": "Exporta los datos en formato CSV para hojas de cálculo"
+    }
+  },
+  "auth": {
+    "title": {
+      "signIn": "Iniciar sesión"
+    },
+    "tagline": "Lalabel - Generador de etiquetas",
+    "welcome": {
+      "title": "🎉 Crea 10 etiquetas gratis por día",
+      "description": "Con una simple conexión puedes imprimir hasta 10 etiquetas gratis cada día. ¿Necesitas más? Pasa a Premium por solo 4€/mes.",
+      "privacy": "Tus datos importados nunca se almacenan"
+    },
+    "required": {
+      "title": "Se requiere inicio de sesión",
+      "message": "Debes iniciar sesión para realizar esta acción."
+    },
+    "form": {
+      "email": "Correo electrónico",
+      "emailPlaceholder": "tu@email.com"
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "signIn": "Iniciar sesión",
+      "loading": "Conectando..."
+    },
+    "otp": {
+      "enterCode": "Introduce tu código",
+      "codeDescription": "Introduce el código de verificación recibido por correo electrónico",
+      "sendCode": "Enviar código",
+      "resendCode": "Reenviar código",
+      "changeEmail": "Cambiar correo electrónico",
+      "verify": "Verificar",
+      "codeLabel": "Código de verificación",
+      "howItWorks": {
+        "title": "¿Cómo funciona?",
+        "step1": "Introduce tu correo electrónico",
+        "step2": "Recibe un código de 6 dígitos por correo",
+        "step3": "Introduce el código para iniciar sesión"
+      }
+    },
+    "guarantees": {
+      "free": "10 etiquetas/día gratis",
+      "secure": "Datos seguros",
+      "noStorage": "Sin almacenamiento"
+    },
+    "page": {
+      "description": "Accede a tu cuenta para generar tus etiquetas de envío y disfrutar de todas las funciones."
+    },
+    "loading": "Conectando...",
+    "errors": {
+      "invalidEmail": "Correo electrónico inválido",
+      "disposableEmail": "Los correos electrónicos temporales/desechables no están permitidos. Utiliza un correo permanente",
+      "rateLimitGeneric": "Demasiados intentos. Espera antes de solicitar un nuevo código",
+      "tooManyRequests": "Demasiados intentos. Espera unos minutos",
+      "rateLimit": "Por razones de seguridad, espera {seconds} segundos antes de solicitar un nuevo código",
+      "invalidCode": "Código de verificación incorrecto",
+      "expiredCode": "Código de verificación caducado. Solicita uno nuevo",
+      "unexpected": "Ocurrió un error inesperado"
+    }
+  },
+  "pricing": {
+    "plans": {
+      "free": {
+        "name": "Gratis"
+      }
+    },
+    "premium": {
+      "title": "Premium",
+      "price": "5€",
+      "period": "/mes",
+      "periodAnnualBilling": "(facturación anual)",
+      "popular": "Más popular",
+      "savings": "Ahorra 33%",
+      "cta": "Pasar a Premium",
+      "perMonth": "/mes",
+      "features": {
+        "0": "Etiquetas ilimitadas",
+        "1": "Todos los formatos de impresión",
+        "2": "Ideal para grandes volúmenes",
+        "3": "Soporte prioritario"
+      }
+    },
+    "limits": {
+      "dailyLimit": "Límite diario alcanzado",
+      "upgradeMessage": "Has usado tus 10 etiquetas gratis hoy. Pasa a Premium para continuar.",
+      "upgradeSoonMessage": "Pasa al plan Premium para obtener impresiones ilimitadas.",
+      "resetTime": "Tus 10 impresiones gratuitas se renuevan automáticamente mañana a medianoche.",
+      "noLabelsLeft": "Tus 10 impresiones gratuitas se renuevan automáticamente mañana a medianoche.",
+      "resetTomorrow": "Tus 10 etiquetas gratuitas se recargan mañana a medianoche",
+      "limitSoon": "Solo quedan {count} etiqueta{plural} gratis",
+      "addressesDetected": "{count} dirección{plural} detectada{plural}",
+      "labelsRemaining": "Tienes derecho a imprimir 10 etiquetas gratis por día. Te quedan {count} impresión{plural} gratuita{plural} de etiqueta{plural} para hoy.",
+      "printLimited": "Impresión limitada a {count} etiqueta{plural}"
+    },
+    "upgrade": {
+      "alreadyPremium": {
+        "title": "Ya eres Premium",
+        "message": "Tu cuenta ya es Premium con etiquetas ilimitadas."
+      }
+    },
+    "checkout": {
+      "redirecting": {
+        "title": "Redirigiendo...",
+        "message": "Serás redirigido a la página de pago segura."
+      },
+      "error": {
+        "title": "Error de pago",
+        "message": "No se pudo crear la sesión de pago. Intenta de nuevo."
+      }
+    },
+    "free": {
+      "title": "Gratis",
+      "price": "0€",
+      "features": {
+        "0": "10 etiquetas por día",
+        "1": "Todos los formatos de impresión",
+        "2": "Perfecto para pequeños envíos",
+        "3": "Soporte estándar"
+      }
+    },
+    "page": {
+      "title": "Nuestros Precios",
+      "subtitle": "Empieza gratis, pasa a Premium cuando quieras. Sin compromiso, cancelable en cualquier momento.",
+      "billingToggle": {
+        "monthly": "Mensual",
+        "annually": "Anual"
+      },
+      "cta": {
+        "free": "Empezar gratis",
+        "premium": "Pasar a Premium",
+        "currentPlan": "Plan actual",
+        "activePlan": "Plan activo"
+      }
+    }
+  },
+  "faq": {
+    "title": "Preguntas frecuentes",
+    "subtitle": "Todo lo que necesitas saber sobre Lalabel, la seguridad de tus datos y el uso de la aplicación.",
+    "cta": {
+      "title": "¿Otra pregunta?",
+      "description": "No dudes en escribirnos a contact@lalabel.app si no encuentras la respuesta a tu pregunta.",
+      "emailSubject": "[Lalabel] Pregunta sobre la aplicación"
+    },
+    "questions": {
+      "security": {
+        "question": "¿Mis datos están seguros?",
+        "answer": "¡Absolutamente! Tus datos se procesan 100% localmente en tu navegador. Ningún archivo se envía a nuestros servidores — todo el procesamiento se realiza directamente en tu dispositivo. Tus direcciones y pedidos permanecen completamente privados y seguros."
+      },
+      "files": {
+        "question": "¿Qué hacéis con mis archivos importados?",
+        "answer": "¡Nada! Tus archivos CSV/TSV nunca salen de tu navegador. Se procesan localmente para extraer las direcciones, luego se eliminan de la memoria inmediatamente. No almacenamos, guardamos ni transmitimos ninguno de tus archivos o datos personales."
+      },
+      "account": {
+        "question": "¿Por qué debo crear una cuenta?",
+        "answer": "La cuenta solo nos permite contar el número de usuarios activos para mejorar el servicio. Solo recopilamos tu correo electrónico — ningún dato comercial, ninguna dirección de clientes, ningún archivo está vinculado a tu cuenta."
+      },
+      "platforms": {
+        "question": "¿Qué plataformas son compatibles?",
+        "answer": "Lalabel soporta automáticamente Amazon Seller Central, Shopify, eBay, así como cualquier archivo CSV genérico. Nuestro sistema detecta automáticamente el formato de tu archivo y extrae las columnas correctas de direcciones. También puedes importar cualquier CSV con columnas de direcciones."
+      },
+      "formats": {
+        "question": "¿Qué formatos de impresión están disponibles?",
+        "answer": "Ofrecemos varios formatos: A4 estándar y compacto, etiquetas adhesivas con 10, 14, 16 o 21 etiquetas por página, rollos de etiquetas para impresoras térmicas y exportación a CSV. Todos los formatos incluyen una vista previa en tiempo real."
+      },
+      "pricing": {
+        "question": "¿Cómo funciona el modelo freemium?",
+        "answer": "Lalabel te ofrece 10 etiquetas gratis cada día, renovadas automáticamente. Es perfecto para pequeños envíos. Si necesitas más, nuestro plan Premium a 5€/mes (o 48€/año) te da acceso a etiquetas ilimitadas con soporte prioritario."
+      }
+    }
+  },
+  "feedback": {
+    "title": "Ayúdanos a mejorar Lalabel",
+    "subtitle": "¡Tu opinión cuenta! Propón nuevos formatos, reporta errores o sugiere mejoras.",
+    "benefits": {
+      "responsive": "Respuesta rápida",
+      "responsiveDesc": "Generalmente respondemos en menos de 24h",
+      "implementation": "Desarrollo ágil",
+      "implementationDesc": "Las buenas ideas se integran rápidamente",
+      "community": "Escucha activa",
+      "communityDesc": "Cada sugerencia es estudiada con atención"
+    },
+    "suggestions": {
+      "title": "¿Qué te gustaría ver en Lalabel?",
+      "formats": "Nuevos formatos de etiquetas",
+      "features": "Funciones adicionales",
+      "improvements": "Mejoras en la interfaz",
+      "integrations": "Integraciones con otras plataformas"
+    },
+    "cta": {
+      "title": "¿Qué te gustaría ver en Lalabel?",
+      "description": "Contáctanos para cualquier sugerencia, solicitud de formato o mejora. Tu retroalimentación nos ayuda a crear la mejor solución de etiquetas posible.",
+      "button": "Comparte tus ideas"
+    },
+    "email": {
+      "subject": "[Lalabel] Sugerencia de mejora",
+      "greeting": "Hola,",
+      "intro": "Me gustaría sugerir una mejora para Lalabel:",
+      "placeholder": "[ Describe tu idea aquí ]",
+      "typeTitle": "Tipo de sugerencia:",
+      "types": {
+        "formats": "Nuevo formato de etiquetas",
+        "features": "Función adicional",
+        "ui": "Mejora de la interfaz",
+        "integration": "Integración con una plataforma",
+        "other": "Otro"
+      },
+      "thanks": "¡Gracias por vuestro excelente trabajo!"
+    }
+  },
+  "footer": {
+    "brand": {
+      "description": "Solución profesional para la extracción e impresión de etiquetas desde todas tus plataformas e-commerce."
+    },
+    "features": {
+      "title": "Funciones",
+      "multiPlatform": "Importación multiplataforma (Amazon, Shopify, eBay...)",
+      "formats": "Formatos A4 y etiquetas",
+      "editing": "Edición de direcciones",
+      "detection": "Detección automática de formatos"
+    },
+    "advantages": {
+      "title": "Ventajas",
+      "security": "Procesamiento local seguro",
+      "speed": "Interfaz moderna y rápida",
+      "compatibility": "Compatible con todos los dispositivos"
+    },
+    "links": {
+      "account": "Mi cuenta"
+    },
+    "copyright": "© 2025 Lalabel. Todos los derechos reservados.",
+    "version": {
+      "label": "Versión"
+    },
+    "languageSelector": {
+      "label": "Seleccionar idioma"
+    }
+  },
+  "subscription": {
+    "title": "Gestión de suscripción",
+    "details": "Detalles de la suscripción",
+    "plan": "Plan",
+    "price": "Precio",
+    "usage": "uso",
+    "renewsAt": "Se renueva el",
+    "endsAt": "Termina el",
+    "accessUntil": "Acceso hasta el",
+    "paymentMethod": "Método de pago",
+    "manage": "Gestionar suscripción",
+    "updatePayment": "Modificar pago",
+    "intervals": {
+      "month": "mes",
+      "year": "año",
+      "week": "semana",
+      "day": "día"
+    },
+    "priceFormat": {
+      "month": "/ mes",
+      "year": "/ año",
+      "week": "/ semana",
+      "day": "/ día"
+    },
+    "statusLabels": {
+      "active": "Activo",
+      "on_trial": "Prueba",
+      "paused": "En pausa",
+      "cancelled": "Cancelado",
+      "expired": "Expirado",
+      "past_due": "Pago atrasado",
+      "unpaid": "No pagado"
+    },
+    "plans": {
+      "Mensuel": "Mensual",
+      "Annuel": "Anual",
+      "Monthly": "Mensual",
+      "Yearly": "Anual",
+      "Premium": "Premium"
+    },
+    "error": {
+      "loading": "Error al cargar la información de la suscripción"
+    },
+    "status": {
+      "gracePeriod": "Período de gracia ({days}d restante{plural})",
+      "cancelled": {
+        "title": "Suscripción cancelada",
+        "message": "Tu suscripción ha sido cancelada, pero conservas el acceso Premium hasta el final de tu período pagado ({days} día{plural} restante{plural}).",
+        "action": "Puedes reanudar tu suscripción en cualquier momento a través del portal de cliente."
+      },
+      "paymentIssue": {
+        "title": "Problema de pago detectado",
+        "message": "Tu suscripción ha encontrado un problema de pago, pero conservas el acceso Premium durante {days} día{plural} más.",
+        "action": "Para evitar cualquier interrupción, actualiza tu método de pago antes del {date}."
+      }
+    }
+  },
+  "status": {
+    "fileProcessed": "Archivo procesado con éxito",
+    "addressExtracted": "dirección extraída",
+    "addressesExtracted": "direcciones extraídas",
+    "noAddressFound": "No se encontraron direcciones",
+    "checkFileFormat": "Verifica que tu archivo contenga columnas de direcciones (nombre, dirección, ciudad, código postal).",
+    "pageNumber": "Página {number}"
+  },
+  "fileAnalysis": {
+    "helpImprove": "Ayúdanos a mejorar nuestro sistema de reconocimiento enviándonos tu archivo:",
+    "privacy": "Tus datos se utilizarán únicamente para mejorar la herramienta (sin almacenamiento permanente, sin uso comercial).",
+    "sendFile": "Enviar el archivo",
+    "emailSubject": "[Lalabel] Archivo sin direcciones detectadas - Solicitud de mejora",
+    "emailBody": "Hola,\n\nIntenté importar un archivo en Lalabel pero no se detectó ninguna dirección.\n\nInformación sobre el archivo:\n- Tipo de plataforma (Amazon, Shopify, eBay, otro): \n- Formato del archivo (CSV, TSV, TXT): \n- Número aproximado de líneas: \n- Descripción del contenido: \n\nAdjunto el archivo para ayudaros a mejorar el sistema de reconocimiento.\n\n🔒 CONFIDENCIALIDAD:\nEntiendo que este archivo se utilizará únicamente para mejorar la herramienta Lalabel y analizar los formatos no reconocidos. Los datos no se almacenarán de forma permanente, ni se utilizarán con fines comerciales, ni se compartirán con terceros. Me mantendréis informado de las mejoras realizadas gracias a mi ayuda.\n\n¡Gracias por desarrollar una herramienta tan útil para los vendedores en línea!\n\nSaludos cordiales"
+  },
+  "csv": {
+    "headers": {
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "address1": "Dirección 1",
+      "address2": "Dirección 2",
+      "postalCode": "Código Postal",
+      "city": "Ciudad",
+      "country": "País"
+    }
+  },
+  "account": {
+    "title": "Mi cuenta",
+    "description": "Gestiona la información de tu cuenta y tus preferencias.",
+    "planStatus": {
+      "title": "Estado de la cuenta",
+      "currentPlan": "Plan actual",
+      "freePlan": "Plan gratuito",
+      "dailyUsage": "Uso diario",
+      "labelsUsed": "etiquetas utilizadas",
+      "remainingLabels": "{count} etiqueta{plural} restante{plural}",
+      "limitReached": "Límite diario alcanzado",
+      "upgradePrompt": "Pasa a Premium para etiquetas ilimitadas:",
+      "upgradeToPremium": "Pasar a Premium",
+      "fromPrice": "desde 4€/mes",
+      "premiumFeatures": {
+        "unlimited": "Etiquetas ilimitadas",
+        "priority": "Soporte prioritario",
+        "support": "Nuevas funciones en avance"
+      },
+      "premiumStatus": {
+        "unlimitedLabels": "Etiquetas ilimitadas",
+        "description": "Imprime tantas etiquetas como desees con tu plan Premium"
+      }
+    },
+    "userInfo": {
+      "title": "Información del usuario",
+      "fullName": "Nombre completo",
+      "email": "Correo electrónico",
+      "memberSince": "Miembro desde",
+      "editName": {
+        "tooltip": "Modificar nombre",
+        "placeholder": "Introduce tu nombre completo",
+        "save": "Guardar",
+        "cancel": "Cancelar",
+        "success": "Nombre actualizado con éxito",
+        "errors": {
+          "empty": "El nombre no puede estar vacío",
+          "tooLong": "El nombre no puede superar los 100 caracteres",
+          "invalidCharacters": "El nombre contiene caracteres no autorizados",
+          "controlCharacters": "El nombre contiene caracteres inválidos"
+        }
+      }
+    },
+    "dangerZone": {
+      "title": "Zona de peligro",
+      "description": "Esta acción es irreversible y eliminará definitivamente tu cuenta y todos los datos asociados.",
+      "deleteAccount": "Eliminar mi cuenta"
+    },
+    "payment": {
+      "success": {
+        "title": "🎉 ¡Pago exitoso!",
+        "message": "Tu suscripción Premium ya está activa. ¡Disfruta de etiquetas ilimitadas!"
+      },
+      "cancelled": {
+        "title": "Pago cancelado",
+        "message": "Tu pago ha sido cancelado. Permaneces en el plan gratuito con 10 etiquetas por día."
+      }
+    }
+  },
+  "common": {
+    "or": "o",
+    "cancel": "Cancelar",
+    "retry": "Reintentar"
+  }
+}

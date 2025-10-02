@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import enMessages from '../../messages/en.json'
+import esMessages from '../../messages/es.json'
 import frMessages from '../../messages/fr.json'
 
 type Messages = typeof frMessages
@@ -31,7 +32,8 @@ function interpolateMessage(message: string, variables?: TranslationVariables): 
 
 export function useTranslations(locale: string) {
   return useMemo(() => {
-    const messages: Messages = locale === 'en' ? enMessages : frMessages
+    const messages: Messages =
+      locale === 'en' ? enMessages : locale === 'es' ? esMessages : frMessages
 
     return (key: MessageKey, variables?: TranslationVariables): string => {
       const message = getNestedValue(messages, key)
