@@ -80,7 +80,7 @@ export const FAQ = React.memo(function FAQ({ t }: FAQProps) {
     [t]
   )
   return (
-    <section className="bg-gray-50 py-16">
+    <section id="faq" className="bg-gray-50 py-16">
       <div className="container mx-auto px-4 md:px-6">
         <FAQHeader t={t} />
 

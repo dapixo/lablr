@@ -1,8 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useParams, usePathname, useRouter } from 'next/navigation'
+import { useCallback, useEffect, useState, useTransition } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import packageJson from '../../package.json'
 
@@ -12,14 +12,30 @@ interface FooterProps {
 
 export function Footer({ t }: FooterProps) {
   const params = useParams()
+  const pathname = usePathname()
+  const router = useRouter()
   const locale = (params?.locale as string) || 'fr'
   const { user } = useAuth()
   const [isHydrated, setIsHydrated] = useState(false)
+  const [isPending, startTransition] = useTransition()
 
   // Éviter les erreurs d'hydratation en attendant que le client soit prêt
   useEffect(() => {
     setIsHydrated(true)
   }, [])
+
+  // Gestion du changement de langue
+  const handleLanguageChange = useCallback(
+    (newLocale: string) => {
+      if (newLocale === locale || isPending) return
+
+      startTransition(() => {
+        const newPath = pathname.replace(`/${locale}`, `/${newLocale}`)
+        router.push(newPath)
+      })
+    },
+    [locale, pathname, router, isPending]
+  )
 
   return (
     <footer className="bg-white border-t border-gray-200">
@@ -115,6 +131,19 @@ export function Footer({ t }: FooterProps) {
               </div>
             </div>
             <div className="flex items-center gap-6">
+              {/* Sélecteur de langue */}
+              {isHydrated && (
+                <select
+                  value={locale}
+                  onChange={(e) => handleLanguageChange(e.target.value)}
+                  disabled={isPending}
+                  className="text-sm text-gray-700 bg-white border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  aria-label={t('footer.languageSelector.label')}
+                >
+                  <option value="fr">Français</option>
+                  <option value="en">English</option>
+                </select>
+              )}
               <div className="flex items-center gap-2 text-xs text-gray-500">
                 <span className="uppercase font-semibold tracking-wider">
                   {t('footer.version.label')}

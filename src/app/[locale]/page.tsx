@@ -22,7 +22,7 @@ export default function Home() {
   const params = useParams()
   const locale = (params?.locale as string) || 'fr'
   const t = useTranslations(locale)
-  const { user } = useAuth()
+  const { user, loading } = useAuth()
   const [addresses, setAddresses] = useState<Address[]>([])
   const [errors, setErrors] = useState<string[]>([])
   const [fileName, setFileName] = useState<string>('')
@@ -135,7 +135,24 @@ export default function Home() {
 
         <div className="container mx-auto px-4 md:px-6 relative">
           {/* Hero Banner - Conditionnel selon connexion */}
-          {user ? (
+          {loading ? (
+            // Skeleton loader pendant le chargement
+            <div className="py-12 text-center">
+              <div className="max-w-4xl mx-auto animate-pulse">
+                <div className="h-8 bg-gray-200 rounded w-3/4 mx-auto mb-4"></div>
+                <div className="h-6 bg-gray-200 rounded w-1/2 mx-auto mb-8"></div>
+                <div className="grid md:grid-cols-3 gap-6">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="text-center">
+                      <div className="w-12 h-12 rounded-xl bg-gray-200 mx-auto mb-3"></div>
+                      <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto mb-2"></div>
+                      <div className="h-3 bg-gray-200 rounded w-full"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : user ? (
             // Hero pour utilisateurs connectés (gratuit + premium) - Version compacte
             <div className="py-12 text-center">
               <div className="max-w-4xl mx-auto">

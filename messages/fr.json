@@ -5,7 +5,12 @@
   },
   "navigation": {
     "pricing": "Tarifs",
-    "getStarted": "Importer"
+    "getStarted": "Importer",
+    "account": "Mon compte",
+    "myAccount": "Mon compte",
+    "signOut": "Déconnexion",
+    "faq": "FAQ",
+    "upgrade": "Upgrade"
   },
   "header": {
     "welcome": "Bienvenue sur",
@@ -410,6 +415,9 @@
     "copyright": "© 2025 Lalabel. Tous droits réservés.",
     "version": {
       "label": "Version"
+    },
+    "languageSelector": {
+      "label": "Sélectionner la langue"
     }
   },
   "subscription": {
