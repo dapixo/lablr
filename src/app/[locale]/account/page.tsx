@@ -14,6 +14,7 @@ import { SubscriptionManager } from '@/components/SubscriptionManager'
 import { useAuth } from '@/hooks/useAuth'
 import { useTranslations } from '@/hooks/useTranslations'
 import { useUsageTracking } from '@/hooks/useUsageTracking'
+import { isPremiumModeEnabled } from '@/lib/feature-flags'
 import { getPluralVariables } from '@/lib/i18n-helpers'
 
 function AccountPageContent() {
@@ -202,16 +203,17 @@ function AccountPageContent() {
               </div>
             </div>
 
-            {/* Status du compte et Gestion d'abonnement */}
-            <Card className="mb-6">
-              <div className="space-y-6">
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                    {userPlan === 'premium'
-                      ? t('subscription.title')
-                      : t('account.planStatus.title')}
-                  </h2>
-                </div>
+            {/* Status du compte et Gestion d'abonnement (uniquement si mode premium activé) */}
+            {isPremiumModeEnabled() && (
+              <Card className="mb-6">
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                      {userPlan === 'premium'
+                        ? t('subscription.title')
+                        : t('account.planStatus.title')}
+                    </h2>
+                  </div>
 
                 {/* Plan actuel */}
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-200">
@@ -381,14 +383,15 @@ function AccountPageContent() {
                   )}
                 </div>
 
-                {/* Gestion des abonnements - intégrée pour les utilisateurs Premium */}
-                {userPlan === 'premium' && (
-                  <div className="pt-6 border-t border-gray-200">
-                    <SubscriptionManager t={t} embedded={true} />
-                  </div>
-                )}
-              </div>
-            </Card>
+                  {/* Gestion des abonnements - intégrée pour les utilisateurs Premium */}
+                  {userPlan === 'premium' && (
+                    <div className="pt-6 border-t border-gray-200">
+                      <SubscriptionManager t={t} embedded={true} />
+                    </div>
+                  )}
+                </div>
+              </Card>
+            )}
 
             {/* Informations utilisateur */}
             <Card className="mb-6">

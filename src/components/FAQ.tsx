@@ -2,7 +2,7 @@
 
 import { Accordion, AccordionTab } from 'primereact/accordion'
 import React, { useMemo } from 'react'
-import { FAQ_IDS } from '@/constants/faq'
+import { getVisibleFAQIds } from '@/constants/faq'
 
 interface FAQProps {
   t: (key: string) => string
@@ -57,7 +57,7 @@ const FAQCallToAction = React.memo(function FAQCallToAction({ t }: { t: (key: st
 export const FAQ = React.memo(function FAQ({ t }: FAQProps) {
   const faqItems = useMemo(
     () =>
-      FAQ_IDS.map((faqId) => (
+      getVisibleFAQIds().map((faqId) => (
         <AccordionTab
           key={faqId}
           header={

@@ -1,7 +1,9 @@
+import { isPremiumModeEnabled } from '@/lib/feature-flags'
+
 // FAQ IDs pour la génération des clés de traduction
 // Les questions/réponses sont dans messages/fr.json et messages/en.json
 // sous les clés: faq.questions.${id}.question et faq.questions.${id}.answer
-export const FAQ_IDS = [
+const ALL_FAQ_IDS = [
   'security',
   'files',
   'account',
@@ -10,4 +12,18 @@ export const FAQ_IDS = [
   'pricing'
 ] as const
 
-export type FAQId = typeof FAQ_IDS[number]
+/**
+ * Retourne les IDs de FAQ à afficher selon l'activation du mode premium
+ * Exclut la question 'pricing' si le mode premium est désactivé
+ */
+export function getVisibleFAQIds(): readonly string[] {
+  if (!isPremiumModeEnabled()) {
+    return ALL_FAQ_IDS.filter(id => id !== 'pricing')
+  }
+  return ALL_FAQ_IDS
+}
+
+// Export pour rétrocompatibilité (affiche toutes les questions)
+export const FAQ_IDS = ALL_FAQ_IDS
+
+export type FAQId = typeof ALL_FAQ_IDS[number]

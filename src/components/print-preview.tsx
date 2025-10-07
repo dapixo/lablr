@@ -22,6 +22,7 @@ import { PREVIEW_DIMENSIONS, PREVIEW_MAX_LABELS_ROLL, PREVIEW_MAX_PAGES } from '
 import { useAuth } from '@/hooks/useAuth'
 import { useUsageTracking } from '@/hooks/useUsageTracking'
 import { useAnalytics } from '@/hooks/useAnalytics'
+import { isPremiumModeEnabled } from '@/lib/feature-flags'
 import { PRINT_CONFIGS, getEnabledFormats } from '@/lib/print/config'
 import { downloadCSV, generateDebugPrintCSS, getPrintCSS } from '@/lib/print-formats'
 import { printAddresses } from '@/lib/print-utils'
@@ -322,15 +323,17 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
         t={t}
       />
 
-      {/* Modal d'upgrade freemium */}
-      <UpgradeModal
-        visible={showUpgradeModal}
-        onHide={() => setShowUpgradeModal(false)}
-        onPrintLimited={handlePrintLimited}
-        t={t}
-        totalAddresses={addresses.length}
-        remainingLabels={remainingLabels}
-      />
+      {/* Modal d'upgrade freemium (uniquement si mode premium activé) */}
+      {isPremiumModeEnabled() && (
+        <UpgradeModal
+          visible={showUpgradeModal}
+          onHide={() => setShowUpgradeModal(false)}
+          onPrintLimited={handlePrintLimited}
+          t={t}
+          totalAddresses={addresses.length}
+          remainingLabels={remainingLabels}
+        />
+      )}
     </div>
   )
 }

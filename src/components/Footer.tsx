@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState, useTransition } from 'react'
 import { useAuth } from '@/hooks/useAuth'
+import { isPremiumModeEnabled } from '@/lib/feature-flags'
 import packageJson from '../../package.json'
 
 interface FooterProps {
@@ -124,12 +125,14 @@ export function Footer({ t }: FooterProps) {
                 >
                   {t('footer.links.refund')}
                 </Link>
-                <Link
-                  href={`/${locale}/pricing`}
-                  className="text-blue-600 hover:text-blue-800 font-medium transition-colors text-sm"
-                >
-                  {t('navigation.pricing')}
-                </Link>
+                {isPremiumModeEnabled() && (
+                  <Link
+                    href={`/${locale}/pricing`}
+                    className="text-blue-600 hover:text-blue-800 font-medium transition-colors text-sm"
+                  >
+                    {t('navigation.pricing')}
+                  </Link>
+                )}
                 {isHydrated &&
                   (user ? (
                     <Link

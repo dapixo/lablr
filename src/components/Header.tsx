@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useParams, useRouter, usePathname } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
+import { isPremiumModeEnabled } from '@/lib/feature-flags'
 
 interface HeaderProps {
   t: (key: string) => string
@@ -136,7 +137,7 @@ export function Header({ t }: HeaderProps) {
                     <i className="pi pi-question-circle text-xs"></i>
                     <span>{t('navigation.faq')}</span>
                   </a>
-                  {userPlan !== 'premium' && (
+                  {isPremiumModeEnabled() && userPlan !== 'premium' && (
                     <Link
                       href={`/${locale}/pricing`}
                       className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5"
@@ -171,13 +172,15 @@ export function Header({ t }: HeaderProps) {
                     <i className="pi pi-question-circle text-xs"></i>
                     <span>{t('navigation.faq')}</span>
                   </a>
-                  <Link
-                    href={`/${locale}/pricing`}
-                    className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5"
-                  >
-                    <i className="pi pi-tag text-xs"></i>
-                    <span>{t('navigation.pricing')}</span>
-                  </Link>
+                  {isPremiumModeEnabled() && (
+                    <Link
+                      href={`/${locale}/pricing`}
+                      className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5"
+                    >
+                      <i className="pi pi-tag text-xs"></i>
+                      <span>{t('navigation.pricing')}</span>
+                    </Link>
+                  )}
                 </>
               )
             }
