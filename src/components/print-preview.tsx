@@ -105,7 +105,7 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
   // États avec hooks personnalisés
   const selectedFormat = usePersistedSelection(
     STORAGE_KEYS.SELECTED_FORMAT,
-    'A4' as PrintFormat,
+    'A4_LABELS_10' as PrintFormat,
     isValidFormat
   )
   const printPanel = useCollapsiblePanel(STORAGE_KEYS.PRINT_PANEL_COLLAPSED, false)
@@ -120,7 +120,7 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
 
       try {
         if (selectedFormat.value === 'CSV_EXPORT') {
-          downloadCSV(addressesToPrint, 'adresses-lablr.csv')
+          downloadCSV(addressesToPrint, 'lalabel.csv')
           if (user) {
             await trackLabelUsage(addressesToPrint.length)
           }
