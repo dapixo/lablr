@@ -76,7 +76,8 @@
       "description": "Ajoutez votre première adresse manuellement",
       "addButton": "Ajouter une adresse",
       "importLink": "Importer un fichier"
-    }
+    },
+    "generateLabels": "Générer les étiquettes"
   },
   "editor": {
     "title": {

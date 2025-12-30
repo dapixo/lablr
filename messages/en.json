@@ -76,7 +76,8 @@
       "description": "Add your first address manually",
       "addButton": "Add an address",
       "importLink": "Import a file"
-    }
+    },
+    "generateLabels": "Generate labels"
   },
   "editor": {
     "title": {

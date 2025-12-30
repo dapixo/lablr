@@ -21,7 +21,9 @@ interface AddressListProps {
   onDeleteAddress?: (addressId: string) => void
   onAddAddress?: () => void
   onImportFile?: () => void
+  onGenerateLabels?: () => void
   isManualMode?: boolean
+  showGenerateButton?: boolean
   t: (key: string) => string
 }
 
@@ -35,7 +37,9 @@ export function AddressList({
   onDeleteAddress,
   onAddAddress,
   onImportFile,
+  onGenerateLabels,
   isManualMode = false,
+  showGenerateButton = false,
   t,
 }: AddressListProps) {
   const [currentPage, setCurrentPage] = useState(0)
@@ -149,24 +153,38 @@ export function AddressList({
         collapsed={addressesPanel.isCollapsed}
         onToggle={addressesPanel.toggle}
       >
-        <div className="flex flex-col sm:flex-row gap-3 mb-4">
-          <div className="flex-1">
-            <SearchBar
-              addresses={addresses}
-              searchQuery={searchQuery}
-              onSearchChange={handleSearchChange}
-              t={t}
-            />
-          </div>
-          {onAddAddress && (
-            <Button
-              onClick={onAddAddress}
-              label={t('addresses.addButton')}
-              icon="pi pi-plus"
-              size="small"
-              className="flex-shrink-0"
-            />
+        <div className="flex flex-col gap-3 mb-4">
+          {/* Bouton "Générer les étiquettes" - Affiché en mode manuel quand il y a des adresses */}
+          {showGenerateButton && onGenerateLabels && (
+            <div className="flex justify-center">
+              <Button
+                onClick={onGenerateLabels}
+                label={t('addresses.generateLabels')}
+                icon="pi pi-print"
+                className="p-button-primary p-button-lg"
+              />
+            </div>
           )}
+
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex-1">
+              <SearchBar
+                addresses={addresses}
+                searchQuery={searchQuery}
+                onSearchChange={handleSearchChange}
+                t={t}
+              />
+            </div>
+            {onAddAddress && (
+              <Button
+                onClick={onAddAddress}
+                label={t('addresses.addButton')}
+                icon="pi pi-plus"
+                size="small"
+                className="flex-shrink-0"
+              />
+            )}
+          </div>
         </div>
 
         {/* Info pagination mobile */}

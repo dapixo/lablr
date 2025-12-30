@@ -31,6 +31,7 @@ export default function Home() {
   const [isAddingAddress, setIsAddingAddress] = useState(false)
   const [shouldAutoScroll, setShouldAutoScroll] = useState(false)
   const [isManualMode, setIsManualMode] = useState(false)
+  const [showPrintPreview, setShowPrintPreview] = useState(false)
   const printPreviewRef = useRef<HTMLDivElement>(null)
 
   // Utility function for smooth scrolling with header offset
@@ -59,6 +60,7 @@ export default function Home() {
     setFileName(filename)
     setParseResult(result)
     setIsManualMode(false) // Retour au mode fichier lors d'un import
+    setShowPrintPreview(true) // Auto-affichage en mode fichier
 
     // Déclencher l'auto-scroll seulement lors de l'import de fichier
     if (cleanedAddresses.length > 0) {
@@ -119,6 +121,7 @@ export default function Home() {
 
   const handleManualCreation = useCallback(() => {
     setIsManualMode(true)
+    setShowPrintPreview(false) // Pas d'auto-affichage en mode manuel
     // Optionnel : scroll vers la section addresses (sera vide)
     setTimeout(() => {
       const addressSection = document.getElementById('addresses-section')
@@ -130,9 +133,20 @@ export default function Home() {
 
   const handleBackToFileUpload = useCallback(() => {
     setIsManualMode(false)
+    setShowPrintPreview(false) // Reset lors du retour
     // Scroll vers le haut (zone upload)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [])
+
+  const handleGenerateLabels = useCallback(() => {
+    setShowPrintPreview(true)
+    // Scroll vers PrintPreview après un court délai
+    setTimeout(() => {
+      if (printPreviewRef.current) {
+        scrollToElement(printPreviewRef.current, HEADER_HEIGHT)
+      }
+    }, 100)
+  }, [scrollToElement])
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -361,7 +375,7 @@ export default function Home() {
             {/* Results */}
             {(addresses.length > 0 || errors.length > 0 || isManualMode) && (
               <>
-                {addresses.length > 0 && (
+                {addresses.length > 0 && showPrintPreview && (
                   <div ref={printPreviewRef}>
                     <PrintPreview addresses={addresses} t={t} />
                   </div>
@@ -374,7 +388,9 @@ export default function Home() {
                     onDeleteAddress={handleDeleteAddress}
                     onAddAddress={handleAddAddress}
                     onImportFile={handleBackToFileUpload}
+                    onGenerateLabels={handleGenerateLabels}
                     isManualMode={isManualMode}
+                    showGenerateButton={isManualMode && addresses.length > 0 && !showPrintPreview}
                     t={t}
                   />
                 </div>

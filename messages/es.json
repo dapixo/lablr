@@ -76,7 +76,8 @@
       "description": "Añade tu primera dirección manualmente",
       "addButton": "Añadir una dirección",
       "importLink": "Importar un archivo"
-    }
+    },
+    "generateLabels": "Generar etiquetas"
   },
   "editor": {
     "title": {
