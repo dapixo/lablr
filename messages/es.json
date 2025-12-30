@@ -146,7 +146,8 @@
     "formatAriaLabel": "Elegir un formato de impresión",
     "buttons": {
       "print": "Imprimir",
-      "download": "Descargar CSV"
+      "download": "Descargar CSV",
+      "upgradeToPremiumFormat": "Pasar a Premium para {format}"
     },
     "preview": {
       "title": "Vista previa - {format}",
@@ -158,6 +159,36 @@
       "rollPagination": "... y {count} etiqueta{s} adicionales",
       "csvPagination": "... y {count} línea{s} adicionales ({total} direcciones en total)",
       "emptyLabel": "Etiqueta vacía"
+    },
+    "offset": {
+      "title": "¿Hoja parcialmente utilizada?",
+      "description": "Si ya ha utilizado algunas etiquetas, indique cuántas para evitar el desperdicio",
+      "labelUsed": "Etiquetas ya retiradas:",
+      "decrease": "Disminuir",
+      "increase": "Aumentar",
+      "previewTitle": "Vista previa de su hoja:",
+      "cellUsed": "Etiqueta ya retirada",
+      "cellNext": "Próxima etiqueta a imprimir",
+      "cellAvailable": "Etiqueta disponible",
+      "startPosition": "La impresión comenzará en la posición {position}",
+      "newSheet": "Hoja nueva - impresión desde la posición 1",
+      "summary": "{count} etiqueta(s) ya retirada(s)",
+      "summaryNone": "Hoja nueva",
+      "reset": "Restablecer",
+      "clickInstruction": "Haga clic en la última etiqueta retirada:",
+      "selectPosition": "Seleccionar posición"
+    },
+    "antiWaste": {
+      "title": "💡 Consejo Premium: Modo anti-desperdicio",
+      "description": "¡Ahorra papel reutilizando hojas parcialmente usadas! Con Premium, selecciona dónde comenzar la impresión.",
+      "learnMore": "Pasar a Premium"
+    },
+    "waiting": {
+      "title": "Preparando tu impresión...",
+      "message": "Tu impresión comenzará en unos momentos",
+      "premiumTitle": "Impresión instantánea con Premium",
+      "premiumMessage": "Los usuarios Premium disfrutan de impresiones instantáneas sin tiempo de espera. ¡Pasa a Premium ahora!",
+      "upgradeButton": "Pasar a Premium"
     }
   },
   "formats": {
@@ -269,9 +300,11 @@
       "perMonth": "/mes",
       "features": {
         "0": "Etiquetas ilimitadas",
-        "1": "Todos los formatos de impresión",
-        "2": "Ideal para grandes volúmenes",
-        "3": "Soporte prioritario"
+        "1": "Todos los formatos (14, 16, 21 etiquetas, rollos...)",
+        "2": "Modo anti-desperdicio (reutilización de hojas)",
+        "3": "Impresiones instantáneas (sin espera)",
+        "4": "Ideal para grandes volúmenes",
+        "5": "Soporte prioritario"
       }
     },
     "limits": {
@@ -307,7 +340,7 @@
       "price": "0€",
       "features": {
         "0": "5 etiquetas por impresión",
-        "1": "Todos los formatos de impresión",
+        "1": "Formato 10 etiquetas + Exportar CSV",
         "2": "Perfecto para pequeños envíos",
         "3": "Soporte estándar"
       }
@@ -354,7 +387,11 @@
       },
       "formats": {
         "question": "¿Qué formatos de impresión están disponibles?",
-        "answer": "Ofrecemos varios formatos: A4 estándar y compacto, etiquetas adhesivas con 10, 14, 16 o 21 etiquetas por página, rollos de etiquetas para impresoras térmicas y exportación a CSV. Todos los formatos incluyen una vista previa en tiempo real."
+        "answer": "Con el plan gratuito, tienes acceso al formato de 10 etiquetas adhesivas y a la exportación CSV. El plan Premium desbloquea todos los formatos: 14, 16 y 21 etiquetas por página, rollos de etiquetas para impresoras térmicas, formatos A4 estándar y compacto. Todos los formatos incluyen una vista previa en tiempo real."
+      },
+      "waste": {
+        "question": "¿Cómo evitar el desperdicio de hojas de etiquetas?",
+        "answer": "Con el plan Premium, tienes acceso al modo anti-desperdicio que te permite reutilizar hojas parcialmente usadas. Si ya has quitado 3 etiquetas de una hoja, simplemente selecciona el offset para que la impresión comience desde la 4ª posición. ¡Perfecto para ahorrar papel y dinero!"
       },
       "pricing": {
         "question": "¿Cómo funciona el modelo freemium?",
@@ -500,6 +537,7 @@
     "addressesExtracted": "direcciones extraídas",
     "noAddressFound": "No se encontraron direcciones",
     "checkFileFormat": "Verifica que tu archivo contenga columnas de direcciones (nombre, dirección, ciudad, código postal).",
+    "importNewFile": "Importar otro archivo",
     "pageNumber": "Página {number}"
   },
   "fileAnalysis": {

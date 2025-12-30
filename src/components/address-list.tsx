@@ -111,7 +111,7 @@ export function AddressList({
   // Reset page when addresses or search query change
   React.useEffect(() => {
     setCurrentPage(0)
-  }, [])
+  }, [addresses.length, searchQuery])
 
   // Handler de changement de page mémorisé
   const handlePageChange = useCallback((event: { first: number; page: number }) => {
@@ -153,38 +153,26 @@ export function AddressList({
         collapsed={addressesPanel.isCollapsed}
         onToggle={addressesPanel.toggle}
       >
-        <div className="flex flex-col gap-3 mb-4">
-          {/* Bouton "Générer les étiquettes" - Affiché en mode manuel quand il y a des adresses */}
-          {showGenerateButton && onGenerateLabels && (
-            <div className="flex justify-center">
-              <Button
-                onClick={onGenerateLabels}
-                label={t('addresses.generateLabels')}
-                icon="pi pi-print"
-                className="p-button-primary p-button-lg"
-              />
-            </div>
-          )}
-
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="flex-1">
-              <SearchBar
-                addresses={addresses}
-                searchQuery={searchQuery}
-                onSearchChange={handleSearchChange}
-                t={t}
-              />
-            </div>
-            {onAddAddress && (
-              <Button
-                onClick={onAddAddress}
-                label={t('addresses.addButton')}
-                icon="pi pi-plus"
-                size="small"
-                className="flex-shrink-0"
-              />
-            )}
+        <div className="flex flex-col sm:flex-row gap-3 mb-4">
+          <div className="flex-1">
+            <SearchBar
+              addresses={addresses}
+              searchQuery={searchQuery}
+              onSearchChange={handleSearchChange}
+              isManualMode={isManualMode}
+              t={t}
+            />
           </div>
+          {/* Bouton "Ajouter une adresse" - Masqué en mode manuel avec 0 adresses (déjà dans EmptyManualState) */}
+          {onAddAddress && !(isManualMode && addresses.length === 0) && (
+            <Button
+              onClick={onAddAddress}
+              label={t('addresses.addButton')}
+              icon="pi pi-plus"
+              size="small"
+              className="flex-shrink-0"
+            />
+          )}
         </div>
 
         {/* Info pagination mobile */}
@@ -230,6 +218,18 @@ export function AddressList({
                 />
               </div>
             )}
+
+            {/* Bouton "Générer les étiquettes" - Affiché en dessous des adresses en mode manuel */}
+            {showGenerateButton && onGenerateLabels && (
+              <div className="mt-6 flex justify-center">
+                <Button
+                  onClick={onGenerateLabels}
+                  label={t('addresses.generateLabels')}
+                  icon="pi pi-print"
+                  className="p-button-primary p-button-lg"
+                />
+              </div>
+            )}
           </>
         ) : searchQuery.trim() && addresses.length > 0 ? (
           <EmptySearchState t={t} />
@@ -272,6 +272,7 @@ const AddressCard = React.memo<AddressCardProps>(function AddressCard({
                   icon="pi pi-pencil"
                   className="p-button-text p-button-sm"
                   size="small"
+                  aria-label="Modifier l'adresse"
                 />
               )}
               {onDelete && (
@@ -280,6 +281,7 @@ const AddressCard = React.memo<AddressCardProps>(function AddressCard({
                   icon="pi pi-trash"
                   className="p-button-text p-button-sm p-button-danger"
                   size="small"
+                  aria-label="Supprimer l'adresse"
                 />
               )}
             </div>
@@ -323,6 +325,7 @@ const AddressCard = React.memo<AddressCardProps>(function AddressCard({
                 icon="pi pi-pencil"
                 className="p-button-text p-button-sm"
                 size="small"
+                aria-label="Modifier l'adresse"
               />
             )}
             {onDelete && (
@@ -331,6 +334,7 @@ const AddressCard = React.memo<AddressCardProps>(function AddressCard({
                 icon="pi pi-trash"
                 className="p-button-text p-button-sm p-button-danger"
                 size="small"
+                aria-label="Supprimer l'adresse"
               />
             )}
           </div>
@@ -345,6 +349,7 @@ interface SearchBarProps {
   addresses: Address[]
   searchQuery: string
   onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  isManualMode: boolean
   t: (key: string) => string
 }
 
@@ -352,9 +357,11 @@ const SearchBar = React.memo<SearchBarProps>(function SearchBar({
   addresses,
   searchQuery,
   onSearchChange,
+  isManualMode,
   t,
 }) {
-  if (addresses.length <= 5) {
+  // Afficher la recherche dès qu'il y a au moins 1 adresse
+  if (addresses.length === 0) {
     return <div /> // Placeholder vide pour maintenir la structure flex
   }
 
@@ -367,6 +374,7 @@ const SearchBar = React.memo<SearchBarProps>(function SearchBar({
         value={searchQuery}
         onChange={onSearchChange}
         placeholder={t('addresses.search.placeholder')}
+        aria-label={t('addresses.search.placeholder')}
         className="w-full"
       />
     </IconField>
@@ -417,7 +425,9 @@ const EmptyManualState = React.memo(function EmptyManualState({
         )}
         {onImportFile && (
           <button
+            type="button"
             onClick={onImportFile}
+            aria-label={t('addresses.emptyManual.importLink')}
             className="text-sm text-blue-600 hover:text-blue-700 hover:underline"
           >
             {t('addresses.emptyManual.importLink')}

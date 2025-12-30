@@ -7,6 +7,7 @@ const ALL_FAQ_IDS = [
   'account',
   'platforms',
   'formats',
+  'waste',
   'pricing'
 ] as const
 

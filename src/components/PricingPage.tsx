@@ -39,7 +39,10 @@ interface PricingPlan {
 const PRICING_CONFIG = {
   annualPrice: '€4',
   discountPercentage: '-33%',
-  featureCount: 4,
+  featureCount: {
+    free: 4,
+    premium: 6,
+  },
 } as const
 
 /**
@@ -51,8 +54,9 @@ function createPricingPlan(
   isAnnual = false
 ): PricingPlan {
   const baseKey = `pricing.${planType}`
+  const featureCount = PRICING_CONFIG.featureCount[planType]
 
-  const features = Array.from({ length: PRICING_CONFIG.featureCount }, (_, index) =>
+  const features = Array.from({ length: featureCount }, (_, index) =>
     t(`${baseKey}.features.${index}`)
   ).filter(Boolean) // Filtre les traductions vides
 

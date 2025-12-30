@@ -2,9 +2,11 @@
 
 import { Eye, Settings } from 'lucide-react'
 import dynamic from 'next/dynamic'
-import { useSearchParams } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { Button } from 'primereact/button'
+import { Dialog } from 'primereact/dialog'
 import { Panel } from 'primereact/panel'
+import { ProgressBar } from 'primereact/progressbar'
 import { Skeleton } from 'primereact/skeleton'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
@@ -29,6 +31,9 @@ import { STORAGE_KEYS, useCollapsiblePanel, usePersistedSelection } from '@/lib/
 import { cn } from '@/lib/utils'
 import type { Address, PrintFormat } from '@/types/address'
 
+// Formats disponibles pour les utilisateurs gratuits
+const FREE_FORMATS: PrintFormat[] = ['A4_LABELS_10', 'CSV_EXPORT']
+
 // Interface pour les composants qui n'utilisent que les adresses
 interface PreviewAddressOnlyProps {
   addresses: Address[]
@@ -47,6 +52,78 @@ interface PrintPreviewProps {
   t: (key: string) => string
 }
 
+// Composant de la modale d'attente avec publicité premium
+interface WaitingModalProps {
+  visible: boolean
+  progress: number
+  onUpgrade: () => void
+  t: (key: string) => string
+}
+
+const WaitingModal = React.memo<WaitingModalProps>(function WaitingModal({
+  visible,
+  progress,
+  onUpgrade,
+  t,
+}) {
+  return (
+    <Dialog
+      visible={visible}
+      onHide={() => {}}
+      modal
+      closable={false}
+      dismissableMask={false}
+      className="w-11/12 md:w-[500px]"
+      header={null}
+    >
+      <div className="text-center py-6">
+        {/* Icône de chargement */}
+        <div className="flex justify-center mb-4">
+          <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center">
+            <i className="pi pi-spin pi-spinner text-blue-600 text-3xl"></i>
+          </div>
+        </div>
+
+        {/* Message de chargement */}
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          {t('print.waiting.title')}
+        </h3>
+        <p className="text-sm text-gray-600 mb-6">
+          {t('print.waiting.message')}
+        </p>
+
+        {/* Barre de progression */}
+        <ProgressBar
+          value={progress}
+          showValue={false}
+          className="mb-6"
+          style={{ height: '8px' }}
+        />
+
+        {/* Publicité Premium */}
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border-2 border-blue-200">
+          <div className="flex items-center justify-center mb-3">
+            <i className="pi pi-bolt text-yellow-500 text-2xl mr-2"></i>
+            <h4 className="text-md font-semibold text-gray-900">
+              {t('print.waiting.premiumTitle')}
+            </h4>
+          </div>
+          <p className="text-sm text-gray-700 mb-4">
+            {t('print.waiting.premiumMessage')}
+          </p>
+          <Button
+            label={t('print.waiting.upgradeButton')}
+            icon="pi pi-star"
+            onClick={onUpgrade}
+            className="w-full"
+            severity="info"
+          />
+        </div>
+      </div>
+    </Dialog>
+  )
+})
+
 export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
   // États d'authentification et limite d'impression
   const { user, userPlan, loading } = useAuth()
@@ -55,7 +132,14 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
 
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+  const [showWaitingModal, setShowWaitingModal] = useState(false)
+  const [waitingProgress, setWaitingProgress] = useState(0)
   const [pendingPrintAction, setPendingPrintAction] = useState<(() => void) | null>(null)
+
+  // Navigation et routing
+  const router = useRouter()
+  const params = useParams()
+  const locale = (params.locale as string) || 'fr'
 
   // Debug mode basé sur l'URL
   const searchParams = useSearchParams()
@@ -64,6 +148,7 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
   // Refs pour éviter les appels multiples
   const hasExecutedPendingActionRef = useRef(false)
   const printInProgressRef = useRef(false)
+  const waitingTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   /**
    * Remet le flag d'impression à false après un délai sécurisé
@@ -108,14 +193,17 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
   )
   const printPanel = useCollapsiblePanel(STORAGE_KEYS.PRINT_PANEL_COLLAPSED, false)
 
-  const executePrint = useCallback(
-    async (addressesToPrint: Address[] = addresses) => {
-      // Protection contre les appels multiples
-      if (printInProgressRef.current) {
-        return
-      }
-      printInProgressRef.current = true
+  // État pour le décalage des étiquettes (planches partiellement utilisées)
+  const [labelOffset, setLabelOffset] = useState(0)
 
+  // Vérifier si le format sélectionné nécessite Premium
+  const isPremiumFormat = useMemo(() => {
+    return userPlan === 'free' && !FREE_FORMATS.includes(selectedFormat.value)
+  }, [userPlan, selectedFormat.value])
+
+  // Fonction pour exécuter l'impression réelle (appelée directement ou après timer)
+  const executeActualPrint = useCallback(
+    async (addressesToPrint: Address[] = addresses) => {
       try {
         if (selectedFormat.value === 'CSV_EXPORT') {
           downloadCSV(addressesToPrint, 'lalabel.csv')
@@ -129,7 +217,9 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
         // Configurer le reset du flag d'impression
         resetPrintFlag()
 
-        printAddresses(addressesToPrint, selectedFormat.value, printCSS)
+        // L'offset est une fonctionnalité premium uniquement
+        const effectiveOffset = userPlan === 'premium' ? labelOffset : 0
+        printAddresses(addressesToPrint, selectedFormat.value, printCSS, effectiveOffset)
 
         // Track analytics business
         if (user) {
@@ -145,10 +235,71 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
         throw error
       }
     },
-    [addresses, selectedFormat.value, user, resetPrintFlag, debugMode, trackLabelGenerated, userPlan]
+    [addresses, selectedFormat.value, user, resetPrintFlag, debugMode, trackLabelGenerated, userPlan, labelOffset]
   )
 
+  const executePrint = useCallback(
+    async (addressesToPrint: Address[] = addresses) => {
+      // Protection contre les appels multiples
+      if (printInProgressRef.current) {
+        return
+      }
+      printInProgressRef.current = true
+
+      // Si utilisateur premium, impression instantanée
+      if (userPlan === 'premium') {
+        await executeActualPrint(addressesToPrint)
+        return
+      }
+
+      // Si utilisateur gratuit, afficher la modale d'attente avec timer
+      setShowWaitingModal(true)
+      setWaitingProgress(0)
+
+      // Nettoyer le timer précédent si existant
+      if (waitingTimerRef.current) {
+        clearInterval(waitingTimerRef.current)
+      }
+
+      // Timer de 10 secondes avec progression
+      const startTime = Date.now()
+      const duration = 10000 // 10 secondes
+
+      waitingTimerRef.current = setInterval(() => {
+        const elapsed = Date.now() - startTime
+        const progress = Math.min((elapsed / duration) * 100, 100)
+        setWaitingProgress(progress)
+
+        if (progress >= 100) {
+          if (waitingTimerRef.current) {
+            clearInterval(waitingTimerRef.current)
+            waitingTimerRef.current = null
+          }
+          setShowWaitingModal(false)
+          executeActualPrint(addressesToPrint)
+        }
+      }, 100)
+    },
+    [addresses, userPlan, executeActualPrint]
+  )
+
+  // Nettoyer le timer au démontage du composant
+  useEffect(() => {
+    return () => {
+      if (waitingTimerRef.current) {
+        clearInterval(waitingTimerRef.current)
+      }
+    }
+  }, [])
+
   const handlePrint = useCallback(() => {
+    // Vérifier si le format nécessite Premium
+    if (isPremiumFormat) {
+      // Rediriger vers la page pricing
+      router.push(`/${locale}/pricing`)
+      return
+    }
+
     // Vérifier si l'utilisateur est connecté
     if (!user) {
       // Stocker l'action d'impression en attente avec les adresses actuelles
@@ -168,7 +319,7 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
 
     // Utilisateur connecté et dans les limites, exécuter directement l'impression
     executePrint()
-  }, [user, addresses, canPrintAll, executePrint])
+  }, [isPremiumFormat, router, locale, user, addresses, canPrintAll, executePrint])
 
   const handlePrintLimited = useCallback(() => {
     // Imprimer seulement le nombre d'adresses autorisées
@@ -244,11 +395,48 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
                   format={format}
                   isSelected={selectedFormat.value === format}
                   onSelect={selectedFormat.updateValue}
+                  isPremium={userPlan === 'free' && !FREE_FORMATS.includes(format)}
                   t={t}
                 />
               ))}
             </div>
           </fieldset>
+
+          {/* Message incitatif anti-gaspillage pour utilisateurs gratuits */}
+          {PRINT_CONFIGS[selectedFormat.value]?.layout.type === 'grid' && userPlan === 'free' && (
+            <div className="mt-4 border-2 border-green-200 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 p-4">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 mt-0.5">
+                  <i className="pi pi-lightbulb text-green-600 text-xl"></i>
+                </div>
+                <div className="flex-1">
+                  <div className="text-sm font-semibold text-gray-900 mb-1">
+                    {t('print.antiWaste.title')}
+                  </div>
+                  <div className="text-xs text-gray-700 mb-2">
+                    {t('print.antiWaste.description')}
+                  </div>
+                  <Button
+                    label={t('print.antiWaste.learnMore')}
+                    size="small"
+                    outlined
+                    className="text-xs px-3 py-1 border-green-600 text-green-700 hover:bg-green-50"
+                    onClick={() => router.push(`/${locale}/pricing`)}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Sélecteur d'offset pour planches partiellement utilisées - Premium uniquement */}
+          {PRINT_CONFIGS[selectedFormat.value]?.layout.type === 'grid' && userPlan === 'premium' && (
+            <LabelOffsetSelector
+              format={selectedFormat.value}
+              offset={labelOffset}
+              onOffsetChange={setLabelOffset}
+              t={t}
+            />
+          )}
         </div>
 
         {/* Actions */}
@@ -256,13 +444,25 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
           <Button
             onClick={handlePrint}
             label={
-              selectedFormat.value === 'CSV_EXPORT'
-                ? t('print.buttons.download')
-                : t('print.buttons.print')
+              isPremiumFormat
+                ? t('print.buttons.upgradeToPremiumFormat').replace(
+                    '{format}',
+                    t(`formats.${selectedFormat.value}.label`)
+                  )
+                : selectedFormat.value === 'CSV_EXPORT'
+                  ? t('print.buttons.download')
+                  : t('print.buttons.print')
             }
-            icon={selectedFormat.value === 'CSV_EXPORT' ? 'pi pi-download' : 'pi pi-print'}
+            icon={
+              isPremiumFormat
+                ? 'pi pi-star'
+                : selectedFormat.value === 'CSV_EXPORT'
+                  ? 'pi pi-download'
+                  : 'pi pi-print'
+            }
             size="small"
-            className="px-6"
+            className={isPremiumFormat ? 'px-6 bg-blue-600 hover:bg-blue-700' : 'px-6'}
+            severity={isPremiumFormat ? 'info' : undefined}
           />
         </div>
 
@@ -278,7 +478,12 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
             </div>
             <div className="text-sm text-gray-600 mb-4">{t('print.preview.description')}</div>
             <div className="flex justify-center bg-gray-100 p-6 rounded-lg mb-4">
-              <PrintPreviewSheet addresses={addresses} format={selectedFormat.value} t={t} />
+              <PrintPreviewSheet
+                addresses={addresses}
+                format={selectedFormat.value}
+                offset={userPlan === 'premium' ? labelOffset : 0}
+                t={t}
+              />
             </div>
           </div>
         )}
@@ -323,6 +528,14 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
         totalAddresses={addresses.length}
         printLimit={freePrintLimit}
       />
+
+      {/* Modal d'attente avec publicité premium */}
+      <WaitingModal
+        visible={showWaitingModal}
+        progress={waitingProgress}
+        onUpgrade={() => router.push(`/${locale}/pricing`)}
+        t={t}
+      />
     </div>
   )
 }
@@ -330,12 +543,14 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
 interface PrintPreviewSheetProps {
   addresses: Address[]
   format: PrintFormat
+  offset?: number
   t: (key: string) => string
 }
 
 const PrintPreviewSheet = React.memo<PrintPreviewSheetProps>(function PrintPreviewSheet({
   addresses,
   format,
+  offset = 0,
   t,
 }) {
   // Calcul dimensions A4 mémorisé
@@ -383,8 +598,23 @@ const PrintPreviewSheet = React.memo<PrintPreviewSheetProps>(function PrintPrevi
   return (
     <div className="space-y-4">
       {Array.from({ length: pagesToShow }, (_, pageIndex) => {
-        const startIndex = pageIndex * addressesPerPage
-        const pageAddresses = addresses.slice(startIndex, startIndex + addressesPerPage)
+        // L'offset ne s'applique que sur la première page
+        const isFirstPage = pageIndex === 0
+        const pageOffset = isFirstPage ? offset : 0
+
+        // Calculer les indices en tenant compte de l'offset sur la première page
+        let startIndex: number
+        let pageAddresses: Address[]
+
+        if (isFirstPage) {
+          // Première page : on prend moins d'adresses car il y a des cases vides
+          startIndex = 0
+          pageAddresses = addresses.slice(0, Math.max(0, addressesPerPage - offset))
+        } else {
+          // Pages suivantes : calculer l'index en tenant compte de l'offset initial
+          startIndex = (pageIndex * addressesPerPage) - offset
+          pageAddresses = addresses.slice(startIndex, startIndex + addressesPerPage)
+        }
 
         return (
           <div
@@ -433,6 +663,7 @@ const PrintPreviewSheet = React.memo<PrintPreviewSheetProps>(function PrintPrevi
                       addresses={pageAddresses}
                       gridCols={2}
                       gridRows={5}
+                      offset={pageOffset}
                       t={t}
                       format={format}
                     />
@@ -441,6 +672,7 @@ const PrintPreviewSheet = React.memo<PrintPreviewSheetProps>(function PrintPrevi
                       addresses={pageAddresses}
                       gridCols={2}
                       gridRows={7}
+                      offset={pageOffset}
                       t={t}
                       format={format}
                     />
@@ -449,6 +681,7 @@ const PrintPreviewSheet = React.memo<PrintPreviewSheetProps>(function PrintPrevi
                       addresses={pageAddresses}
                       gridCols={2}
                       gridRows={8}
+                      offset={pageOffset}
                       t={t}
                       format={format}
                     />
@@ -457,6 +690,7 @@ const PrintPreviewSheet = React.memo<PrintPreviewSheetProps>(function PrintPrevi
                       addresses={pageAddresses}
                       gridCols={3}
                       gridRows={7}
+                      offset={pageOffset}
                       t={t}
                       format={format}
                     />
@@ -493,10 +727,17 @@ const PrintPreviewLabels = React.memo<{
   addresses: Address[]
   gridCols: number
   gridRows?: number
+  offset?: number
   t: (key: string) => string
   format?: PrintFormat
-}>(function PrintPreviewLabels({ addresses, gridCols, gridRows, t, format }) {
+}>(function PrintPreviewLabels({ addresses, gridCols, gridRows, offset = 0, t, format }) {
   const totalLabels = gridRows ? gridCols * gridRows : gridCols === 2 ? 10 : 21
+
+  // Créer un tableau avec les cases vides au début + les adresses
+  const items = useMemo(() => {
+    const emptyLabels = Array(offset).fill(null)
+    return [...emptyLabels, ...addresses]
+  }, [offset, addresses])
 
   // Obtenir les dimensions réelles de la configuration
   const config = format ? PRINT_CONFIGS[format] : null
@@ -524,7 +765,8 @@ const PrintPreviewLabels = React.memo<{
   return (
     <div className="w-full h-full" style={gridStyle}>
       {Array.from({ length: totalLabels }, (_, index) => {
-        const address = addresses[index]
+        const item = items[index]
+        const isEmptyOffset = index < offset
         const labelStyle: React.CSSProperties = {
           width: '100%',
           height: '100%',
@@ -541,26 +783,30 @@ const PrintPreviewLabels = React.memo<{
         return (
           <div
             key={index}
-            className="border border-gray-400 rounded-sm bg-white flex flex-col justify-center items-center overflow-hidden"
+            className={`border rounded-sm flex flex-col justify-center items-center overflow-hidden ${
+              isEmptyOffset
+                ? 'border-dashed border-gray-300 bg-gray-50'
+                : 'border-gray-400 bg-white'
+            }`}
             style={labelStyle}
           >
-            {address ? (
+            {item ? (
               <div className="w-full text-center overflow-hidden">
                 <div className="font-bold text-black truncate mb-1">
-                  {address.firstName} {address.lastName}
+                  {item.firstName} {item.lastName}
                 </div>
-                <div className="text-gray-700 truncate mb-1">{address.addressLine1}</div>
-                {address.addressLine2 && (
-                  <div className="text-gray-700 truncate mb-1">{address.addressLine2}</div>
+                <div className="text-gray-700 truncate mb-1">{item.addressLine1}</div>
+                {item.addressLine2 && (
+                  <div className="text-gray-700 truncate mb-1">{item.addressLine2}</div>
                 )}
                 <div className="text-gray-700 truncate mb-1">
-                  {address.postalCode} {address.city}
+                  {item.postalCode} {item.city}
                 </div>
-                <div className="font-semibold text-gray-800 truncate">{address.country}</div>
+                <div className="font-semibold text-gray-800 truncate">{item.country}</div>
               </div>
             ) : (
-              <div className="text-gray-300 text-center text-xs">
-                {t('print.preview.emptyLabel')}
+              <div className="text-gray-400 text-center" style={{ fontSize: '7px' }}>
+                {isEmptyOffset ? '✕' : t('print.preview.emptyLabel')}
               </div>
             )}
           </div>
@@ -721,6 +967,7 @@ interface FormatCardProps {
   format: PrintFormat
   isSelected: boolean
   onSelect: (format: PrintFormat) => void
+  isPremium?: boolean
   t: (key: string) => string
 }
 
@@ -728,9 +975,13 @@ const FormatCard = React.memo<FormatCardProps>(function FormatCard({
   format,
   isSelected,
   onSelect,
+  isPremium = false,
   t,
 }) {
-  const { cardStyles, iconStyles, titleStyles, descriptionStyles } = getFormatCardStyles(isSelected)
+  const { cardStyles, iconStyles, titleStyles, descriptionStyles } = getFormatCardStyles(
+    isSelected,
+    isPremium
+  )
 
   return (
     <label className={cardStyles} htmlFor={`format-${format}`}>
@@ -747,7 +998,15 @@ const FormatCard = React.memo<FormatCardProps>(function FormatCard({
       <div className="flex items-start gap-3">
         <div className={iconStyles}>{getFormatIcon(format)}</div>
         <div className="flex-1 min-w-0">
-          <div className={titleStyles}>{getFormatLabel(format, t)}</div>
+          <div className={titleStyles}>
+            {getFormatLabel(format, t)}
+            {isPremium && (
+              <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-500 text-white">
+                <i className="pi pi-star text-xs mr-1"></i>
+                Premium
+              </span>
+            )}
+          </div>
           <div id={`format-${format}-description`} className={descriptionStyles}>
             {getFormatDescription(format, t)}
           </div>
@@ -874,18 +1133,24 @@ function getFormatIcon(format: PrintFormat): string {
 
 // Fonction supprimée - utiliser getEnabledFormats() depuis @/lib/print/config
 
-function getFormatCardStyles(isSelected: boolean) {
+function getFormatCardStyles(isSelected: boolean, isPremium: boolean = false) {
   const baseCardStyles =
     'relative cursor-pointer rounded-lg border-2 p-4 transition-all duration-200 focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2'
-  const selectedCardStyles = 'border-blue-500 bg-blue-50'
-  const unselectedCardStyles = 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+
+  let selectedCardStyles = 'border-blue-500 bg-blue-50'
+  let unselectedCardStyles = 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+
+  // Style subtil pour les formats premium
+  if (isPremium) {
+    unselectedCardStyles = 'border-blue-300 bg-blue-50/30 hover:border-blue-400 hover:bg-blue-50/50'
+  }
 
   const baseIconStyles =
     'flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-lg'
   const selectedIconStyles = 'bg-blue-500 text-white'
   const unselectedIconStyles = 'bg-gray-100 text-gray-600'
 
-  const baseTitleStyles = 'font-medium text-sm mb-1 leading-tight'
+  const baseTitleStyles = 'font-medium text-sm mb-1 leading-tight flex items-center flex-wrap'
   const selectedTitleStyles = 'text-blue-900'
   const unselectedTitleStyles = 'text-gray-900'
 
@@ -900,3 +1165,191 @@ function getFormatCardStyles(isSelected: boolean) {
     descriptionStyles: `${baseDescriptionStyles} ${isSelected ? selectedDescriptionStyles : unselectedDescriptionStyles}`,
   }
 }
+
+// Composant pour gérer l'offset des étiquettes (planches partiellement utilisées)
+interface LabelOffsetSelectorProps {
+  format: PrintFormat
+  offset: number
+  onOffsetChange: (offset: number) => void
+  t: (key: string) => string
+}
+
+const LabelOffsetSelector = React.memo<LabelOffsetSelectorProps>(function LabelOffsetSelector({
+  format,
+  offset,
+  onOffsetChange,
+  t,
+}) {
+  const [isExpanded, setIsExpanded] = useState(false)
+  const config = PRINT_CONFIGS[format]
+  const maxLabels = config.layout.itemsPerPage || 21
+  const columns = config.layout.columns || 3
+
+  const handleIncrement = useCallback(() => {
+    if (offset < maxLabels - 1) {
+      onOffsetChange(offset + 1)
+    }
+  }, [offset, maxLabels, onOffsetChange])
+
+  const handleDecrement = useCallback(() => {
+    if (offset > 0) {
+      onOffsetChange(offset - 1)
+    }
+  }, [offset, onOffsetChange])
+
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value, 10)
+    if (!isNaN(value) && value >= 0 && value < maxLabels) {
+      onOffsetChange(value)
+    }
+  }, [maxLabels, onOffsetChange])
+
+  const handleCellClick = useCallback((index: number) => {
+    // Cliquer sur une case = définir l'offset à cet index
+    // Si on clique sur la case 5, ça veut dire que les 5 premières (0-4) sont utilisées
+    // Donc offset = index
+    onOffsetChange(index)
+  }, [onOffsetChange])
+
+  const handleReset = useCallback(() => {
+    onOffsetChange(0)
+  }, [onOffsetChange])
+
+  // Génération de la grille de preview
+  const gridCells = useMemo(() => {
+    return Array.from({ length: maxLabels }, (_, index) => {
+      const isUsed = index < offset
+      const isNext = index === offset
+      return { index, isUsed, isNext }
+    })
+  }, [maxLabels, offset])
+
+  return (
+    <div className="border-2 border-blue-200 rounded-lg overflow-hidden bg-blue-50/30">
+      {/* Header cliquable pour expand/collapse */}
+      <button
+        type="button"
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full flex items-center justify-between p-4 hover:bg-blue-50/50 transition-colors text-left"
+      >
+        <div className="flex items-center gap-2">
+          <i className="pi pi-box text-blue-600"></i>
+          <div>
+            <div className="text-sm font-semibold text-gray-900">
+              {t('print.offset.title')}
+            </div>
+            <div className="text-xs text-gray-600">
+              {offset > 0
+                ? t('print.offset.summary').replace('{count}', offset.toString())
+                : t('print.offset.summaryNone')}
+            </div>
+          </div>
+        </div>
+        <i className={cn('pi text-gray-600 transition-transform', isExpanded ? 'pi-chevron-up' : 'pi-chevron-down')}></i>
+      </button>
+
+      {/* Contenu expandable */}
+      {isExpanded && (
+        <div className="p-4 pt-4 space-y-4 border-t border-blue-200">
+          <div className="text-xs text-gray-600">
+            {t('print.offset.description')}
+          </div>
+
+          {/* Input avec boutons +/- */}
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-gray-700">{t('print.offset.labelUsed')}</span>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center border border-gray-300 rounded-md bg-white">
+                <button
+                  type="button"
+                  onClick={handleDecrement}
+                  disabled={offset === 0}
+                  className="px-3 py-2 text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  aria-label={t('print.offset.decrease')}
+                >
+                  <i className="pi pi-minus text-sm"></i>
+                </button>
+                <input
+                  type="number"
+                  value={offset}
+                  onChange={handleInputChange}
+                  min="0"
+                  max={maxLabels - 1}
+                  className="w-16 text-center border-x border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  type="button"
+                  onClick={handleIncrement}
+                  disabled={offset >= maxLabels - 1}
+                  className="px-3 py-2 text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  aria-label={t('print.offset.increase')}
+                >
+                  <i className="pi pi-plus text-sm"></i>
+                </button>
+              </div>
+              {offset > 0 && (
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  className="text-xs text-blue-600 hover:text-blue-700 underline"
+                >
+                  {t('print.offset.reset')}
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Preview de la grille cliquable */}
+          <div className="bg-white p-3 rounded-md border border-gray-200">
+            <div className="text-xs text-gray-600 mb-2 text-center">
+              {t('print.offset.clickInstruction')}
+            </div>
+            <div
+              className="grid gap-1 mx-auto"
+              style={{
+                gridTemplateColumns: `repeat(${columns}, 1fr)`,
+                maxWidth: `${columns * 40}px`,
+              }}
+            >
+              {gridCells.map((cell) => (
+                <button
+                  key={cell.index}
+                  type="button"
+                  onClick={() => handleCellClick(cell.index)}
+                  className={cn(
+                    'aspect-square rounded flex items-center justify-center text-xs font-medium transition-all cursor-pointer',
+                    'hover:scale-105 active:scale-95',
+                    cell.isUsed && 'bg-gray-300 text-gray-600 hover:bg-gray-400',
+                    cell.isNext && 'bg-green-500 text-white ring-2 ring-green-600 hover:bg-green-600',
+                    !cell.isUsed && !cell.isNext && 'bg-white border border-gray-300 text-gray-400 hover:border-gray-400 hover:bg-gray-50'
+                  )}
+                  title={
+                    cell.isUsed
+                      ? t('print.offset.cellUsed')
+                      : cell.isNext
+                        ? t('print.offset.cellNext')
+                        : t('print.offset.cellAvailable')
+                  }
+                  aria-label={`${t('print.offset.selectPosition')} ${cell.index + 1}`}
+                >
+                  {cell.isUsed ? '✓' : cell.isNext ? '→' : cell.index + 1}
+                </button>
+              ))}
+            </div>
+            <div className="mt-3 text-xs text-center text-gray-600">
+              {offset > 0 ? (
+                <span>
+                  💡 {t('print.offset.startPosition').replace('{position}', (offset + 1).toString())}
+                </span>
+              ) : (
+                <span>
+                  ✨ {t('print.offset.newSheet')}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+})

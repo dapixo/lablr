@@ -146,7 +146,8 @@
     "formatAriaLabel": "Choose a print format",
     "buttons": {
       "print": "Print",
-      "download": "Download CSV"
+      "download": "Download CSV",
+      "upgradeToPremiumFormat": "Upgrade to Premium for {format}"
     },
     "preview": {
       "title": "Preview - {format}",
@@ -158,6 +159,36 @@
       "rollPagination": "... and {count} more label{s}",
       "csvPagination": "... and {count} more line{s} ({total} addresses total)",
       "emptyLabel": "Empty label"
+    },
+    "offset": {
+      "title": "Partially used sheet?",
+      "description": "If you have already used some labels, indicate how many to avoid waste",
+      "labelUsed": "Labels already removed:",
+      "decrease": "Decrease",
+      "increase": "Increase",
+      "previewTitle": "Preview of your sheet:",
+      "cellUsed": "Label already removed",
+      "cellNext": "Next label to print",
+      "cellAvailable": "Available label",
+      "startPosition": "Printing will start at position {position}",
+      "newSheet": "New sheet - printing from position 1",
+      "summary": "{count} label(s) already removed",
+      "summaryNone": "New sheet",
+      "reset": "Reset",
+      "clickInstruction": "Click on the last removed label:",
+      "selectPosition": "Select position"
+    },
+    "antiWaste": {
+      "title": "💡 Premium Tip: Anti-waste mode",
+      "description": "Save paper by reusing partially used sheets! With Premium, select where to start printing.",
+      "learnMore": "Upgrade to Premium"
+    },
+    "waiting": {
+      "title": "Preparing your print...",
+      "message": "Your print will start in a few moments",
+      "premiumTitle": "Instant printing with Premium",
+      "premiumMessage": "Premium users enjoy instant printing with no waiting time. Upgrade to Premium now!",
+      "upgradeButton": "Upgrade to Premium"
     }
   },
   "formats": {
@@ -269,9 +300,11 @@
       "perMonth": "/month",
       "features": {
         "0": "Unlimited labels",
-        "1": "All printing formats",
-        "2": "Perfect for high volume",
-        "3": "Priority support"
+        "1": "All formats (14, 16, 21 labels, rolls...)",
+        "2": "Anti-waste mode (sheet reuse)",
+        "3": "Instant printing (no waiting)",
+        "4": "Perfect for high volume",
+        "5": "Priority support"
       }
     },
     "limits": {
@@ -307,7 +340,7 @@
       "price": "€0",
       "features": {
         "0": "5 labels per print",
-        "1": "All printing formats",
+        "1": "10 labels format + CSV Export",
         "2": "Perfect for small shipments",
         "3": "Standard support"
       }
@@ -354,7 +387,11 @@
       },
       "formats": {
         "question": "What print formats are available?",
-        "answer": "We offer several formats: standard and compact A4, adhesive labels with 10, 14, 16 or 21 labels per page, label rolls for thermal printers, and CSV export. All formats include real-time preview."
+        "answer": "With the free plan, you have access to the 10-label adhesive format and CSV export. The Premium plan unlocks all formats: 14, 16 and 21 labels per page, label rolls for thermal printers, standard and compact A4 formats. All formats include real-time preview."
+      },
+      "waste": {
+        "question": "How can I avoid wasting label sheets?",
+        "answer": "With the Premium plan, you have access to anti-waste mode which allows you to reuse partially used sheets. If you've already removed 3 labels from a sheet, simply select the offset so printing starts from the 4th position. Perfect for saving paper and money!"
       },
       "pricing": {
         "question": "How does the freemium model work?",
@@ -500,6 +537,7 @@
     "addressesExtracted": "addresses extracted",
     "noAddressFound": "No addresses found",
     "checkFileFormat": "Check that your file contains address columns (name, address, city, postal code).",
+    "importNewFile": "Import another file",
     "pageNumber": "Page {number}"
   },
   "fileAnalysis": {

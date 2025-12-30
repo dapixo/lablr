@@ -278,6 +278,13 @@ export function generatePrintCSS(format: PrintFormat, debug: boolean = false): s
   // Contenu des adresses
   css += CSS_MIXINS.addressContent()
 
+  // Style pour les étiquettes vides (offset)
+  css += `
+    .label-empty {
+      background: transparent;
+      border: none !important;
+    }`
+
   // Sauts de page
   if (layout.itemsPerPage && layout.itemsPerPage > 1) {
     css += CSS_MIXINS.pageBreaks(layout.itemsPerPage)
