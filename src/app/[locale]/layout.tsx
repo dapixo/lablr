@@ -20,7 +20,7 @@ export async function generateMetadata({
     return {
       title: "Lalabel - Générateur d'Étiquettes d'Expédition | Impression Amazon, Shopify, eBay",
       description:
-        "Créez 10 étiquettes d'expédition gratuites par jour. Compatible Amazon Seller, Shopify, eBay. Premium illimité à 6€/mois. Formats Avery, A4, rouleaux thermiques.",
+        "Imprimez jusqu'à 5 étiquettes d'expédition gratuitement par impression. Compatible Amazon Seller, Shopify, eBay. Premium illimité à 6€/mois. Formats Avery, A4, rouleaux thermiques.",
       keywords:
         'impression étiquettes expédition, générateur étiquettes, imprimer étiquettes adresse, Amazon Seller, Shopify, eBay, étiquettes Avery, A4, gratuit',
       alternates: {

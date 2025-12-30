@@ -13,8 +13,6 @@ import { Header } from '@/components/Header'
 import { SubscriptionManager } from '@/components/SubscriptionManager'
 import { useAuth } from '@/hooks/useAuth'
 import { useTranslations } from '@/hooks/useTranslations'
-import { useUsageTracking } from '@/hooks/useUsageTracking'
-import { getPluralVariables } from '@/lib/i18n-helpers'
 
 function AccountPageContent() {
   const { locale } = useParams()
@@ -24,7 +22,6 @@ function AccountPageContent() {
   const t = useTranslations(locale as string)
   const toast = useRef<Toast>(null)
   const [isDeleting, setIsDeleting] = useState(false)
-  const { labelsUsed, remainingLabels, loading: usageLoading } = useUsageTracking()
 
   // États pour l'édition du nom
   const [isEditingName, setIsEditingName] = useState(false)
@@ -265,77 +262,6 @@ function AccountPageContent() {
                               ? t('pricing.premium.title')
                               : t('pricing.plans.free.name')}
                           </div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-
-                  {/* Usage quotidien */}
-                  <div className="space-y-3">
-                    {loading || usageLoading ? (
-                      /* Skeleton loader global */
-                      <>
-                        <div className="flex justify-between items-center text-sm">
-                          <Skeleton width="8rem" height="1rem" />
-                          <Skeleton width="6rem" height="1rem" />
-                        </div>
-                        <div className="w-full">
-                          <Skeleton width="100%" height="0.5rem" borderRadius="9999px" />
-                        </div>
-                        <Skeleton width="10rem" height="1rem" />
-                      </>
-                    ) : userPlan === 'premium' ? (
-                      /* Utilisateur Premium */
-                      <div className="text-center pt-4">
-                        <div className="inline-flex items-center gap-2 text-blue-600 font-medium">
-                          <i className="pi pi-infinity text-xl"></i>
-                          <span className="text-lg">
-                            {t('account.planStatus.premiumStatus.unlimitedLabels')}
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-600 mt-2">
-                          {t('account.planStatus.premiumStatus.description')}
-                        </p>
-                      </div>
-                    ) : (
-                      /* Contenu réel pour utilisateurs gratuits */
-                      <>
-                        <div className="flex justify-between items-center text-sm">
-                          <span className="text-gray-600">
-                            {t('account.planStatus.dailyUsage')}
-                          </span>
-                          <span className="font-medium text-gray-900">
-                            {labelsUsed}/10 {t('account.planStatus.labelsUsed')}
-                          </span>
-                        </div>
-
-                        {/* Barre de progression */}
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className={`h-2 rounded-full transition-all duration-300 ${
-                              remainingLabels === 0
-                                ? 'bg-red-500'
-                                : remainingLabels <= 3
-                                  ? 'bg-orange-500'
-                                  : 'bg-green-500'
-                            }`}
-                            style={{ width: `${(labelsUsed / 10) * 100}%` }}
-                          ></div>
-                        </div>
-
-                        <div className="text-sm text-gray-600">
-                          {remainingLabels > 0 ? (
-                            <span>
-                              {t(
-                                'account.planStatus.remainingLabels',
-                                getPluralVariables(remainingLabels)
-                              )}
-                            </span>
-                          ) : (
-                            <span className="text-red-600 font-medium">
-                              {t('account.planStatus.limitReached')}
-                            </span>
-                          )}
                         </div>
                       </>
                     )}

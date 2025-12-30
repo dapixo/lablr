@@ -29,14 +29,14 @@ export function StructuredData({ locale }: StructuredDataProps) {
       'Formats A4, Avery et étiquettes thermiques',
       'Traitement local sécurisé des données',
       'Interface moderne et responsive',
-      '10 étiquettes gratuites par jour',
+      '5 étiquettes par impression gratuites',
       'Plan Premium illimité'
     ] : [
       'Multi-platform import (Amazon, Shopify, eBay)',
       'A4, Avery and thermal label formats',
       'Secure local data processing',
       'Modern responsive interface',
-      '10 free labels per day',
+      '5 free labels per print',
       'Unlimited Premium plan'
     ],
     offers: [

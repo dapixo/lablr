@@ -20,7 +20,7 @@ const UpgradeModal = dynamic(() => import('@/components/UpgradeModal').then(mod 
 })
 import { PREVIEW_DIMENSIONS, PREVIEW_MAX_LABELS_ROLL, PREVIEW_MAX_PAGES } from '@/constants'
 import { useAuth } from '@/hooks/useAuth'
-import { useUsageTracking } from '@/hooks/useUsageTracking'
+import { usePrintLimit } from '@/hooks/usePrintLimit'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { PRINT_CONFIGS, getEnabledFormats } from '@/lib/print/config'
 import { downloadCSV, generateDebugPrintCSS, getPrintCSS } from '@/lib/print-formats'
@@ -48,10 +48,9 @@ interface PrintPreviewProps {
 }
 
 export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
-  // États d'authentification et usage tracking
+  // États d'authentification et limite d'impression
   const { user, userPlan, loading } = useAuth()
-  const { remainingLabels, canPrintLabels, getMaxPrintableLabels, trackLabelUsage } =
-    useUsageTracking()
+  const { canPrintAll, getMaxPrintable, freePrintLimit } = usePrintLimit()
   const { trackLabelGenerated } = useAnalytics()
 
   const [showAuthModal, setShowAuthModal] = useState(false)
@@ -120,9 +119,6 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
       try {
         if (selectedFormat.value === 'CSV_EXPORT') {
           downloadCSV(addressesToPrint, 'lalabel.csv')
-          if (user) {
-            await trackLabelUsage(addressesToPrint.length)
-          }
           return
         }
 
@@ -135,16 +131,12 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
 
         printAddresses(addressesToPrint, selectedFormat.value, printCSS)
 
-        // Track l'usage après impression réussie
+        // Track analytics business
         if (user) {
-          await trackLabelUsage(addressesToPrint.length)
-
-          // Track analytics business
           trackLabelGenerated({
             format: selectedFormat.value,
             count: addressesToPrint.length,
             userPlan: userPlan || 'free',
-            remainingLabels: userPlan === 'premium' ? undefined : remainingLabels
           })
         }
       } catch (error) {
@@ -153,7 +145,7 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
         throw error
       }
     },
-    [addresses, selectedFormat.value, user, trackLabelUsage, resetPrintFlag, debugMode, trackLabelGenerated, userPlan, remainingLabels]
+    [addresses, selectedFormat.value, user, resetPrintFlag, debugMode, trackLabelGenerated, userPlan]
   )
 
   const handlePrint = useCallback(() => {
@@ -168,7 +160,7 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
     }
 
     // Vérifier les limites freemium
-    if (!canPrintLabels(addresses.length)) {
+    if (!canPrintAll(addresses.length)) {
       // L'utilisateur dépasse ses limites, ouvrir la modal d'upgrade
       setShowUpgradeModal(true)
       return
@@ -176,14 +168,14 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
 
     // Utilisateur connecté et dans les limites, exécuter directement l'impression
     executePrint()
-  }, [user, addresses, canPrintLabels, executePrint])
+  }, [user, addresses, canPrintAll, executePrint])
 
   const handlePrintLimited = useCallback(() => {
     // Imprimer seulement le nombre d'adresses autorisées
-    const maxPrintable = getMaxPrintableLabels(addresses.length)
+    const maxPrintable = getMaxPrintable(addresses.length)
     const limitedAddresses = addresses.slice(0, maxPrintable)
     executePrint(limitedAddresses)
-  }, [addresses, getMaxPrintableLabels, executePrint])
+  }, [addresses, getMaxPrintable, executePrint])
 
   const handleAuthModalHide = useCallback(() => {
     setShowAuthModal(false)
@@ -205,14 +197,14 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
       hasExecutedPendingActionRef.current = true
 
       // Vérifier les limites freemium et exécuter l'action appropriée
-      const action = canPrintLabels(addresses.length)
+      const action = canPrintAll(addresses.length)
         ? pendingPrintAction
         : () => setShowUpgradeModal(true)
 
       action()
       setPendingPrintAction(null)
     }
-  }, [loading, user, userPlan, pendingPrintAction, canPrintLabels, addresses.length])
+  }, [loading, user, userPlan, pendingPrintAction, canPrintAll, addresses.length])
 
   if (addresses.length === 0) {
     return null
@@ -329,7 +321,7 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
         onPrintLimited={handlePrintLimited}
         t={t}
         totalAddresses={addresses.length}
-        remainingLabels={remainingLabels}
+        printLimit={freePrintLimit}
       />
     </div>
   )

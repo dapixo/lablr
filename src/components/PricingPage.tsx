@@ -7,7 +7,6 @@ import { Card } from 'primereact/card'
 import { Skeleton } from 'primereact/skeleton'
 import { Tag } from 'primereact/tag'
 import { Toast } from 'primereact/toast'
-import type React from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 // Lazy loading du AuthModal pour améliorer FCP
@@ -41,16 +40,6 @@ const PRICING_CONFIG = {
   annualPrice: '€4',
   discountPercentage: '-33%',
   featureCount: 4,
-} as const
-
-const CARD_STYLES = {
-  free: {
-    base: 'p-10 shadow-xl rounded-2xl bg-white hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 h-full',
-    withUser: 'border-2 border-blue-500',
-    withoutUser: 'border border-gray-200',
-  },
-  premium:
-    'p-10 shadow-2xl border-2 border-blue-500 rounded-2xl bg-gradient-to-br from-white to-blue-50 hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-2 relative overflow-hidden h-full',
 } as const
 
 /**

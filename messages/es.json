@@ -191,8 +191,8 @@
     },
     "tagline": "Lalabel - Generador de etiquetas",
     "welcome": {
-      "title": "🎉 Crea 10 etiquetas gratis por día",
-      "description": "Con una simple conexión puedes imprimir hasta 10 etiquetas gratis cada día. ¿Necesitas más? Pasa a Premium por solo 4€/mes.",
+      "title": "🎉 Imprime hasta 5 etiquetas gratis",
+      "description": "Un simple inicio de sesión te permite imprimir hasta 5 etiquetas por impresión. ¿Necesitas más? Pasa a Premium por solo 4€/mes.",
       "privacy": "Tus datos importados nunca se almacenan"
     },
     "required": {
@@ -224,7 +224,7 @@
       }
     },
     "guarantees": {
-      "free": "10 etiquetas/día gratis",
+      "free": "5 etiquetas por impresión",
       "secure": "Datos seguros",
       "noStorage": "Sin almacenamiento"
     },
@@ -297,7 +297,7 @@
       "title": "Gratis",
       "price": "0€",
       "features": {
-        "0": "10 etiquetas por día",
+        "0": "5 etiquetas por impresión",
         "1": "Todos los formatos de impresión",
         "2": "Perfecto para pequeños envíos",
         "3": "Soporte estándar"
@@ -349,7 +349,7 @@
       },
       "pricing": {
         "question": "¿Cómo funciona el modelo freemium?",
-        "answer": "Lalabel te ofrece 10 etiquetas gratis cada día, renovadas automáticamente. Es perfecto para pequeños envíos. Si necesitas más, nuestro plan Premium a 6€/mes (o 48€/año) te da acceso a etiquetas ilimitadas con soporte prioritario."
+        "answer": "Lalabel te ofrece hasta 5 etiquetas gratuitas por impresión. Perfecto para pequeños envíos. Si necesitas más, nuestro plan Premium desde 4€/mes te da acceso a etiquetas ilimitadas con soporte prioritario."
       }
     }
   },
@@ -477,6 +477,11 @@
         "title": "Problema de pago detectado",
         "message": "Tu suscripción ha encontrado un problema de pago, pero conservas el acceso Premium durante {days} día{plural} más.",
         "action": "Para evitar cualquier interrupción, actualiza tu método de pago antes del {date}."
+      }
+    },
+    "cancelled": {
+      "payment": {
+        "message": "Tu pago fue cancelado. Permaneces en el plan gratuito con 5 etiquetas por impresión."
       }
     }
   },
@@ -654,6 +659,17 @@
     "contact": {
       "title": "Contacto",
       "content": "Si tiene alguna pregunta, contáctenos en"
+    }
+  },
+  "upgrade": {
+    "title": "Pasa a Premium para impresiones ilimitadas",
+    "subtitle": "Desbloquea todas las funcionalidades premium",
+    "message": {
+      "addressesDetected": "{count} dirección{plural} detectada{plural}",
+      "freeLimit": "Puedes imprimir hasta {limit} etiquetas gratis por impresión."
+    },
+    "button": {
+      "printLimited": "Imprimir las primeras {limit}"
     }
   }
 }

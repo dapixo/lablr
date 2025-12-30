@@ -20,11 +20,11 @@ interface UpgradeModalProps {
   onPrintLimited: () => void
   t: (key: string, variables?: TranslationVariables) => string
   totalAddresses: number
-  remainingLabels: number
+  printLimit: number
 }
 
 /**
- * Modal d'upgrade lorsque l'utilisateur atteint ses limites freemium
+ * Modal d'upgrade lorsque l'utilisateur dépasse la limite de 5 étiquettes par impression
  */
 export function UpgradeModal({
   visible,
@@ -32,7 +32,7 @@ export function UpgradeModal({
   onPrintLimited,
   t,
   totalAddresses,
-  remainingLabels,
+  printLimit,
 }: UpgradeModalProps) {
   const [isAnnual, setIsAnnual] = useState(false)
   const { user, userPlan } = useAuth()
@@ -80,8 +80,7 @@ export function UpgradeModal({
     // Track tentative d'upgrade
     trackUpgradeAttempt({
       source: 'limit_modal',
-      remainingLabels,
-      triggeredBy: remainingLabels === 0 ? 'limit_reached' : 'proactive'
+      triggeredBy: 'limit_exceeded'
     })
 
     // Créer le checkout Lemon Squeezy
@@ -96,7 +95,7 @@ export function UpgradeModal({
         life: 3000,
       })
     }
-  }, [user, userPlan, createCheckout, isAnnual, t, trackUpgradeAttempt, remainingLabels])
+  }, [user, userPlan, createCheckout, isAnnual, t, trackUpgradeAttempt])
 
   // Afficher les erreurs de checkout
   useEffect(() => {
@@ -110,56 +109,23 @@ export function UpgradeModal({
     }
   }, [checkoutError, t])
 
-  // Système de couleurs progressif selon le niveau d'alerte
-  const alertLevel = useMemo(() => {
-    if (remainingLabels === 0) {
-      return {
-        bgGradient: 'from-red-600 via-red-500 to-orange-500',
-        borderColor: 'border-red-400',
-        cardBg: 'from-red-50 to-orange-50',
-        iconColor: 'text-red-500',
-        textColor: 'text-red-700'
-      }
-    }
-    if (remainingLabels <= 3) {
-      return {
-        bgGradient: 'from-orange-600 via-orange-500 to-amber-500',
-        borderColor: 'border-orange-400',
-        cardBg: 'from-orange-50 to-amber-50',
-        iconColor: 'text-orange-500',
-        textColor: 'text-orange-700'
-      }
-    }
-    return {
-      bgGradient: 'from-blue-600 via-blue-500 to-blue-400',
-      borderColor: 'border-blue-400',
-      cardBg: 'from-blue-50 to-indigo-50',
-      iconColor: 'text-blue-500',
-      textColor: 'text-blue-700'
-    }
-  }, [remainingLabels])
-
   const headerContent = useMemo(
     () => (
       <div className="flex items-center gap-3">
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-lg bg-gradient-to-br ${alertLevel.bgGradient}`}>
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg bg-gradient-to-br from-blue-600 via-blue-500 to-blue-400">
           <Crown className="h-5 w-5 text-white" />
         </div>
         <div>
           <span className="text-xl font-bold text-gray-900">
-            {remainingLabels === 0
-              ? t('pricing.limits.dailyLimit')
-              : t('pricing.limits.limitSoon', getPluralVariables(remainingLabels))}
+            {t('upgrade.title')}
           </span>
           <p className="text-sm text-gray-500 mt-1">
-            {remainingLabels === 0
-              ? t('pricing.limits.upgradeMessage')
-              : t('pricing.limits.upgradeSoonMessage')}
+            {t('upgrade.subtitle')}
           </p>
         </div>
       </div>
     ),
-    [t, remainingLabels, alertLevel]
+    [t]
   )
 
   const premiumFeatures = useMemo(
@@ -183,31 +149,18 @@ export function UpgradeModal({
       resizable={false}
     >
           {/* Situation actuelle */}
-          <div className={`bg-gradient-to-r ${alertLevel.cardBg} border-l-4 ${alertLevel.borderColor} p-4 rounded-lg mb-6`}>
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-400 p-4 rounded-lg mb-6">
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0 mt-1">
-                <Zap className={`h-5 w-5 ${alertLevel.iconColor}`} />
+                <Zap className="h-5 w-5 text-blue-500" />
               </div>
               <div className="flex-1">
-                <h3 className={`font-semibold mb-2 ${alertLevel.textColor}`}>
-                  {t('pricing.limits.addressesDetected', getPluralVariables(totalAddresses))}
+                <h3 className="font-semibold mb-2 text-blue-700">
+                  {t('upgrade.message.addressesDetected', getPluralVariables(totalAddresses))}
                 </h3>
-                <p className="text-sm text-gray-700 mb-3">
-                  {remainingLabels === 0 ? (
-                    t('pricing.limits.noLabelsLeft')
-                  ) : (
-                    <span
-                      dangerouslySetInnerHTML={createInnerHTML(
-                        markdownToHtml(
-                          t('pricing.limits.labelsRemaining', getPluralVariables(remainingLabels))
-                        )
-                      )}
-                    />
-                  )}
+                <p className="text-sm text-gray-700">
+                  {t('upgrade.message.freeLimit', { limit: printLimit })}
                 </p>
-                {remainingLabels > 0 && (
-                  <div className="text-xs text-gray-500">💡 {t('pricing.limits.resetTime')}</div>
-                )}
               </div>
             </div>
           </div>
@@ -298,24 +251,16 @@ export function UpgradeModal({
               outlined
               className="flex-1"
             />
-            {remainingLabels > 0 && (
-              <Button
-                label={t('pricing.limits.printLimited', getPluralVariables(remainingLabels))}
-                icon="pi pi-print"
-                onClick={() => {
-                  onPrintLimited()
-                  onHide()
-                }}
-                className="flex-1 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 hover:from-blue-700 hover:via-blue-600 hover:to-blue-500 text-white font-medium border-0"
-              />
-            )}
+            <Button
+              label={t('upgrade.button.printLimited', { limit: printLimit })}
+              icon="pi pi-print"
+              onClick={() => {
+                onPrintLimited()
+                onHide()
+              }}
+              className="flex-1 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 hover:from-blue-700 hover:via-blue-600 hover:to-blue-500 text-white font-medium border-0"
+            />
           </div>
-
-          {remainingLabels === 0 && (
-            <div className="mt-4 p-3 bg-gray-50 rounded-lg text-center">
-              <p className="text-sm text-gray-600">🕐 {t('pricing.limits.resetTomorrow')}</p>
-            </div>
-          )}
 
       {/* Toast pour les notifications */}
       <Toast ref={toast} />

@@ -191,8 +191,8 @@
     },
     "tagline": "Lalabel - Label Generator",
     "welcome": {
-      "title": "🎉 Create 10 free labels daily",
-      "description": "A simple sign-in allows you to print up to 10 labels for free every day. Need more? Upgrade to Premium for just $5/month.",
+      "title": "🎉 Print up to 5 labels for free",
+      "description": "A simple login allows you to print up to 5 labels per print job. Need more? Go Premium for only €4/month.",
       "privacy": "Your import data is never stored"
     },
     "required": {
@@ -224,7 +224,7 @@
       }
     },
     "guarantees": {
-      "free": "10 labels/day free",
+      "free": "5 labels per print",
       "secure": "Secure data",
       "noStorage": "No storage"
     },
@@ -297,7 +297,7 @@
       "title": "Free",
       "price": "€0",
       "features": {
-        "0": "10 labels per day",
+        "0": "5 labels per print",
         "1": "All printing formats",
         "2": "Perfect for small shipments",
         "3": "Standard support"
@@ -349,7 +349,7 @@
       },
       "pricing": {
         "question": "How does the freemium model work?",
-        "answer": "Lalabel offers you 10 free labels every day, automatically renewed. It's perfect for small shipments. If you need more, our Premium plan starting from €4/month gives you access to unlimited labels with priority support."
+        "answer": "Lalabel offers you up to 5 free labels per print job. Perfect for small shipments. If you need more, our Premium plan starting at €4/month gives you unlimited labels with priority support."
       }
     }
   },
@@ -477,6 +477,11 @@
         "title": "Payment issue detected",
         "message": "Your subscription encountered a payment issue, but you retain Premium access for another {days} day{plural}.",
         "action": "To avoid any interruption, please update your payment method before {date}."
+      }
+    },
+    "cancelled": {
+      "payment": {
+        "message": "Your payment was cancelled. You remain on the free plan with 5 labels per print."
       }
     }
   },
@@ -654,6 +659,17 @@
     "contact": {
       "title": "Contact",
       "content": "If you have any questions, contact us at"
+    }
+  },
+  "upgrade": {
+    "title": "Upgrade to Premium for Unlimited Printing",
+    "subtitle": "Unlock all premium features",
+    "message": {
+      "addressesDetected": "{count} address{plural} detected",
+      "freeLimit": "You can print up to {limit} labels for free per print job."
+    },
+    "button": {
+      "printLimited": "Print first {limit}"
     }
   }
 }

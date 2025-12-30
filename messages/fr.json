@@ -191,8 +191,8 @@
     },
     "tagline": "Lalabel - Générateur d'étiquettes",
     "welcome": {
-      "title": "🎉 Créez 10 étiquettes gratuites par jour",
-      "description": "Une simple connexion vous permet d'imprimer jusqu'à 10 étiquettes gratuitement chaque jour. Besoin de plus ? Passez Premium pour seulement 4€/mois.",
+      "title": "🎉 Imprimez jusqu'à 5 étiquettes gratuitement",
+      "description": "Une simple connexion vous permet d'imprimer jusqu'à 5 étiquettes par impression. Besoin de plus ? Passez Premium pour seulement 4€/mois.",
       "privacy": "Vos données d'import ne sont jamais conservées"
     },
     "required": {
@@ -224,7 +224,7 @@
       }
     },
     "guarantees": {
-      "free": "10 étiquettes/jour gratuites",
+      "free": "5 étiquettes par impression",
       "secure": "Données sécurisées",
       "noStorage": "Aucune conservation"
     },
@@ -297,7 +297,7 @@
       "title": "Gratuit",
       "price": "0€",
       "features": {
-        "0": "10 étiquettes par jour",
+        "0": "5 étiquettes par impression",
         "1": "Tous les formats d'impression",
         "2": "Parfait pour les petites expéditions",
         "3": "Support standard"
@@ -349,7 +349,7 @@
       },
       "pricing": {
         "question": "Comment fonctionne le modèle freemium ?",
-        "answer": "Lalabel vous offre 10 étiquettes gratuites chaque jour, renouvelées automatiquement. C'est parfait pour les petites expéditions. Si vous avez besoin de plus, notre plan Premium à partir de 4€/mois. vous donne accès à des étiquettes illimitées avec support prioritaire."
+        "answer": "Lalabel vous offre jusqu'à 5 étiquettes par impression gratuitement. C'est parfait pour les petites expéditions. Si vous avez besoin de plus, notre plan Premium à partir de 4€/mois vous donne accès à des étiquettes illimitées avec support prioritaire."
       }
     }
   },
@@ -477,6 +477,11 @@
         "title": "Problème de paiement détecté",
         "message": "Votre abonnement a rencontré un problème de paiement, mais vous conservez l'accès Premium pendant encore {days} jour{plural}.",
         "action": "Pour éviter toute interruption, veuillez mettre à jour votre méthode de paiement avant le {date}."
+      }
+    },
+    "cancelled": {
+      "payment": {
+        "message": "Votre paiement a été annulé. Vous restez sur le plan gratuit avec 5 étiquettes par impression."
       }
     }
   },
@@ -654,6 +659,17 @@
     "contact": {
       "title": "Contact",
       "content": "Si vous avez des questions, contactez-nous à"
+    }
+  },
+  "upgrade": {
+    "title": "Passez à Premium pour des impressions illimitées",
+    "subtitle": "Débloquez toutes les fonctionnalités premium",
+    "message": {
+      "addressesDetected": "{count} adresse{plural} détectée{plural}",
+      "freeLimit": "Vous pouvez imprimer jusqu'à {limit} étiquettes gratuitement par impression."
+    },
+    "button": {
+      "printLimited": "Imprimer les {limit} premières"
     }
   }
 }
