@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { DailyUsage } from '@/app/api/usage/route'
 import { useAuth } from './useAuth'
-import { isPremiumModeEnabled } from '@/lib/feature-flags'
 
 interface UsageTrackingState {
   dailyUsage: DailyUsage | null
@@ -49,19 +48,6 @@ export function useUsageTracking(): UsageTrackingHook {
 
     try {
       setState((prev) => ({ ...prev, loading: true, error: null }))
-
-      // Si le mode premium est désactivé, pas de limite pour personne
-      if (!isPremiumModeEnabled()) {
-        setState({
-          dailyUsage: null,
-          labelsUsed: 0,
-          remainingLabels: Infinity,
-          isLimitReached: false,
-          loading: false,
-          error: null,
-        })
-        return
-      }
 
       // Si l'utilisateur est marqué Premium, pas de limite (plus besoin de vérifier l'API)
       if (userPlan === 'premium') {
@@ -126,11 +112,6 @@ export function useUsageTracking(): UsageTrackingHook {
         return false
       }
 
-      // Si le mode premium est désactivé, pas de tracking
-      if (!isPremiumModeEnabled()) {
-        return true
-      }
-
       // Si l'utilisateur est Premium, toujours retourner true sans tracking
       if (userPlan === 'premium') {
         return true
@@ -171,7 +152,6 @@ export function useUsageTracking(): UsageTrackingHook {
   const canPrintLabels = useCallback(
     (requestedCount: number): boolean => {
       if (!user) return false
-      if (!isPremiumModeEnabled()) return true
       if (userPlan === 'premium') return true
       return state.remainingLabels >= requestedCount
     },
@@ -184,7 +164,6 @@ export function useUsageTracking(): UsageTrackingHook {
   const getMaxPrintableLabels = useCallback(
     (requestedCount: number): number => {
       if (!user) return 0
-      if (!isPremiumModeEnabled()) return requestedCount
       if (userPlan === 'premium') return requestedCount
       return Math.min(requestedCount, state.remainingLabels)
     },
