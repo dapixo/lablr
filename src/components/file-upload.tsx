@@ -9,11 +9,12 @@ import { cn } from '@/lib/utils'
 
 interface FileUploadProps {
   onFileContent: (content: string, filename: string) => void
+  onManualCreation?: () => void
   className?: string
   t: (key: string) => string
 }
 
-export function FileUpload({ onFileContent, className, t }: FileUploadProps) {
+export function FileUpload({ onFileContent, onManualCreation, className, t }: FileUploadProps) {
   const [isDragOver, setIsDragOver] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -128,6 +129,31 @@ export function FileUpload({ onFileContent, className, t }: FileUploadProps) {
         <div className="mt-3">
           <Message severity="error" text={error} className="w-full" />
         </div>
+      )}
+
+      {/* Séparateur "ou" avec option création manuelle */}
+      {onManualCreation && (
+        <>
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="bg-white px-4 text-gray-500">{t('upload.or')}</span>
+            </div>
+          </div>
+
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={onManualCreation}
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
+            >
+              <i className="pi pi-plus-circle"></i>
+              <span>{t('upload.createManually')}</span>
+            </button>
+          </div>
+        </>
       )}
     </Panel>
   )

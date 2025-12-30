@@ -49,7 +49,9 @@
     "processing": "Procesando...",
     "error": {
       "reading": "Error al leer el archivo"
-    }
+    },
+    "or": "o",
+    "createManually": "Crear manualmente"
   },
   "addresses": {
     "title": "Direcciones extraídas ({count})",
@@ -68,6 +70,12 @@
     "noResults": {
       "title": "No se encontraron resultados",
       "description": "Prueba con otras palabras clave o verifica la ortografía"
+    },
+    "emptyManual": {
+      "title": "Ninguna dirección por el momento",
+      "description": "Añade tu primera dirección manualmente",
+      "addButton": "Añadir una dirección",
+      "importLink": "Importar un archivo"
     }
   },
   "editor": {

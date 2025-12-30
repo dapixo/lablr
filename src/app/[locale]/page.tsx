@@ -30,6 +30,7 @@ export default function Home() {
   const [editingAddress, setEditingAddress] = useState<Address | null>(null)
   const [isAddingAddress, setIsAddingAddress] = useState(false)
   const [shouldAutoScroll, setShouldAutoScroll] = useState(false)
+  const [isManualMode, setIsManualMode] = useState(false)
   const printPreviewRef = useRef<HTMLDivElement>(null)
 
   // Utility function for smooth scrolling with header offset
@@ -57,6 +58,7 @@ export default function Home() {
     setErrors(result.errors)
     setFileName(filename)
     setParseResult(result)
+    setIsManualMode(false) // Retour au mode fichier lors d'un import
 
     // Déclencher l'auto-scroll seulement lors de l'import de fichier
     if (cleanedAddresses.length > 0) {
@@ -114,6 +116,23 @@ export default function Home() {
     setEditingAddress(null)
     setIsAddingAddress(false)
   }
+
+  const handleManualCreation = useCallback(() => {
+    setIsManualMode(true)
+    // Optionnel : scroll vers la section addresses (sera vide)
+    setTimeout(() => {
+      const addressSection = document.getElementById('addresses-section')
+      if (addressSection) {
+        scrollToElement(addressSection, HEADER_HEIGHT)
+      }
+    }, 100)
+  }, [scrollToElement])
+
+  const handleBackToFileUpload = useCallback(() => {
+    setIsManualMode(false)
+    // Scroll vers le haut (zone upload)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [])
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -264,9 +283,11 @@ export default function Home() {
           {/* Content Sections */}
           <div className="space-y-6 pb-12">
             {/* File Upload */}
-            <div id="file-upload-section">
-              <FileUpload onFileContent={handleFileContent} t={t} />
-            </div>
+            {!isManualMode && (
+              <div id="file-upload-section">
+                <FileUpload onFileContent={handleFileContent} onManualCreation={handleManualCreation} t={t} />
+              </div>
+            )}
 
             {/* Stats Card avec informations de détection */}
             {fileName && parseResult && (
@@ -338,19 +359,25 @@ export default function Home() {
             )}
 
             {/* Results */}
-            {(addresses.length > 0 || errors.length > 0) && (
+            {(addresses.length > 0 || errors.length > 0 || isManualMode) && (
               <>
-                <div ref={printPreviewRef}>
-                  <PrintPreview addresses={addresses} t={t} />
+                {addresses.length > 0 && (
+                  <div ref={printPreviewRef}>
+                    <PrintPreview addresses={addresses} t={t} />
+                  </div>
+                )}
+                <div id="addresses-section">
+                  <AddressList
+                    addresses={addresses}
+                    errors={errors}
+                    onEditAddress={handleEditAddress}
+                    onDeleteAddress={handleDeleteAddress}
+                    onAddAddress={handleAddAddress}
+                    onImportFile={handleBackToFileUpload}
+                    isManualMode={isManualMode}
+                    t={t}
+                  />
                 </div>
-                <AddressList
-                  addresses={addresses}
-                  errors={errors}
-                  onEditAddress={handleEditAddress}
-                  onDeleteAddress={handleDeleteAddress}
-                  onAddAddress={handleAddAddress}
-                  t={t}
-                />
               </>
             )}
           </div>

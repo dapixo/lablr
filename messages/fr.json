@@ -49,7 +49,9 @@
     "processing": "Traitement en cours...",
     "error": {
       "reading": "Erreur lors de la lecture du fichier"
-    }
+    },
+    "or": "ou",
+    "createManually": "Créer manuellement"
   },
   "addresses": {
     "title": "Adresses extraites ({count})",
@@ -68,6 +70,12 @@
     "noResults": {
       "title": "Aucun résultat trouvé",
       "description": "Essayez avec d'autres mots-clés ou vérifiez l'orthographe"
+    },
+    "emptyManual": {
+      "title": "Aucune adresse pour le moment",
+      "description": "Ajoutez votre première adresse manuellement",
+      "addButton": "Ajouter une adresse",
+      "importLink": "Importer un fichier"
     }
   },
   "editor": {

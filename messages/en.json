@@ -49,7 +49,9 @@
     "processing": "Processing...",
     "error": {
       "reading": "Error reading file"
-    }
+    },
+    "or": "or",
+    "createManually": "Create manually"
   },
   "addresses": {
     "title": "Extracted addresses ({count})",
@@ -68,6 +70,12 @@
     "noResults": {
       "title": "No results found",
       "description": "Try with different keywords or check spelling"
+    },
+    "emptyManual": {
+      "title": "No addresses yet",
+      "description": "Add your first address manually",
+      "addButton": "Add an address",
+      "importLink": "Import a file"
     }
   },
   "editor": {
