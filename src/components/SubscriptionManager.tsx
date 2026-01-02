@@ -6,11 +6,12 @@ import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 import { Skeleton } from 'primereact/skeleton'
 import { Tag } from 'primereact/tag'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
+import { useCsrfToken } from '@/hooks/useCsrfToken'
 import type { TranslationVariables } from '@/hooks/useTranslations'
 import { getPluralVariables } from '@/lib/i18n-helpers'
-import type { LemonSqueezySubscription } from '@/types/lemonsqueezy'
+import type { Subscription } from '@/types/subscription'
 
 interface SubscriptionManagerProps {
   t: (key: string, variables?: TranslationVariables) => string
@@ -18,21 +19,66 @@ interface SubscriptionManagerProps {
 }
 
 /**
- * Composant de gestion des abonnements Lemon Squeezy
+ * Composant de gestion des abonnements Dodo Payments
  */
 export function SubscriptionManager({ t, embedded = false }: SubscriptionManagerProps) {
-  const [subscription, setSubscription] = useState<LemonSqueezySubscription | null>(null)
+  const [subscription, setSubscription] = useState<Subscription | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [hasFetched, setHasFetched] = useState(false) // Cache pour éviter les appels répétitifs
+  const hasFetchedRef = useRef(false) // useRef pour éviter re-renders inutiles
+  const [loadingPortal, setLoadingPortal] = useState(false)
   const { locale } = useParams()
   const { user, userPlan } = useAuth()
+  const { csrfFetch, loading: csrfLoading } = useCsrfToken()
+
+  /**
+   * Génération du lien du portail client Dodo Payments
+   */
+  const fetchPortalUrl = useCallback(async () => {
+    if (!user || csrfLoading) return
+
+    setLoadingPortal(true)
+
+    try {
+      const response = await csrfFetch('/api/dodopayments/portal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      })
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          // Pas de subscription active, c'est normal
+          return
+        }
+        throw new Error(`HTTP ${response.status}`)
+      }
+
+      const data = await response.json()
+
+      // Mettre à jour le subscription avec le portal URL
+      setSubscription((prev) => {
+        if (!prev) return prev
+        return {
+          ...prev,
+          urls: {
+            ...prev.urls,
+            customer_portal: data.portalUrl,
+          },
+        }
+      })
+    } catch (err) {
+      console.error('Fetch portal URL error:', err)
+      // Ne pas afficher d'erreur à l'utilisateur, juste logger
+    } finally {
+      setLoadingPortal(false)
+    }
+  }, [user, csrfFetch, csrfLoading])
 
   /**
    * Récupération des données d'abonnement depuis la base de données
    */
   const fetchSubscription = useCallback(async () => {
-    if (!user || hasFetched) return // Ne pas refaire l'appel si déjà fait
+    if (!user || hasFetchedRef.current) return // Ne pas refaire l'appel si déjà fait
 
     setLoading(true)
     setError(null)
@@ -54,25 +100,28 @@ export function SubscriptionManager({ t, embedded = false }: SubscriptionManager
 
       const data = await response.json()
       setSubscription(data.subscription)
+
+      // Si l'utilisateur a un abonnement actif, générer le lien du portail
+      if (data.subscription?.status === 'active') {
+        fetchPortalUrl()
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur inconnue'
       console.error('Fetch subscription error:', errorMessage)
       setError(errorMessage)
     } finally {
       setLoading(false)
-      setHasFetched(true) // Marquer comme récupéré
+      hasFetchedRef.current = true // Marquer comme récupéré avec useRef
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]) // hasFetched excluded to avoid infinite loop
+  }, [user, fetchPortalUrl]) // Dépendances correctes maintenant
 
   useEffect(() => {
-    setHasFetched(false) // Reset cache quand l'utilisateur change
+    hasFetchedRef.current = false // Reset cache quand l'utilisateur change
     fetchSubscription()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]) // fetchSubscription excluded to avoid infinite loop
+  }, [user, fetchSubscription]) // Dépendances correctes avec useRef
 
   /**
-   * Ouverture du customer portal Lemon Squeezy
+   * Ouverture du customer portal Dodo Payments
    */
   const openCustomerPortal = useCallback(() => {
     if (subscription?.urls?.customer_portal) {
@@ -143,7 +192,7 @@ export function SubscriptionManager({ t, embedded = false }: SubscriptionManager
    * Obtention du tag de statut
    */
   const getStatusTag = useCallback(
-    (subscription: LemonSqueezySubscription) => {
+    (subscription: Subscription) => {
       const status = subscription.status
       const isInGracePeriod = subscription.isInGracePeriod
 
@@ -225,7 +274,7 @@ export function SubscriptionManager({ t, embedded = false }: SubscriptionManager
           label={t('common.retry')}
           icon="pi pi-refresh"
           onClick={() => {
-            setHasFetched(false)
+            hasFetchedRef.current = false
             fetchSubscription()
           }}
           size="small"
@@ -390,18 +439,9 @@ export function SubscriptionManager({ t, embedded = false }: SubscriptionManager
           <div className="flex flex-wrap gap-3 pt-4 border-t border-gray-200">
             <Button
               label={t('subscription.manage')}
-              icon="pi pi-external-link"
+              icon={loadingPortal ? 'pi pi-spin pi-spinner' : 'pi pi-external-link'}
               onClick={openCustomerPortal}
-              disabled={!subscription.urls?.customer_portal}
-              outlined
-              size="small"
-            />
-
-            <Button
-              label={t('subscription.updatePayment')}
-              icon="pi pi-credit-card"
-              onClick={openCustomerPortal}
-              disabled={!subscription.urls?.update_payment_method}
+              disabled={!subscription.urls?.customer_portal || loadingPortal}
               outlined
               size="small"
             />
