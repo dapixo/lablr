@@ -17,7 +17,7 @@ const AuthModal = dynamic(() => import('@/components/auth/AuthModal').then(mod =
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { useAuth } from '@/hooks/useAuth'
-import { useLemonSqueezyCheckout } from '@/hooks/useLemonSqueezyCheckout'
+import { useDodoCheckout } from '@/hooks/useDodoCheckout'
 
 type TranslationFunction = (key: string) => string
 
@@ -87,7 +87,7 @@ export function PricingPage({ t }: PricingPageProps) {
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [pendingUpgrade, setPendingUpgrade] = useState(false)
   const { user, userPlan, loading } = useAuth()
-  const { createCheckout, isLoading: isUpgrading, error: checkoutError } = useLemonSqueezyCheckout()
+  const { createCheckout, isLoading: isUpgrading, error: checkoutError } = useDodoCheckout()
   const toast = useRef<Toast>(null)
 
   const { freePlan, premiumPlan } = useMemo(
@@ -118,7 +118,7 @@ export function PricingPage({ t }: PricingPageProps) {
       return
     }
 
-    // Créer le checkout Lemon Squeezy
+    // Créer le checkout Dodo Payments
     const success = await createCheckout(isAnnual ? 'yearly' : 'monthly')
 
     if (success) {

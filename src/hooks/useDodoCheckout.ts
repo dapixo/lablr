@@ -1,17 +1,17 @@
 import { useCallback, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
-import type { CheckoutRequest, CheckoutResponse } from '@/types/lemonsqueezy'
+import type { CheckoutRequest, CheckoutResponse } from '@/types/dodopayments'
 
 /**
- * Hook pour gérer les checkouts Lemon Squeezy
+ * Hook pour gérer les checkouts Dodo Payments
  */
-export function useLemonSqueezyCheckout() {
+export function useDodoCheckout() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const { user } = useAuth()
 
   /**
-   * Crée une session de checkout et redirige vers Lemon Squeezy
+   * Crée une session de checkout et redirige vers Dodo Payments
    */
   const createCheckout = useCallback(
     async (billingCycle: 'monthly' | 'yearly') => {
@@ -24,16 +24,14 @@ export function useLemonSqueezyCheckout() {
       setError(null)
 
       try {
-        // L'API déterminera le variant ID côté serveur
-        const checkoutRequest: CheckoutRequest = {
-          variantId: '', // Sera déterminé côté serveur
+        const checkoutRequest: Omit<CheckoutRequest, 'productId'> = {
           userId: user.id,
           billingCycle,
         }
 
-        console.log('Creating checkout with:', checkoutRequest)
+        console.log('[Dodo Checkout] Creating checkout:', checkoutRequest)
 
-        const response = await fetch('/api/lemonsqueezy/checkout', {
+        const response = await fetch('/api/dodopayments/checkout', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -52,15 +50,15 @@ export function useLemonSqueezyCheckout() {
           throw new Error('URL de checkout non reçue')
         }
 
-        console.log('Redirecting to checkout:', data.checkoutUrl)
+        console.log('[Dodo Checkout] Redirecting to:', data.checkoutUrl)
 
-        // Redirection vers Lemon Squeezy
+        // Redirection vers Dodo Payments
         window.open(data.checkoutUrl, '_blank', 'noopener,noreferrer')
 
         return true
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Erreur inconnue'
-        console.error('Checkout error:', errorMessage)
+        console.error('[Dodo Checkout] Error:', errorMessage)
         setError(errorMessage)
         return false
       } finally {

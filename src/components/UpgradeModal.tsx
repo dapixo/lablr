@@ -9,7 +9,7 @@ import { Toast } from 'primereact/toast'
 import type React from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
-import { useLemonSqueezyCheckout } from '@/hooks/useLemonSqueezyCheckout'
+import { useDodoCheckout } from '@/hooks/useDodoCheckout'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import type { TranslationVariables } from '@/hooks/useTranslations'
 import { createInnerHTML, getPluralVariables, markdownToHtml } from '@/lib/i18n-helpers'
@@ -41,7 +41,7 @@ export function UpgradeModal({
     isLoading: isUpgrading,
     error: checkoutError,
     clearError,
-  } = useLemonSqueezyCheckout()
+  } = useDodoCheckout()
   const { trackUpgradeAttempt } = useAnalytics()
   const toast = useRef<Toast>(null)
 
@@ -54,7 +54,7 @@ export function UpgradeModal({
   }, [onHide, clearError])
 
   /**
-   * Gère l'upgrade vers Premium via Lemon Squeezy
+   * Gère l'upgrade vers Premium via Dodo Payments
    */
   const handleUpgradeToPremium = useCallback(async () => {
     if (!user) {
@@ -83,7 +83,7 @@ export function UpgradeModal({
       triggeredBy: 'limit_exceeded'
     })
 
-    // Créer le checkout Lemon Squeezy
+    // Créer le checkout Dodo Payments
     const success = await createCheckout(isAnnual ? 'yearly' : 'monthly')
 
     if (success) {

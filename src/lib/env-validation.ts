@@ -62,12 +62,12 @@ export function validateSupabaseServerEnv() {
 }
 
 /**
- * Validation spécifique pour les variables Lemon Squeezy
+ * Validation spécifique pour les variables Dodo Payments
  */
-export function validateLemonSqueezyEnv() {
+export function validateDodoPaymentsEnv() {
   return validateEnvVars({
-    LEMONSQUEEZY_API_KEY: process.env.LEMONSQUEEZY_API_KEY,
-    LEMONSQUEEZY_WEBHOOK_SECRET: process.env.LEMONSQUEEZY_WEBHOOK_SECRET,
-    LEMONSQUEEZY_STORE_ID: process.env.LEMONSQUEEZY_STORE_ID,
+    DODO_PAYMENTS_API_KEY: process.env.DODO_PAYMENTS_API_KEY,
+    DODO_WEBHOOK_SECRET: process.env.DODO_WEBHOOK_SECRET,
+    DODO_BRAND_ID: process.env.DODO_BRAND_ID,
   })
 }

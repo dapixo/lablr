@@ -76,7 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Récupérer les subscriptions avec ends_at ou grace_period_ends_at passé
         const { data: subs, error: fetchError } = await supabase
           .from('subscriptions')
-          .select('lemon_squeezy_id, status, ends_at, grace_period_ends_at')
+          .select('subscription_id, status, ends_at, grace_period_ends_at')
           .eq('user_id', userId)
 
         if (fetchError) {
@@ -113,19 +113,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
 
           if (isExpired) {
-            debugLog(`⏰ Subscription ${sub.lemon_squeezy_id} expired: ${reason}`)
+            debugLog(`⏰ Subscription ${sub.subscription_id} expired: ${reason}`)
 
             // Marquer comme expired dans la DB
             await supabase
               .from('subscriptions')
               .update({
                 status: 'expired',
-                status_formatted: 'Expired',
                 grace_period_starts_at: null,
                 grace_period_ends_at: null,
                 updated_at: new Date().toISOString(),
               })
-              .eq('lemon_squeezy_id', sub.lemon_squeezy_id)
+              .eq('subscription_id', sub.subscription_id)
 
             shouldDowngrade = true
           }

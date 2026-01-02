@@ -99,6 +99,11 @@ export const RATE_LIMIT_CONFIGS = {
     maxRequests: 10,
     windowMs: 60 * 1000, // 10 req/minute
   },
+  // Checkout - Protection contre abus de création de sessions
+  checkout: {
+    maxRequests: 10,
+    windowMs: 60 * 1000, // 10 req/minute
+  },
   // Webhooks - Volume élevé mais légitime
   webhook: {
     maxRequests: 100,

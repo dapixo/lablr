@@ -39,9 +39,10 @@ export async function GET(request: NextRequest) {
     const { data: subscription, error: subscriptionError } = await supabase
       .from('subscriptions')
       .select(`
-        lemon_squeezy_id,
+        subscription_id,
+        customer_id,
+        provider,
         status,
-        variant_id,
         renews_at,
         ends_at,
         card_brand,
@@ -52,7 +53,7 @@ export async function GET(request: NextRequest) {
         grace_period_ends_at
       `)
       .eq('user_id', user.id)
-      .in('status', ['active', 'past_due', 'unpaid', 'cancelled', 'paused']) // Inclure tous les statuts avec accès
+      .in('status', ['active', 'past_due', 'unpaid', 'on_hold', 'cancelled', 'paused']) // Inclure statuts Dodo
       .order('updated_at', { ascending: false })
       .limit(1)
       .maybeSingle() // Évite l'erreur si 0 ou multiple résultats
@@ -144,10 +145,16 @@ export async function GET(request: NextRequest) {
           return 'Paiement en retard'
         case 'unpaid':
           return 'Non payé'
+        case 'on_hold':
+          return 'En attente de paiement'
         case 'cancelled':
           return 'Annulé'
         case 'expired':
           return 'Expiré'
+        case 'pending':
+          return 'En attente'
+        case 'failed':
+          return 'Échec'
         default:
           return status
       }
@@ -155,7 +162,9 @@ export async function GET(request: NextRequest) {
 
     // Retourner les infos essentielles
     const simpleSubscription = {
-      id: subscription.lemon_squeezy_id,
+      id: subscription.subscription_id,
+      customerId: subscription.customer_id,
+      provider: subscription.provider || 'dodo',
       status: subscription.status,
       statusFormatted: translateStatus(subscription.status),
       price: priceInEuros,

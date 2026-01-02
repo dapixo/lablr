@@ -679,7 +679,7 @@
       "title": "Información que Recopilamos",
       "purchase": {
         "title": "Información de Compra",
-        "content": "Cuando compra Lalabel, nuestro procesador de pagos (LemonSqueezy o equivalente) recopila su nombre, dirección de correo electrónico e información de pago. No almacenamos sus datos de pago."
+        "content": "Cuando compra Lalabel, nuestro procesador de pagos (Dodo Payments o equivalente) recopila su nombre, dirección de correo electrónico e información de pago. No almacenamos sus datos de pago."
       },
       "analytics": {
         "title": "Análisis y Cookies",

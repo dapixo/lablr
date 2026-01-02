@@ -56,16 +56,6 @@ export async function generateMetadata({
         images: [`${baseUrl}/og-image.jpg`],
       },
       manifest: '/manifest.json',
-      icons: {
-        icon: [
-          { url: '/favicon.ico', sizes: '32x32' },
-          { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
-        ],
-        apple: [
-          { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-        ],
-      },
     }
   } else {
     return {
@@ -107,16 +97,6 @@ export async function generateMetadata({
         images: [`${baseUrl}/og-image.jpg`],
       },
       manifest: '/manifest.json',
-      icons: {
-        icon: [
-          { url: '/favicon.ico', sizes: '32x32' },
-          { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
-        ],
-        apple: [
-          { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-        ],
-      },
     }
   }
 }
@@ -146,7 +126,7 @@ export default async function LocaleLayout({
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       <link rel="dns-prefetch" href="https://api.supabase.co" />
-      <link rel="dns-prefetch" href="https://api.lemonsqueezy.com" />
+      <link rel="dns-prefetch" href="https://checkout.dodopayments.com" />
 
       <StructuredData locale={locale} />
       <PrimeReactProvider>

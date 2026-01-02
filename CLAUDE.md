@@ -2,9 +2,9 @@
 
 ## Vue d'ensemble
 
-**Lablr** est une solution professionnelle permettant aux vendeurs Amazon de générer et imprimer facilement des étiquettes d'adresse à partir de leurs rapports Amazon Seller au format TSV. Interface moderne et intuitive avec design responsive pour tous les appareils. 
+**Lablr** est une solution professionnelle permettant aux vendeurs Amazon de générer et imprimer facilement des étiquettes d'adresse à partir de leurs rapports Amazon Seller au format TSV. Interface moderne et intuitive avec design responsive pour tous les appareils.
 
-**V3.8** : Système de paiement Lemon Squeezy production-ready avec webhook robuste, période de grâce 7 jours et gestion d'abonnements complète.
+**V4.0** : Système de paiement Dodo Payments production-ready avec webhook robuste, période de grâce 7 jours et gestion d'abonnements complète. Migration complète depuis Lemon Squeezy.
 
 ## Architecture Technique
 
@@ -16,8 +16,8 @@
 - **Icons** : PrimeIcons + Lucide React
 - **Build Tool** : Turbopack pour développement rapide
 - **Authentification** : Supabase Auth avec SSR
-- **Base de données** : Supabase (auth + gestion abonnements Lemon Squeezy)
-- **Paiements** : Lemon Squeezy avec webhook signature verification
+- **Base de données** : Supabase (auth + gestion abonnements Dodo Payments)
+- **Paiements** : Dodo Payments avec webhook signature verification
 - **Internationalisation** : Système i18n personnalisé (FR/EN) avec routing dynamique
 
 ### Structure du Projet (Architecture Refactorisée)
@@ -38,7 +38,7 @@ src/
 │   ├── LanguageSelector.tsx   # 🆕 Sélecteur langue optimisé avec navigation
 │   ├── PricingPage.tsx        # 🆕 Page pricing avec modèle freemium
 │   ├── UpgradeModal.tsx       # 🆕 Modal d'upgrade freemium avec toggle mensuel/annuel
-│   ├── SubscriptionManager.tsx # 🆕 Gestion complète abonnements Lemon Squeezy
+│   ├── SubscriptionManager.tsx # 🆕 Gestion complète abonnements Dodo Payments
 │   ├── file-upload.tsx        # Upload drag & drop avec PrimeReact
 │   ├── address-list.tsx       # Liste avec pagination (15 par page) et recherche
 │   ├── address-editor.tsx     # Éditeur modal avec PrimeReact Dialog
@@ -48,8 +48,8 @@ src/
 │   │   ├── client.ts          # 🆕 Client Supabase navigateur
 │   │   ├── server.ts          # 🆕 Client Supabase serveur
 │   │   └── middleware.ts      # 🆕 Middleware gestion session
-│   ├── lemonsqueezy/
-│   │   ├── client.ts          # 🆕 Client Lemon Squeezy API
+│   ├── dodopayments/
+│   │   ├── client.ts          # 🆕 Client Dodo Payments API
 │   │   └── config.ts          # 🆕 Configuration produits et variants
 │   ├── auth-helpers.ts        # 🆕 Helpers partagés pour authentification OTP
 │   ├── utils.ts              # Utilitaires (cn)
@@ -157,15 +157,16 @@ src/
 - **Hook optimisé** : `useUsageTracking` avec API calls minimales
 - **UX premium** : Interface encourageante sans frustration utilisateur
 
-### 10. Système de Paiement Lemon Squeezy (🆕 V3.8)
+### 10. Système de Paiement Dodo Payments (🆕 V4.0)
 - **Webhook robuste** : Signature verification HMAC SHA-256 sécurisée
-- **Gestion complète des statuts** : active, past_due, cancelled, expired avec logique métier
-- **Période de grâce 7 jours** : Best practice Lemon Squeezy pour payment failures
-- **Synchronisation temps réel** : Mise à jour automatique des plans utilisateur
+- **Gestion complète des statuts** : active, past_due, on_hold, cancelled, expired, failed avec logique métier
+- **Période de grâce 7 jours** : Best practice pour payment failures et cancellations
+- **Synchronisation temps réel** : Mise à jour automatique des plans utilisateur via webhooks
 - **Interface subscription** : Gestion portail client, cartes de paiement, renouvellements
 - **Audit trail complet** : Table webhook_events pour monitoring et debugging
 - **Architecture scalable** : Support multi-produits et variants (mensuel/annuel)
 - **Error handling robuste** : Retry logic, fallbacks et logging détaillé
+- **Event-first logic** : Priorité event_name vs status pour éviter bugs logiques
 
 ## Commandes de Développement
 
@@ -203,7 +204,7 @@ pnpm run type-check
   "lucide-react": "latest",
   "@supabase/supabase-js": "2.57.4",
   "@supabase/ssr": "0.7.0",
-  "@lemonsqueezy/lemonsqueezy.js": "latest"
+  "dodopayments": "2.13.1"
 }
 ```
 
@@ -569,12 +570,135 @@ const FormatCard = React.memo(function FormatCard({...}))
 - ✅ **Navigation optimisée** : Redirection fluide vers la page de connexion depuis le header
 - ✅ **Style cohérent** : Design harmonieux avec bordures discrètes et focus states appropriés
 
-## Évolutions Récentes (✅ V3.8)
+## Évolutions Récentes (✅ V4.0)
 
-### 💳 Système de Paiement Lemon Squeezy Production-Ready (🆕 V3.8)
+### 🚀 Migration Complète vers Dodo Payments (🆕 V4.0 - 2025-12-31)
+
+**Migration majeure du système de paiement de Lemon Squeezy vers Dodo Payments**
+
+#### Infrastructure Créée
+- ✅ **Client Dodo Payments SDK** : `/src/lib/dodopayments/client.ts` avec validation config
+- ✅ **Configuration produits** : `/src/lib/dodopayments/config.ts` avec URLs redirections
+- ✅ **Types TypeScript** : `/src/types/dodopayments.ts` et `/src/types/subscription.ts` génériques
+- ✅ **Hook useDodoCheckout** : `/src/hooks/useDodoCheckout.ts` pour checkout flow
+- ✅ **API Checkout** : `/src/app/api/dodopayments/checkout/route.ts` création sessions
+- ✅ **API Webhook** : `/src/app/api/dodopayments/webhook/route.ts` (223 lignes) avec HMAC SHA-256 verification
+
+#### Adaptations Base de Données
+- ✅ **Migration SQL complète** : `docs/sql/03-dodo-migration-simple.sql` avec DROP CASCADE
+- ✅ **Table plans** : Support multi-providers (lemonsqueezy/dodo) avec product_id générique
+- ✅ **Table subscriptions** : Colonnes provider-agnostic (subscription_id vs lemon_squeezy_id)
+- ✅ **Table webhook_events** : Audit trail complet pour debugging
+- ✅ **RLS Policies** : Sécurisation avec lecture publique, écriture service-only
+
+#### Modifications Code
+- ✅ **API `/api/subscription`** : Support nouveaux statuts Dodo (on_hold, pending, failed)
+- ✅ **SubscriptionManager** : Type Subscription générique au lieu de LemonSqueezySubscription
+- ✅ **UpgradeModal** : Utilisation useDodoCheckout au lieu de useLemonSqueezyCheckout
+- ✅ **PricingPage** : Utilisation useDodoCheckout au lieu de useLemonSqueezyCheckout
+- ✅ **AuthContext** : Remplacement lemon_squeezy_id → subscription_id
+- ✅ **env-validation.ts** : validateDodoPaymentsEnv() au lieu de validateLemonSqueezyEnv()
+
+#### Nettoyage Complet
+- ✅ **Fichiers supprimés** :
+  - `/src/lib/lemonsqueezy/` (dossier complet)
+  - `/src/app/api/lemonsqueezy/` (dossier complet)
+  - `/src/hooks/useLemonSqueezyCheckout.ts`
+  - `/src/types/lemonsqueezy.ts`
+  - `/src/app/api/upgrade-to-premium/` (route obsolète)
+- ✅ **Dépendances** : Suppression `@lemonsqueezy/lemonsqueezy.js`, ajout `dodopayments@2.13.1`
+- ✅ **Configuration** :
+  - `middleware.ts` : `/api/lemonsqueezy/` → `/api/dodopayments/`
+  - `next.config.ts` : CSP avec `checkout.dodopayments.com`
+  - `layout.tsx` : DNS prefetch Dodo Payments
+
+#### Spécificités Dodo Payments
+- ✅ **Event-first logic** : Priorité event_name sur status pour éviter bugs
+- ✅ **7-day grace period** : Gestion manuelle pour payment failures et cancellations
+- ✅ **Nouveaux statuts** : on_hold, pending, failed en plus des statuts standards
+- ✅ **Webhook events** : subscription.active, subscription.failed, subscription.cancelled, etc.
+- ✅ **Customer Portal** : URLs dynamiques pour gestion abonnements et paiements
+
+#### Configuration Production
+```bash
+# Variables d'environnement Dodo Payments
+DODO_PAYMENTS_API_KEY=dodo_live_xxx
+DODO_WEBHOOK_SECRET=whsec_xxx
+DODO_BRAND_ID=brnd_xxx
+DODO_PRODUCT_MONTHLY=pdt_xxx
+DODO_PRODUCT_YEARLY=pdt_xxx
+```
+
+**Webhook URL** : `https://lalabel.app/api/dodopayments/webhook`
+
+---
+
+### 🔒 Sécurité Renforcée et Migration Proxy (🆕 V4.1 - 2026-01-02)
+
+**Renforcement majeur de la sécurité avec migration Next.js 16 et protection CSRF complète**
+
+#### Migration Next.js 16
+- ✅ **middleware.ts → proxy.ts** : Migration vers nouvelle convention Next.js 16
+- ✅ **Fonction proxy()** : Renommage fonction exportée selon nouvelle API
+- ✅ **Headers CSP conditionnels** : Désactivation en dev pour support ngrok, stricts en production
+- ✅ **allowedDevOrigins** : Support wildcards ngrok (`*.ngrok-free.dev`) pour testing webhooks
+- ✅ **Suppression ancien middleware** : Nettoyage fichier `middleware.ts` racine qui bloquait ngrok
+
+#### Protection CSRF Token-Based
+- ✅ **Double-submit cookie pattern** : `/src/lib/csrf.ts` avec crypto.randomUUID()
+- ✅ **Cookie httpOnly** : Protection XSS avec sameSite='lax' et maxAge 1h
+- ✅ **Header personnalisé** : `x-csrf-token` pour validation requêtes
+- ✅ **Routes protégées** : `/api/subscription`, `/api/dodopayments/portal`, `/api/usage`, `/api/auth/delete`
+- ✅ **Routes exemptées** : `/api/dodopayments/webhook` (HMAC), `/api/dodopayments/checkout` (referer)
+- ✅ **API endpoint** : `/src/app/api/csrf-token/route.ts` pour récupération token côté client
+- ✅ **Hook React** : `/src/hooks/useCsrfToken.ts` avec fetch wrapper automatique
+
+#### Rate Limiting Maison
+- ✅ **InMemoryRateLimiter** : `/src/lib/rate-limit.ts` avec Map en mémoire
+- ✅ **Configurations granulaires** :
+  - Auth: 5 req/min (protection brute force OTP)
+  - Usage: 30 req/min (tracking normal)
+  - Subscription: 10 req/min (opérations management)
+  - Checkout: 10 req/min (protection spam sessions)
+  - Webhook: 100 req/min (volume élevé légitime)
+- ✅ **Headers standard** : `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`, `Retry-After`
+- ✅ **Cleanup automatique** : Nettoyage périodique toutes les 10 minutes
+
+#### Optimisations Performance
+- ✅ **SubscriptionManager refactorisé** : `useState(hasFetched)` → `useRef(hasFetchedRef)` pour éviter re-renders
+- ✅ **Dependencies optimisées** : useCallback/useEffect avec dépendances strictes
+- ✅ **Suppression eslint-disable** : Code propre sans warnings
+
+#### Sécurité API Routes
+- ✅ **Validation HTTP methods** : GET/POST/PUT/DELETE explicites, 405 pour autres
+- ✅ **Error sanitization** : `/src/lib/error-sanitizer.ts` pour masquer erreurs internes
+- ✅ **Referer validation** : Support localhost + ngrok en dev, production strict
+- ✅ **CORS headers sécurisés** : Access-Control-* configurés via proxy.ts
+
+#### Debug et Résolution Problèmes
+- ✅ **Fix Turbopack cache** : Résolution problème fichier checkout.ts non recompilé
+- ✅ **Fix ancien middleware** : Suppression `middleware.ts` racine qui bloquait requêtes ngrok
+- ✅ **Logs structurés** : Console logs avec préfixes pour debugging (`[PROXY]`, `[CHECKOUT]`, `[CSRF]`)
+
+**Configuration Sécurité Production** :
+```typescript
+// proxy.ts - Headers de sécurité complets
+Content-Security-Policy: strict (CSP complet)
+X-Frame-Options: DENY
+X-Content-Type-Options: nosniff
+Strict-Transport-Security: max-age=31536000
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: camera=(), microphone=(), geolocation=()
+```
+
+---
+
+## Évolutions Antérieures
+
+### 💳 Système de Paiement Lemon Squeezy [REMPLACÉ PAR DODO V4.0] (V3.8)
 - ✅ **Architecture webhook robuste** : Handler Next.js avec signature HMAC SHA-256 verification
 - ✅ **Gestion complète des statuts** : Support active, past_due, unpaid, cancelled, expired, paused avec logique métier
-- ✅ **Période de grâce 7 jours** : Best practice Lemon Squeezy pour payment failures et cancellations
+- ✅ **Période de grâce 7 jours** : Best practice pour payment failures et cancellations
 - ✅ **Synchronisation temps réel** : Mise à jour automatique des plans utilisateur via webhooks
 - ✅ **Base de données optimisée** : Tables plans, subscriptions, webhook_events avec relations FK
 - ✅ **Interface utilisateur complète** : SubscriptionManager avec gestion portail client intégré
