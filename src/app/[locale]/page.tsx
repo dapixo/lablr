@@ -1,79 +1,50 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { useParams } from 'next/navigation'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { Skeleton } from 'primereact/skeleton'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { AddressEditor } from '@/components/address-editor'
-import { AddressList } from '@/components/address-list'
 import { FAQ } from '@/components/FAQ'
 import FeedbackSection from '@/components/FeedbackSection'
 import { Footer } from '@/components/Footer'
 import { FileUpload } from '@/components/file-upload'
 import { Header } from '@/components/Header'
-import { PrintPreview } from '@/components/print-preview'
+import { HeroSteps } from '@/components/HeroSteps'
 import { HEADER_HEIGHT, SCROLL_DELAY } from '@/constants/ui'
 import { useAuth } from '@/hooks/useAuth'
 import { useTranslations } from '@/hooks/useTranslations'
 import { cleanAddressData } from '@/lib/address-parser'
 import { parseUniversalFile, type UniversalParseResult } from '@/lib/universal-parser'
 import type { Address } from '@/types/address'
-import React from 'react'
 
-/**
- * Composant réutilisable pour afficher les 3 étapes du processus
- */
-const HeroSteps = React.memo(function HeroSteps({
-  t,
-  variant = 'compact',
-}: {
-  t: (key: string) => string
-  variant?: 'compact' | 'full'
-}) {
-  const isCompact = variant === 'compact'
-
-  return (
-    <div className={`grid md:grid-cols-3 ${isCompact ? 'gap-6' : 'gap-8'}`}>
-      {/* Étape 1 : Upload */}
-      <div className="text-center">
-        <div className={`${isCompact ? 'w-12 h-12 mb-3' : 'w-14 h-14 mb-4'} rounded-xl bg-blue-100 flex items-center justify-center mx-auto`}>
-          <i className={`pi pi-upload text-blue-600 ${isCompact ? 'text-lg' : 'text-xl'}`}></i>
-        </div>
-        <h3 className={`font-semibold text-gray-900 ${isCompact ? 'text-sm mb-1' : 'mb-2'}`}>
-          {t('steps.1.title')}
-        </h3>
-        <p className={`text-gray-600 ${isCompact ? 'text-xs' : 'text-sm'}`}>
-          {t('steps.1.description')}
-        </p>
+// ⚡ OPTIMISATION: Lazy loading des composants lourds pour améliorer FCP
+// PrintPreview (1355 lignes) - Chargé uniquement quand des adresses sont affichées
+const PrintPreview = dynamic(
+  () => import('@/components/print-preview').then((mod) => ({ default: mod.PrintPreview })),
+  {
+    loading: () => (
+      <div className="bg-white rounded-xl shadow-sm p-6">
+        <Skeleton width="100%" height="400px" />
       </div>
+    ),
+    ssr: false,
+  }
+)
 
-      {/* Étape 2 : Configuration */}
-      <div className="text-center">
-        <div className={`${isCompact ? 'w-12 h-12 mb-3' : 'w-14 h-14 mb-4'} rounded-xl bg-green-100 flex items-center justify-center mx-auto`}>
-          <i className={`pi pi-cog text-green-600 ${isCompact ? 'text-lg' : 'text-xl'}`}></i>
-        </div>
-        <h3 className={`font-semibold text-gray-900 ${isCompact ? 'text-sm mb-1' : 'mb-2'}`}>
-          {t('steps.2.title')}
-        </h3>
-        <p className={`text-gray-600 ${isCompact ? 'text-xs' : 'text-sm'}`}>
-          {t('steps.2.description')}
-        </p>
+// AddressList (439 lignes) - Chargé uniquement quand des adresses existent
+const AddressList = dynamic(
+  () => import('@/components/address-list').then((mod) => ({ default: mod.AddressList })),
+  {
+    loading: () => (
+      <div className="bg-white rounded-xl shadow-sm p-6">
+        <Skeleton width="100%" height="300px" />
       </div>
-
-      {/* Étape 3 : Impression */}
-      <div className="text-center">
-        <div className={`${isCompact ? 'w-12 h-12 mb-3' : 'w-14 h-14 mb-4'} rounded-xl bg-purple-100 flex items-center justify-center mx-auto`}>
-          <i className={`pi pi-print text-purple-600 ${isCompact ? 'text-lg' : 'text-xl'}`}></i>
-        </div>
-        <h3 className={`font-semibold text-gray-900 ${isCompact ? 'text-sm mb-1' : 'mb-2'}`}>
-          {t('steps.3.title')}
-        </h3>
-        <p className={`text-gray-600 ${isCompact ? 'text-xs' : 'text-sm'}`}>
-          {t('steps.3.description')}
-        </p>
-      </div>
-    </div>
-  )
-})
+    ),
+    ssr: false,
+  }
+)
 
 export default function Home() {
   const params = useParams()
@@ -318,118 +289,124 @@ export default function Home() {
               {/* File Upload - Masqué si des adresses sont présentes */}
               {!isManualMode && addresses.length === 0 && (
                 <div id="file-upload-section">
-                  <FileUpload onFileContent={handleFileContent} onManualCreation={handleManualCreation} t={t} />
+                  <FileUpload
+                    onFileContent={handleFileContent}
+                    onManualCreation={handleManualCreation}
+                    t={t}
+                  />
                 </div>
               )}
 
-            {/* Stats Card avec informations de détection */}
-            {fileName && parseResult && (
-              <div ref={statsCardRef} className="bg-white rounded-xl shadow-sm p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-4">
-                    <div
-                      className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                        addresses.length > 0 ? 'bg-green-50' : 'bg-orange-50'
-                      }`}
-                    >
-                      <i
-                        className={`text-xl ${
-                          addresses.length > 0
-                            ? 'pi pi-check text-green-500'
-                            : 'pi pi-exclamation-triangle text-orange-500'
+              {/* Stats Card avec informations de détection */}
+              {fileName && parseResult && (
+                <div ref={statsCardRef} className="bg-white rounded-xl shadow-sm p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-4">
+                      <div
+                        className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                          addresses.length > 0 ? 'bg-green-50' : 'bg-orange-50'
                         }`}
-                      ></i>
+                      >
+                        <i
+                          className={`text-xl ${
+                            addresses.length > 0
+                              ? 'pi pi-check text-green-500'
+                              : 'pi pi-exclamation-triangle text-orange-500'
+                          }`}
+                        ></i>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600 mb-1">{t('status.fileProcessed')}</p>
+                        <p className="font-semibold text-gray-900">{fileName}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-600 mb-1">{t('status.fileProcessed')}</p>
-                      <p className="font-semibold text-gray-900">{fileName}</p>
+                    <div className="text-right">
+                      <p
+                        className={`text-3xl font-bold mb-1 ${
+                          addresses.length > 0 ? 'text-blue-500' : 'text-orange-500'
+                        }`}
+                      >
+                        {addresses.length}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        {addresses.length === 0
+                          ? t('status.noAddressFound')
+                          : addresses.length === 1
+                            ? t('status.addressExtracted')
+                            : t('status.addressesExtracted')}
+                      </p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p
-                      className={`text-3xl font-bold mb-1 ${
-                        addresses.length > 0 ? 'text-blue-500' : 'text-orange-500'
-                      }`}
-                    >
-                      {addresses.length}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      {addresses.length === 0
-                        ? t('status.noAddressFound')
-                        : addresses.length === 1
-                          ? t('status.addressExtracted')
-                          : t('status.addressesExtracted')}
-                    </p>
-                  </div>
-                </div>
 
-                {/* Bouton "Importer un autre fichier" */}
-                {addresses.length > 0 && (
-                  <div className="mt-4 pt-4 border-t border-gray-200">
-                    <button
-                      type="button"
-                      onClick={handleResetAndImportNew}
-                      aria-label={t('status.importNewFile')}
-                      className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
-                    >
-                      <i className="pi pi-file-import" aria-hidden="true"></i>
-                      <span>{t('status.importNewFile')}</span>
-                    </button>
-                  </div>
-                )}
-                {addresses.length === 0 && (
-                  <div className="mt-4 p-4 bg-orange-50 border border-orange-200 rounded-lg">
-                    <div className="flex items-start gap-3">
-                      <i className="pi pi-info-circle text-orange-500 text-sm mt-0.5"></i>
-                      <div className="text-sm text-orange-800 flex-1">
-                        <p className="font-medium mb-1">{t('status.noAddressFound')}</p>
-                        <p className="mb-3">{t('status.checkFileFormat')}</p>
-                        <div className="space-y-2">
-                          <p className="text-xs text-orange-700">{t('fileAnalysis.helpImprove')}</p>
-                          <p className="text-xs text-orange-600 italic">
-                            {t('fileAnalysis.privacy')}
-                          </p>
-                          <div className="flex justify-start">
-                            <a
-                              href={`mailto:contact@lalabel.app?subject=${encodeURIComponent(t('fileAnalysis.emailSubject'))}&body=${encodeURIComponent(t('fileAnalysis.emailBody'))}`}
-                              className="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-100 hover:bg-orange-200 text-orange-800 text-xs font-medium rounded-md transition-colors duration-200 border border-orange-300 hover:border-orange-400"
-                            >
-                              <i className="pi pi-send text-xs"></i>
-                              {t('fileAnalysis.sendFile')}
-                            </a>
+                  {/* Bouton "Importer un autre fichier" */}
+                  {addresses.length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <button
+                        type="button"
+                        onClick={handleResetAndImportNew}
+                        aria-label={t('status.importNewFile')}
+                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
+                      >
+                        <i className="pi pi-file-import" aria-hidden="true"></i>
+                        <span>{t('status.importNewFile')}</span>
+                      </button>
+                    </div>
+                  )}
+                  {addresses.length === 0 && (
+                    <div className="mt-4 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                      <div className="flex items-start gap-3">
+                        <i className="pi pi-info-circle text-orange-500 text-sm mt-0.5"></i>
+                        <div className="text-sm text-orange-800 flex-1">
+                          <p className="font-medium mb-1">{t('status.noAddressFound')}</p>
+                          <p className="mb-3">{t('status.checkFileFormat')}</p>
+                          <div className="space-y-2">
+                            <p className="text-xs text-orange-700">
+                              {t('fileAnalysis.helpImprove')}
+                            </p>
+                            <p className="text-xs text-orange-600 italic">
+                              {t('fileAnalysis.privacy')}
+                            </p>
+                            <div className="flex justify-start">
+                              <a
+                                href={`mailto:contact@lalabel.app?subject=${encodeURIComponent(t('fileAnalysis.emailSubject'))}&body=${encodeURIComponent(t('fileAnalysis.emailBody'))}`}
+                                className="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-100 hover:bg-orange-200 text-orange-800 text-xs font-medium rounded-md transition-colors duration-200 border border-orange-300 hover:border-orange-400"
+                              >
+                                <i className="pi pi-send text-xs"></i>
+                                {t('fileAnalysis.sendFile')}
+                              </a>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Results */}
-            {(addresses.length > 0 || errors.length > 0 || isManualMode) && (
-              <>
-                {addresses.length > 0 && showPrintPreview && (
-                  <div ref={printPreviewRef}>
-                    <PrintPreview addresses={addresses} t={t} />
-                  </div>
-                )}
-                <div id="addresses-section">
-                  <AddressList
-                    addresses={addresses}
-                    errors={errors}
-                    onEditAddress={handleEditAddress}
-                    onDeleteAddress={handleDeleteAddress}
-                    onAddAddress={handleAddAddress}
-                    onImportFile={handleBackToFileUpload}
-                    onGenerateLabels={handleGenerateLabels}
-                    isManualMode={isManualMode}
-                    showGenerateButton={isManualMode && addresses.length > 0 && !showPrintPreview}
-                    t={t}
-                  />
+                  )}
                 </div>
-              </>
-            )}
+              )}
+
+              {/* Results */}
+              {(addresses.length > 0 || errors.length > 0 || isManualMode) && (
+                <>
+                  {addresses.length > 0 && showPrintPreview && (
+                    <div ref={printPreviewRef}>
+                      <PrintPreview addresses={addresses} t={t} />
+                    </div>
+                  )}
+                  <div id="addresses-section">
+                    <AddressList
+                      addresses={addresses}
+                      errors={errors}
+                      onEditAddress={handleEditAddress}
+                      onDeleteAddress={handleDeleteAddress}
+                      onAddAddress={handleAddAddress}
+                      onImportFile={handleBackToFileUpload}
+                      onGenerateLabels={handleGenerateLabels}
+                      isManualMode={isManualMode}
+                      showGenerateButton={isManualMode && addresses.length > 0 && !showPrintPreview}
+                      t={t}
+                    />
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

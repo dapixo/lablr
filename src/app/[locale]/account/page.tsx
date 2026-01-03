@@ -1,5 +1,6 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
@@ -10,9 +11,26 @@ import { Toast } from 'primereact/toast'
 import { Suspense, useEffect, useRef, useState } from 'react'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
-import { SubscriptionManager } from '@/components/SubscriptionManager'
 import { useAuth } from '@/hooks/useAuth'
 import { useTranslations } from '@/hooks/useTranslations'
+
+// ⚡ OPTIMISATION: Lazy loading SubscriptionManager (455 lignes)
+// Chargé uniquement sur la page Account, améliore FCP
+const SubscriptionManager = dynamic(
+  () =>
+    import('@/components/SubscriptionManager').then((mod) => ({
+      default: mod.SubscriptionManager,
+    })),
+  {
+    loading: () => (
+      <Card className="mb-6">
+        <Skeleton width="100%" height="200px" className="mb-4" />
+        <Skeleton width="100%" height="50px" />
+      </Card>
+    ),
+    ssr: false,
+  }
+)
 
 function AccountPageContent() {
   const { locale } = useParams()
@@ -201,14 +219,14 @@ function AccountPageContent() {
 
             {/* Status du compte et Gestion d'abonnement */}
             <Card className="mb-6">
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                      {userPlan === 'premium'
-                        ? t('subscription.title')
-                        : t('account.planStatus.title')}
-                    </h2>
-                  </div>
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                    {userPlan === 'premium'
+                      ? t('subscription.title')
+                      : t('account.planStatus.title')}
+                  </h2>
+                </div>
 
                 {/* Plan actuel */}
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-200">
@@ -307,14 +325,14 @@ function AccountPageContent() {
                   )}
                 </div>
 
-                  {/* Gestion des abonnements - intégrée pour les utilisateurs Premium */}
-                  {userPlan === 'premium' && (
-                    <div className="pt-6 border-t border-gray-200">
-                      <SubscriptionManager t={t} embedded={true} />
-                    </div>
-                  )}
-                </div>
-              </Card>
+                {/* Gestion des abonnements - intégrée pour les utilisateurs Premium */}
+                {userPlan === 'premium' && (
+                  <div className="pt-6 border-t border-gray-200">
+                    <SubscriptionManager t={t} embedded={true} />
+                  </div>
+                )}
+              </div>
+            </Card>
 
             {/* Informations utilisateur */}
             <Card className="mb-6">

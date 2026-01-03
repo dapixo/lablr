@@ -41,7 +41,7 @@ export function extractRateLimitDelay(message: string): number | null {
     const match = message.match(pattern)
     if (match?.[1]) {
       const delay = parseInt(match[1], 10)
-      return isNaN(delay) ? null : delay
+      return Number.isNaN(delay) ? null : delay
     }
   }
   return null
@@ -107,4 +107,18 @@ export function isRateLimitError(message: string): boolean {
   return RATE_LIMIT_INDICATORS.some((indicator) =>
     message.toLowerCase().includes(indicator.toLowerCase())
   )
+}
+
+/**
+ * ⚡ NOUVEAU: Helper centralisé pour créer une erreur de validation
+ * Élimine duplication dans AuthContext (lignes 317-324)
+ */
+export function createValidationError(errorCode: keyof typeof EMAIL_VALIDATION_ERRORS): {
+  message: string
+  status: number
+} {
+  return {
+    message: EMAIL_VALIDATION_ERRORS[errorCode],
+    status: 400,
+  }
 }

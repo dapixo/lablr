@@ -1,10 +1,11 @@
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { PrimeReactProvider } from 'primereact/api'
-import { Analytics } from '@vercel/analytics/react'
-import { SpeedInsights } from '@vercel/speed-insights/next'
 import { StructuredData } from '@/components/SEO/StructuredData'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { TranslationsProvider } from '@/contexts/TranslationsContext'
 import { locales } from '@/i18n/config'
 
 export async function generateMetadata({
@@ -26,8 +27,8 @@ export async function generateMetadata({
       alternates: {
         canonical: `${baseUrl}/${locale}`,
         languages: {
-          'fr': `${baseUrl}/fr`,
-          'en': `${baseUrl}/en`,
+          fr: `${baseUrl}/fr`,
+          en: `${baseUrl}/en`,
           'x-default': `${baseUrl}/fr`,
         },
       },
@@ -67,8 +68,8 @@ export async function generateMetadata({
       alternates: {
         canonical: `${baseUrl}/${locale}`,
         languages: {
-          'fr': `${baseUrl}/fr`,
-          'en': `${baseUrl}/en`,
+          fr: `${baseUrl}/fr`,
+          en: `${baseUrl}/en`,
           'x-default': `${baseUrl}/fr`,
         },
       },
@@ -130,7 +131,9 @@ export default async function LocaleLayout({
 
       <StructuredData locale={locale} />
       <PrimeReactProvider>
-        <AuthProvider>{children}</AuthProvider>
+        <TranslationsProvider locale={locale}>
+          <AuthProvider>{children}</AuthProvider>
+        </TranslationsProvider>
       </PrimeReactProvider>
       <Analytics />
       <SpeedInsights />
