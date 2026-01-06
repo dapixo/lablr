@@ -6,9 +6,10 @@ import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 import { Skeleton } from 'primereact/skeleton'
 import { Tag } from 'primereact/tag'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useCsrfToken } from '@/hooks/useCsrfToken'
+import { useSubscription } from '@/hooks/useSubscription'
 import type { TranslationVariables } from '@/hooks/useTranslations'
 import { getPluralVariables } from '@/lib/i18n-helpers'
 import type { Subscription } from '@/types/subscription'
@@ -20,22 +21,30 @@ interface SubscriptionManagerProps {
 
 /**
  * Composant de gestion des abonnements Dodo Payments
+ * 🚀 OPTIMISÉ : Utilise React Query pour cache automatique
  */
 export function SubscriptionManager({ t, embedded = false }: SubscriptionManagerProps) {
-  const [subscription, setSubscription] = useState<Subscription | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const hasFetchedRef = useRef(false) // useRef pour éviter re-renders inutiles
-  const [loadingPortal, setLoadingPortal] = useState(false)
   const { locale } = useParams()
   const { user, userPlan } = useAuth()
   const { csrfFetch, loading: csrfLoading } = useCsrfToken()
 
+  // 🚀 NOUVEAU : Utilisation de React Query pour subscription (cache 12h)
+  const {
+    subscription: subscriptionData,
+    isLoading: subscriptionLoading,
+    error: subscriptionError,
+  } = useSubscription(user?.id)
+
+  // État local pour le portal URL (pas caché, généré à la demande)
+  const [portalUrl, setPortalUrl] = useState<string | null>(null)
+  const [loadingPortal, setLoadingPortal] = useState(false)
+
   /**
    * Génération du lien du portail client Dodo Payments
+   * ⚡ OPTIMISÉ : Dépendances stables (pas de cascade)
    */
   const fetchPortalUrl = useCallback(async () => {
-    if (!user || csrfLoading) return
+    if (!user || csrfLoading || !csrfFetch) return
 
     setLoadingPortal(true)
 
@@ -54,18 +63,7 @@ export function SubscriptionManager({ t, embedded = false }: SubscriptionManager
       }
 
       const data = await response.json()
-
-      // Mettre à jour le subscription avec le portal URL
-      setSubscription((prev) => {
-        if (!prev) return prev
-        return {
-          ...prev,
-          urls: {
-            ...prev.urls,
-            customer_portal: data.portalUrl,
-          },
-        }
-      })
+      setPortalUrl(data.portalUrl)
     } catch (err) {
       console.error('Fetch portal URL error:', err)
       // Ne pas afficher d'erreur à l'utilisateur, juste logger
@@ -74,60 +72,25 @@ export function SubscriptionManager({ t, embedded = false }: SubscriptionManager
     }
   }, [user, csrfFetch, csrfLoading])
 
-  /**
-   * Récupération des données d'abonnement depuis la base de données
-   */
-  const fetchSubscription = useCallback(async () => {
-    if (!user || hasFetchedRef.current) return // Ne pas refaire l'appel si déjà fait
-
-    setLoading(true)
-    setError(null)
-
-    try {
-      const response = await fetch('/api/subscription', {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-      })
-
-      if (!response.ok) {
-        if (response.status === 404) {
-          // Pas d'abonnement trouvé, c'est normal pour les utilisateurs free
-          setSubscription(null)
-          return
-        }
-        throw new Error(`HTTP ${response.status}`)
-      }
-
-      const data = await response.json()
-      setSubscription(data.subscription)
-
-      // Si l'utilisateur a un abonnement actif, générer le lien du portail
-      if (data.subscription?.status === 'active') {
-        fetchPortalUrl()
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erreur inconnue'
-      console.error('Fetch subscription error:', errorMessage)
-      setError(errorMessage)
-    } finally {
-      setLoading(false)
-      hasFetchedRef.current = true // Marquer comme récupéré avec useRef
-    }
-  }, [user, fetchPortalUrl]) // Dépendances correctes maintenant
-
+  // Fetch portal URL si subscription active
   useEffect(() => {
-    hasFetchedRef.current = false // Reset cache quand l'utilisateur change
-    fetchSubscription()
-  }, [fetchSubscription]) // Dépendances correctes avec useRef
+    if (subscriptionData?.status === 'active' && !portalUrl && !loadingPortal) {
+      fetchPortalUrl()
+    }
+  }, [subscriptionData?.status, portalUrl, loadingPortal, fetchPortalUrl])
 
   /**
    * Ouverture du customer portal Dodo Payments
+   * ⚡ OPTIMISÉ : Utilise portalUrl de l'état local
    */
   const openCustomerPortal = useCallback(() => {
-    if (subscription?.urls?.customer_portal) {
-      window.open(subscription.urls.customer_portal, '_blank', 'noopener,noreferrer')
+    if (portalUrl) {
+      window.open(portalUrl, '_blank', 'noopener,noreferrer')
+    } else if (subscriptionData?.urls?.customer_portal) {
+      // Fallback sur l'URL de la subscription si disponible
+      window.open(subscriptionData.urls.customer_portal, '_blank', 'noopener,noreferrer')
     }
-  }, [subscription])
+  }, [portalUrl, subscriptionData?.urls?.customer_portal])
 
   /**
    * Formatage des dates
@@ -246,7 +209,7 @@ export function SubscriptionManager({ t, embedded = false }: SubscriptionManager
     [t]
   )
 
-  if (loading) {
+  if (subscriptionLoading) {
     const loadingContent = (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
@@ -265,7 +228,7 @@ export function SubscriptionManager({ t, embedded = false }: SubscriptionManager
     return embedded ? loadingContent : <Card className="mb-6">{loadingContent}</Card>
   }
 
-  if (error) {
+  if (subscriptionError) {
     const errorContent = (
       <div className="text-center py-6">
         <i className="pi pi-exclamation-triangle text-red-500 text-3xl mb-3 block"></i>
@@ -274,8 +237,8 @@ export function SubscriptionManager({ t, embedded = false }: SubscriptionManager
           label={t('common.retry')}
           icon="pi pi-refresh"
           onClick={() => {
-            hasFetchedRef.current = false
-            fetchSubscription()
+            // React Query gère le retry automatiquement
+            window.location.reload()
           }}
           size="small"
           outlined
@@ -291,7 +254,7 @@ export function SubscriptionManager({ t, embedded = false }: SubscriptionManager
   }
 
   // Utilisateur Free sans abonnement - ne pas afficher car géré par la page Account
-  if (!subscription && userPlan === 'free') {
+  if (!subscriptionData && userPlan === 'free') {
     return null
   }
 
@@ -300,16 +263,16 @@ export function SubscriptionManager({ t, embedded = false }: SubscriptionManager
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-900">{t('subscription.details')}</h3>
-        {subscription && getStatusTag(subscription)}
+        {subscriptionData && getStatusTag(subscriptionData)}
       </div>
 
-      {subscription && (
+      {subscriptionData && (
         <>
           {/* Alerte période de grâce */}
-          {subscription.isInGracePeriod && (
+          {subscriptionData.isInGracePeriod && (
             <div
               className={`border rounded-lg p-4 ${
-                subscription.status === 'cancelled'
+                subscriptionData.status === 'cancelled'
                   ? 'bg-blue-50 border-blue-200'
                   : 'bg-orange-50 border-orange-200'
               }`}
@@ -317,7 +280,7 @@ export function SubscriptionManager({ t, embedded = false }: SubscriptionManager
               <div className="flex items-start gap-3">
                 <i
                   className={`text-lg mt-0.5 ${
-                    subscription.status === 'cancelled'
+                    subscriptionData.status === 'cancelled'
                       ? 'pi pi-info-circle text-blue-500'
                       : 'pi pi-exclamation-triangle text-orange-500'
                   }`}
@@ -325,42 +288,42 @@ export function SubscriptionManager({ t, embedded = false }: SubscriptionManager
                 <div className="flex-1">
                   <h4
                     className={`font-medium mb-1 ${
-                      subscription.status === 'cancelled' ? 'text-blue-900' : 'text-orange-900'
+                      subscriptionData.status === 'cancelled' ? 'text-blue-900' : 'text-orange-900'
                     }`}
                   >
-                    {subscription.status === 'cancelled'
+                    {subscriptionData.status === 'cancelled'
                       ? t('subscription.status.cancelled.title')
                       : t('subscription.status.paymentIssue.title')}
                   </h4>
                   <p
                     className={`text-sm mb-3 ${
-                      subscription.status === 'cancelled' ? 'text-blue-800' : 'text-orange-800'
+                      subscriptionData.status === 'cancelled' ? 'text-blue-800' : 'text-orange-800'
                     }`}
                   >
-                    {subscription.status === 'cancelled'
+                    {subscriptionData.status === 'cancelled'
                       ? t('subscription.status.cancelled.message', {
-                          days: subscription.graceDaysRemaining ?? 0,
-                          ...(subscription.graceDaysRemaining
-                            ? getPluralVariables(subscription.graceDaysRemaining)
+                          days: subscriptionData.graceDaysRemaining ?? 0,
+                          ...(subscriptionData.graceDaysRemaining
+                            ? getPluralVariables(subscriptionData.graceDaysRemaining)
                             : {}),
                         })
                       : t('subscription.status.paymentIssue.message', {
-                          days: subscription.graceDaysRemaining ?? 0,
-                          ...(subscription.graceDaysRemaining
-                            ? getPluralVariables(subscription.graceDaysRemaining)
+                          days: subscriptionData.graceDaysRemaining ?? 0,
+                          ...(subscriptionData.graceDaysRemaining
+                            ? getPluralVariables(subscriptionData.graceDaysRemaining)
                             : {}),
                         })}
                   </p>
                   <p
                     className={`text-sm ${
-                      subscription.status === 'cancelled' ? 'text-blue-700' : 'text-orange-700'
+                      subscriptionData.status === 'cancelled' ? 'text-blue-700' : 'text-orange-700'
                     }`}
                   >
-                    {subscription.status === 'cancelled'
+                    {subscriptionData.status === 'cancelled'
                       ? t('subscription.status.cancelled.action')
                       : t('subscription.status.paymentIssue.action', {
-                          date: subscription.gracePeriodEndsAt
-                            ? formatDate(subscription.gracePeriodEndsAt)
+                          date: subscriptionData.gracePeriodEndsAt
+                            ? formatDate(subscriptionData.gracePeriodEndsAt)
                             : '',
                         })}
                   </p>
@@ -377,7 +340,8 @@ export function SubscriptionManager({ t, embedded = false }: SubscriptionManager
                 <div>
                   <p className="text-sm font-medium text-gray-900">{t('subscription.plan')}</p>
                   <p className="text-gray-600">
-                    {getTranslatedPlanName(subscription.planName) || subscription.statusFormatted}
+                    {getTranslatedPlanName(subscriptionData.planName) ||
+                      subscriptionData.statusFormatted}
                   </p>
                 </div>
               </div>
@@ -387,10 +351,10 @@ export function SubscriptionManager({ t, embedded = false }: SubscriptionManager
                 <div>
                   <p className="text-sm font-medium text-gray-900">{t('subscription.price')}</p>
                   <p className="text-gray-600">
-                    €{subscription.price}{' '}
-                    {subscription.isUsageBased
+                    €{subscriptionData.price}{' '}
+                    {subscriptionData.isUsageBased
                       ? `/ ${t('subscription.usage')}`
-                      : getTranslatedPriceFormat(subscription.interval)}
+                      : getTranslatedPriceFormat(subscriptionData.interval)}
                   </p>
                 </div>
               </div>
@@ -401,25 +365,25 @@ export function SubscriptionManager({ t, embedded = false }: SubscriptionManager
                 <Calendar className="h-5 w-5 text-gray-400 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-gray-900">
-                    {subscription.status === 'cancelled'
+                    {subscriptionData.status === 'cancelled'
                       ? t('subscription.endsAt')
-                      : subscription.status === 'paused'
+                      : subscriptionData.status === 'paused'
                         ? t('subscription.accessUntil')
                         : t('subscription.renewsAt')}
                   </p>
                   <p className="text-gray-600">
                     {formatDate(
-                      subscription.status === 'cancelled'
-                        ? subscription.endsAt
-                        : subscription.status === 'paused'
-                          ? subscription.endsAt || subscription.renewsAt
-                          : subscription.renewsAt
+                      subscriptionData.status === 'cancelled'
+                        ? subscriptionData.endsAt
+                        : subscriptionData.status === 'paused'
+                          ? subscriptionData.endsAt || subscriptionData.renewsAt
+                          : subscriptionData.renewsAt
                     )}
                   </p>
                 </div>
               </div>
 
-              {subscription.cardBrand && subscription.cardLastFour && (
+              {subscriptionData.cardBrand && subscriptionData.cardLastFour && (
                 <div className="flex items-start gap-3">
                   <CreditCard className="h-5 w-5 text-gray-400 mt-0.5" />
                   <div>
@@ -427,7 +391,8 @@ export function SubscriptionManager({ t, embedded = false }: SubscriptionManager
                       {t('subscription.paymentMethod')}
                     </p>
                     <p className="text-gray-600">
-                      {subscription.cardBrand.toUpperCase()} •••• {subscription.cardLastFour}
+                      {subscriptionData.cardBrand.toUpperCase()} ••••{' '}
+                      {subscriptionData.cardLastFour}
                     </p>
                   </div>
                 </div>
@@ -441,7 +406,7 @@ export function SubscriptionManager({ t, embedded = false }: SubscriptionManager
               label={t('subscription.manage')}
               icon={loadingPortal ? 'pi pi-spin pi-spinner' : 'pi pi-external-link'}
               onClick={openCustomerPortal}
-              disabled={!subscription.urls?.customer_portal || loadingPortal}
+              disabled={!subscriptionData.urls?.customer_portal || loadingPortal}
               outlined
               size="small"
             />
