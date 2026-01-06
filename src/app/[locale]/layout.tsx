@@ -7,6 +7,7 @@ import { StructuredData } from '@/components/SEO/StructuredData'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { TranslationsProvider } from '@/contexts/TranslationsContext'
 import { locales } from '@/i18n/config'
+import { QueryProvider } from '@/providers/QueryProvider'
 
 export async function generateMetadata({
   params,
@@ -131,9 +132,11 @@ export default async function LocaleLayout({
 
       <StructuredData locale={locale} />
       <PrimeReactProvider>
-        <TranslationsProvider locale={locale}>
-          <AuthProvider>{children}</AuthProvider>
-        </TranslationsProvider>
+        <QueryProvider>
+          <TranslationsProvider locale={locale}>
+            <AuthProvider>{children}</AuthProvider>
+          </TranslationsProvider>
+        </QueryProvider>
       </PrimeReactProvider>
       <Analytics />
       <SpeedInsights />

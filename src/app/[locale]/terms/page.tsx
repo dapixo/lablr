@@ -1,8 +1,8 @@
 'use client'
 
 import { useParams } from 'next/navigation'
-import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
+import { Header } from '@/components/Header'
 import { useTranslations } from '@/hooks/useTranslations'
 
 export default function TermsPage() {
@@ -18,9 +18,7 @@ export default function TermsPage() {
         <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12">
           {/* Header */}
           <div className="mb-8 border-b border-gray-200 pb-6">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
-              {t('terms.title')}
-            </h1>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('terms.title')}</h1>
             <p className="text-gray-600">
               {t('terms.effectiveDate')}: {t('terms.date')}
             </p>
@@ -28,9 +26,7 @@ export default function TermsPage() {
 
           {/* Introduction */}
           <div className="prose prose-blue max-w-none">
-            <p className="text-gray-700 leading-relaxed mb-8">
-              {t('terms.intro')}
-            </p>
+            <p className="text-gray-700 leading-relaxed mb-8">{t('terms.intro')}</p>
 
             {/* Section 1: Refund Policy */}
             <section className="mb-8">
@@ -38,9 +34,7 @@ export default function TermsPage() {
                 <span className="text-blue-500">1.</span>
                 {t('terms.refundPolicy.title')}
               </h2>
-              <p className="text-gray-700 leading-relaxed">
-                {t('terms.refundPolicy.content')}
-              </p>
+              <p className="text-gray-700 leading-relaxed">{t('terms.refundPolicy.content')}</p>
             </section>
 
             {/* Section 2: Intellectual Property */}
@@ -60,9 +54,7 @@ export default function TermsPage() {
                 <span className="text-blue-500">3.</span>
                 {t('terms.disclaimer.title')}
               </h2>
-              <p className="text-gray-700 leading-relaxed">
-                {t('terms.disclaimer.content')}
-              </p>
+              <p className="text-gray-700 leading-relaxed">{t('terms.disclaimer.content')}</p>
             </section>
 
             {/* Section 4: Limitation of Liability */}
@@ -82,9 +74,7 @@ export default function TermsPage() {
                 <span className="text-blue-500">5.</span>
                 {t('terms.governingLaw.title')}
               </h2>
-              <p className="text-gray-700 leading-relaxed">
-                {t('terms.governingLaw.content')}
-              </p>
+              <p className="text-gray-700 leading-relaxed">{t('terms.governingLaw.content')}</p>
             </section>
 
             {/* Section 6: Contact */}

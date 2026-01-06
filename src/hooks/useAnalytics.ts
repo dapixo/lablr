@@ -40,7 +40,6 @@ export interface AuthEvent {
  * Hook principal pour analytics Lablr
  */
 export function useAnalytics() {
-
   /**
    * Track génération d'étiquettes
    */
@@ -110,7 +109,11 @@ export function useAnalytics() {
   /**
    * Track erreurs utilisateur importantes
    */
-  const trackError = (errorType: string, errorMessage: string, context?: Record<string, string | number | boolean>) => {
+  const trackError = (
+    errorType: string,
+    errorMessage: string,
+    context?: Record<string, string | number | boolean>
+  ) => {
     track('User Error', {
       errorType,
       errorMessage: errorMessage.slice(0, 100), // Limiter la longueur

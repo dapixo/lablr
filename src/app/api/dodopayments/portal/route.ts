@@ -1,8 +1,8 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { setupDodoPayments } from '@/lib/dodopayments/client'
-import { createClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
 import { checkRateLimit, withRateLimitHeaders } from '@/lib/rate-limit'
+import { createClient } from '@/lib/supabase/server'
 
 /**
  * Génère un lien vers le portail client Dodo Payments

@@ -11,9 +11,7 @@ export function setupDodoPayments() {
   }
 
   // Détecter l'environnement via variable dédiée ou NODE_ENV
-  const isTestMode =
-    process.env.DODO_TEST_MODE === 'true' ||
-    process.env.NODE_ENV === 'development'
+  const isTestMode = process.env.DODO_TEST_MODE === 'true' || process.env.NODE_ENV === 'development'
 
   console.log('[Dodo Client] Test mode:', isTestMode)
   console.log('[Dodo Client] Environment:', isTestMode ? 'test_mode' : 'live_mode')

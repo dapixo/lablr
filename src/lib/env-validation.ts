@@ -33,7 +33,9 @@ export function validateEnvVars(vars: Record<string, string | undefined>): Recor
   }
 
   if (missingVars.length > 0) {
-    const error = new Error(`Variables d'environnement manquantes: ${missingVars.join(', ')}`) as EnvValidationError
+    const error = new Error(
+      `Variables d'environnement manquantes: ${missingVars.join(', ')}`
+    ) as EnvValidationError
     error.missingVars = missingVars
     throw error
   }

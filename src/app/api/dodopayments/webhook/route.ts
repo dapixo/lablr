@@ -1,13 +1,13 @@
-import { Webhook } from 'standardwebhooks'
 import { createClient } from '@supabase/supabase-js'
 import { headers } from 'next/headers'
 import { type NextRequest, NextResponse } from 'next/server'
+import { Webhook } from 'standardwebhooks'
 import { DODO_CONFIG } from '@/lib/dodopayments/config'
 import { dispatchWebhookEvent } from '@/lib/dodopayments/webhook-handlers'
-import { logger } from '@/lib/logger'
-import type { WebhookSubscriptionPayload } from '@/types/dodopayments'
-import { checkRateLimit, withRateLimitHeaders } from '@/lib/rate-limit'
 import { createSanitizedErrorResponse, SANITIZED_ERRORS } from '@/lib/error-sanitizer'
+import { logger } from '@/lib/logger'
+import { checkRateLimit, withRateLimitHeaders } from '@/lib/rate-limit'
+import type { WebhookSubscriptionPayload } from '@/types/dodopayments'
 
 /**
  * Crée un client Supabase avec validation des variables d'environnement
@@ -104,11 +104,14 @@ export async function POST(request: NextRequest) {
     logger.info('[Dodo Webhook] Payload data:', JSON.stringify(payload.data, null, 2))
 
     // Enregistrer l'événement webhook via RPC (sécurisé avec RLS)
-    const { data: webhookEventId, error: webhookError } = await supabase.rpc('insert_webhook_event', {
-      p_webhook_id: webhookId,
-      p_event_name: eventName,
-      p_body: JSON.parse(body),
-    })
+    const { data: webhookEventId, error: webhookError } = await supabase.rpc(
+      'insert_webhook_event',
+      {
+        p_webhook_id: webhookId,
+        p_event_name: eventName,
+        p_body: JSON.parse(body),
+      }
+    )
 
     if (webhookError) {
       // L'idempotence est gérée dans la fonction RPC elle-même
@@ -143,10 +146,7 @@ export async function POST(request: NextRequest) {
 
     if (processingError) {
       console.error('[Dodo Webhook] Error:', processingError)
-      return NextResponse.json(
-        { error: SANITIZED_ERRORS.WEBHOOK_ERROR },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: SANITIZED_ERRORS.WEBHOOK_ERROR }, { status: 500 })
     }
 
     logger.info(`[Dodo Webhook] Successfully processed: ${eventName}`)

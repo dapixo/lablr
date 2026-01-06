@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { checkRateLimit, withRateLimitHeaders } from '@/lib/rate-limit'
+import { createClient } from '@/lib/supabase/server'
 
 /**
  * Récupération des données d'abonnement utilisateur
@@ -114,7 +114,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Traiter les infos du plan
-    const priceInEuros = plan ? (parseInt(plan.price) / 100).toString() : '5'
+    const priceInEuros = plan ? (parseInt(plan.price, 10) / 100).toString() : '5'
     const interval = plan?.interval === 'year' ? 'an' : 'mois'
 
     // Traduire le nom du plan

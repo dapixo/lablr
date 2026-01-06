@@ -1,6 +1,7 @@
 'use client'
 
 import type { AuthError, User } from '@supabase/supabase-js'
+import { useQueryClient } from '@tanstack/react-query'
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { createValidationError } from '@/lib/auth-helpers'
 import { debugLog } from '@/lib/debug'
@@ -42,25 +43,24 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
  */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const supabase = createClient()
+  const queryClient = useQueryClient()
 
   // 🔐 État d'authentification (session uniquement)
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // 💰 État plan utilisateur (séparé, non-bloquant)
+  // 💰 État plan utilisateur (géré par React Query)
+  // Note: On garde les états locaux pour compatibilité API, mais la source de vérité est React Query
   const [userPlan, setUserPlan] = useState<UserPlan>('free')
   const [planLoading, setPlanLoading] = useState(false)
   const [planError, setPlanError] = useState<string | null>(null)
 
-  // 🚀 Cache optimisé avec timestamps pour éviter appels redondants
-  const planCacheRef = useRef<Map<string, { plan: UserPlan; timestamp: number }>>(new Map())
-  const expirationCheckRef = useRef<Map<string, number>>(new Map()) // Timestamp dernière vérification expiration
+  // 🚀 OPTIMISÉ: Cache expiration check uniquement (plan caché par React Query avec TTL 12h)
+  const expirationCheckRef = useRef<Map<string, number>>(new Map())
 
-  // Cache valide pendant 5 minutes
-  const PLAN_CACHE_TTL = 5 * 60 * 1000 // 5 minutes
-  // Vérifier les expirations max 1 fois toutes les 30 minutes
-  const EXPIRATION_CHECK_TTL = 30 * 60 * 1000 // 30 minutes
+  // ⚡ TTL expiration check : 24 heures
+  const EXPIRATION_CHECK_TTL = 24 * 60 * 60 * 1000 // 24 heures
 
   /**
    * Vérifie et nettoie automatiquement les abonnements expirés
@@ -143,66 +143,57 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   )
 
   /**
-   * Récupère le plan utilisateur de manière non-bloquante
-   * 🎯 OPTIMISÉ : Cache intelligent + vérifications expiration en arrière-plan
+   * Récupère le plan utilisateur via React Query
+   * 🚀 OPTIMISÉ : Cache géré par React Query (12h TTL)
+   * ⚡ Vérifications expiration en arrière-plan (non-bloquant)
    */
   const fetchUserPlan = useCallback(
-    async (userId: string, forceRefresh = false) => {
-      const now = Date.now()
-
-      // ⚡ Vérifier le cache (valide pendant 5 minutes)
-      if (!forceRefresh) {
-        const cached = planCacheRef.current.get(userId)
-        if (cached && now - cached.timestamp < PLAN_CACHE_TTL) {
-          debugLog('⚡ Using cached plan for user:', userId)
-          setUserPlan(cached.plan)
-          setPlanLoading(false)
-          return
-        }
-      }
-
+    async (userId: string, _forceRefresh = false) => {
       setPlanLoading(true)
       setPlanError(null)
 
       try {
-        debugLog('📡 Fetching user plan for:', userId)
+        debugLog('📡 Fetching user plan via React Query for:', userId)
 
         // 🚀 OPTIMISÉ: Vérifier expirations en arrière-plan (non-bloquant)
-        // Ne pas attendre la fin, lancer en parallèle
         checkAndCleanExpiredSubscriptions(userId).catch((err) => {
           debugLog('⚠️ Background expiration check failed:', err)
         })
 
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('plan')
-          .eq('user_id', userId)
-          .single()
-
-        if (error) {
-          // Si profil pas trouvé, créer avec plan gratuit
-          if (error.code === 'PGRST116') {
-            debugLog('📝 Creating new profile with free plan')
-            const { error: insertError } = await supabase
+        // ⚡ Utiliser React Query pour le fetch avec cache automatique
+        const plan = await queryClient.fetchQuery({
+          queryKey: ['userPlan', userId],
+          queryFn: async (): Promise<UserPlan> => {
+            const { data, error } = await supabase
               .from('profiles')
-              .insert({ user_id: userId, plan: 'free' })
+              .select('plan')
+              .eq('user_id', userId)
+              .single()
 
-            if (insertError) {
-              throw insertError
+            if (error) {
+              // Si profil pas trouvé, créer avec plan gratuit
+              if (error.code === 'PGRST116') {
+                debugLog('📝 Creating new profile with free plan')
+                const { error: insertError } = await supabase
+                  .from('profiles')
+                  .insert({ user_id: userId, plan: 'free' })
+
+                if (insertError) {
+                  throw insertError
+                }
+
+                return 'free'
+              }
+              throw error
             }
 
-            setUserPlan('free')
-          } else {
-            throw error
-          }
-        } else {
-          const plan = (data?.plan as UserPlan) || 'free'
-          debugLog('📋 User plan loaded:', plan)
+            return (data?.plan as UserPlan) || 'free'
+          },
+          staleTime: 12 * 60 * 60 * 1000, // 12h - Cache plan
+        })
 
-          // ⚡ Mettre en cache le plan
-          planCacheRef.current.set(userId, { plan, timestamp: now })
-          setUserPlan(plan)
-        }
+        debugLog('📋 User plan loaded:', plan)
+        setUserPlan(plan)
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to load user plan'
         debugLog('❌ Error fetching user plan:', errorMessage)
@@ -213,7 +204,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setPlanLoading(false)
       }
     },
-    [supabase, checkAndCleanExpiredSubscriptions]
+    [supabase, queryClient, checkAndCleanExpiredSubscriptions]
   )
 
   /**
@@ -250,9 +241,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUserPlan('free')
         setPlanError(null)
         setPlanLoading(false)
-        // Reset tous les caches
-        planCacheRef.current.clear()
+        // Reset cache expiration et invalider React Query cache
         expirationCheckRef.current.clear()
+        queryClient.clear() // Nettoie tous les caches React Query
       }
     })
 
@@ -260,11 +251,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       debugLog('🧹 Cleaning up auth listener')
       subscription.unsubscribe()
     }
-  }, [fetchUserPlan, supabase.auth])
+  }, [fetchUserPlan, supabase.auth, queryClient])
 
   /**
    * Rafraîchissement manuel du plan utilisateur (force le refresh)
-   * ⚡ OPTIMISÉ : Bypass le cache pour forcer un reload complet
+   * ⚡ OPTIMISÉ : Invalide le cache React Query et force un refetch
    */
   const refreshUserPlan = useCallback(async () => {
     if (!user?.id) {
@@ -272,12 +263,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return
     }
 
-    // Forcer le refresh en invalidant les caches
-    planCacheRef.current.delete(user.id)
+    debugLog('🔄 Force refresh user plan via React Query for:', user.id)
+
+    // Invalider le cache React Query
+    await queryClient.invalidateQueries({
+      queryKey: ['userPlan', user.id],
+    })
+
+    // Invalider aussi le cache expiration pour forcer un check
     expirationCheckRef.current.delete(user.id)
 
-    await fetchUserPlan(user.id, true) // forceRefresh = true
-  }, [user?.id, fetchUserPlan])
+    // Refetch immédiatement
+    await fetchUserPlan(user.id, true)
+  }, [user?.id, queryClient, fetchUserPlan])
 
   /**
    * Envoi du code OTP avec validation

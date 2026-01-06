@@ -8,8 +8,8 @@
  * - Validation côté serveur pour chaque requête POST/PUT/DELETE
  */
 
-import { type NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
+import { type NextRequest, NextResponse } from 'next/server'
 
 // ================================================================
 // CONSTANTES

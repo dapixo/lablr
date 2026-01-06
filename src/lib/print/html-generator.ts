@@ -65,9 +65,13 @@ export function generateAddressesHTML(
   const config = PRINT_CONFIGS[format]
 
   // Génération des étiquettes vides pour l'offset (seulement pour les grilles)
-  const emptyLabels = config.layout.type === 'grid' && offset > 0
-    ? Array(offset).fill(null).map(() => generateEmptyLabel()).join('')
-    : ''
+  const emptyLabels =
+    config.layout.type === 'grid' && offset > 0
+      ? Array(offset)
+          .fill(null)
+          .map(() => generateEmptyLabel())
+          .join('')
+      : ''
 
   // Génération du contenu des adresses
   const addressesContent = addresses

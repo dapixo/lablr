@@ -11,20 +11,27 @@ import { Skeleton } from 'primereact/skeleton'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 // Lazy loading des modals pour améliorer FCP
-const AuthModal = dynamic(() => import('@/components/auth/AuthModal').then(mod => ({ default: mod.AuthModal })), {
-  loading: () => <Skeleton width="100%" height="400px" />,
-  ssr: false,
-})
+const AuthModal = dynamic(
+  () => import('@/components/auth/AuthModal').then((mod) => ({ default: mod.AuthModal })),
+  {
+    loading: () => <Skeleton width="100%" height="400px" />,
+    ssr: false,
+  }
+)
 
-const UpgradeModal = dynamic(() => import('@/components/UpgradeModal').then(mod => ({ default: mod.UpgradeModal })), {
-  loading: () => <Skeleton width="100%" height="300px" />,
-  ssr: false,
-})
+const UpgradeModal = dynamic(
+  () => import('@/components/UpgradeModal').then((mod) => ({ default: mod.UpgradeModal })),
+  {
+    loading: () => <Skeleton width="100%" height="300px" />,
+    ssr: false,
+  }
+)
+
 import { PREVIEW_DIMENSIONS, PREVIEW_MAX_LABELS_ROLL, PREVIEW_MAX_PAGES } from '@/constants'
+import { useAnalytics } from '@/hooks/useAnalytics'
 import { useAuth } from '@/hooks/useAuth'
 import { usePrintLimit } from '@/hooks/usePrintLimit'
-import { useAnalytics } from '@/hooks/useAnalytics'
-import { PRINT_CONFIGS, getEnabledFormats } from '@/lib/print/config'
+import { getEnabledFormats, PRINT_CONFIGS } from '@/lib/print/config'
 import { downloadCSV, generateDebugPrintCSS, getPrintCSS } from '@/lib/print-formats'
 import { printAddresses } from '@/lib/print-utils'
 import { STORAGE_KEYS, useCollapsiblePanel, usePersistedSelection } from '@/lib/storage'
@@ -85,12 +92,8 @@ const WaitingModal = React.memo<WaitingModalProps>(function WaitingModal({
         </div>
 
         {/* Message de chargement */}
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          {t('print.waiting.title')}
-        </h3>
-        <p className="text-sm text-gray-600 mb-6">
-          {t('print.waiting.message')}
-        </p>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('print.waiting.title')}</h3>
+        <p className="text-sm text-gray-600 mb-6">{t('print.waiting.message')}</p>
 
         {/* Barre de progression */}
         <ProgressBar
@@ -108,9 +111,7 @@ const WaitingModal = React.memo<WaitingModalProps>(function WaitingModal({
               {t('print.waiting.premiumTitle')}
             </h4>
           </div>
-          <p className="text-sm text-gray-700 mb-4">
-            {t('print.waiting.premiumMessage')}
-          </p>
+          <p className="text-sm text-gray-700 mb-4">{t('print.waiting.premiumMessage')}</p>
           <Button
             label={t('print.waiting.upgradeButton')}
             icon="pi pi-star"
@@ -235,7 +236,16 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
         throw error
       }
     },
-    [addresses, selectedFormat.value, user, resetPrintFlag, debugMode, trackLabelGenerated, userPlan, labelOffset]
+    [
+      addresses,
+      selectedFormat.value,
+      user,
+      resetPrintFlag,
+      debugMode,
+      trackLabelGenerated,
+      userPlan,
+      labelOffset,
+    ]
   )
 
   const executePrint = useCallback(
@@ -355,7 +365,7 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
       action()
       setPendingPrintAction(null)
     }
-  }, [loading, user, userPlan, pendingPrintAction, canPrintAll, addresses.length])
+  }, [loading, user, pendingPrintAction, canPrintAll, addresses.length])
 
   if (addresses.length === 0) {
     return null
@@ -429,14 +439,15 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
           )}
 
           {/* Sélecteur d'offset pour planches partiellement utilisées - Premium uniquement */}
-          {PRINT_CONFIGS[selectedFormat.value]?.layout.type === 'grid' && userPlan === 'premium' && (
-            <LabelOffsetSelector
-              format={selectedFormat.value}
-              offset={labelOffset}
-              onOffsetChange={setLabelOffset}
-              t={t}
-            />
-          )}
+          {PRINT_CONFIGS[selectedFormat.value]?.layout.type === 'grid' &&
+            userPlan === 'premium' && (
+              <LabelOffsetSelector
+                format={selectedFormat.value}
+                offset={labelOffset}
+                onOffsetChange={setLabelOffset}
+                t={t}
+              />
+            )}
         </div>
 
         {/* Actions */}
@@ -612,7 +623,7 @@ const PrintPreviewSheet = React.memo<PrintPreviewSheetProps>(function PrintPrevi
           pageAddresses = addresses.slice(0, Math.max(0, addressesPerPage - offset))
         } else {
           // Pages suivantes : calculer l'index en tenant compte de l'offset initial
-          startIndex = (pageIndex * addressesPerPage) - offset
+          startIndex = pageIndex * addressesPerPage - offset
           pageAddresses = addresses.slice(startIndex, startIndex + addressesPerPage)
         }
 
@@ -1137,7 +1148,7 @@ function getFormatCardStyles(isSelected: boolean, isPremium: boolean = false) {
   const baseCardStyles =
     'relative cursor-pointer rounded-lg border-2 p-4 transition-all duration-200 focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2'
 
-  let selectedCardStyles = 'border-blue-500 bg-blue-50'
+  const selectedCardStyles = 'border-blue-500 bg-blue-50'
   let unselectedCardStyles = 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
 
   // Style subtil pour les formats premium
@@ -1197,19 +1208,25 @@ const LabelOffsetSelector = React.memo<LabelOffsetSelectorProps>(function LabelO
     }
   }, [offset, onOffsetChange])
 
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value, 10)
-    if (!isNaN(value) && value >= 0 && value < maxLabels) {
-      onOffsetChange(value)
-    }
-  }, [maxLabels, onOffsetChange])
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = parseInt(e.target.value, 10)
+      if (!Number.isNaN(value) && value >= 0 && value < maxLabels) {
+        onOffsetChange(value)
+      }
+    },
+    [maxLabels, onOffsetChange]
+  )
 
-  const handleCellClick = useCallback((index: number) => {
-    // Cliquer sur une case = définir l'offset à cet index
-    // Si on clique sur la case 5, ça veut dire que les 5 premières (0-4) sont utilisées
-    // Donc offset = index
-    onOffsetChange(index)
-  }, [onOffsetChange])
+  const handleCellClick = useCallback(
+    (index: number) => {
+      // Cliquer sur une case = définir l'offset à cet index
+      // Si on clique sur la case 5, ça veut dire que les 5 premières (0-4) sont utilisées
+      // Donc offset = index
+      onOffsetChange(index)
+    },
+    [onOffsetChange]
+  )
 
   const handleReset = useCallback(() => {
     onOffsetChange(0)
@@ -1235,9 +1252,7 @@ const LabelOffsetSelector = React.memo<LabelOffsetSelectorProps>(function LabelO
         <div className="flex items-center gap-2">
           <i className="pi pi-box text-blue-600"></i>
           <div>
-            <div className="text-sm font-semibold text-gray-900">
-              {t('print.offset.title')}
-            </div>
+            <div className="text-sm font-semibold text-gray-900">{t('print.offset.title')}</div>
             <div className="text-xs text-gray-600">
               {offset > 0
                 ? t('print.offset.summary').replace('{count}', offset.toString())
@@ -1245,15 +1260,18 @@ const LabelOffsetSelector = React.memo<LabelOffsetSelectorProps>(function LabelO
             </div>
           </div>
         </div>
-        <i className={cn('pi text-gray-600 transition-transform', isExpanded ? 'pi-chevron-up' : 'pi-chevron-down')}></i>
+        <i
+          className={cn(
+            'pi text-gray-600 transition-transform',
+            isExpanded ? 'pi-chevron-up' : 'pi-chevron-down'
+          )}
+        ></i>
       </button>
 
       {/* Contenu expandable */}
       {isExpanded && (
         <div className="p-4 pt-4 space-y-4 border-t border-blue-200">
-          <div className="text-xs text-gray-600">
-            {t('print.offset.description')}
-          </div>
+          <div className="text-xs text-gray-600">{t('print.offset.description')}</div>
 
           {/* Input avec boutons +/- */}
           <div className="flex items-center gap-3">
@@ -1320,8 +1338,11 @@ const LabelOffsetSelector = React.memo<LabelOffsetSelectorProps>(function LabelO
                     'aspect-square rounded flex items-center justify-center text-xs font-medium transition-all cursor-pointer',
                     'hover:scale-105 active:scale-95',
                     cell.isUsed && 'bg-gray-300 text-gray-600 hover:bg-gray-400',
-                    cell.isNext && 'bg-green-500 text-white ring-2 ring-green-600 hover:bg-green-600',
-                    !cell.isUsed && !cell.isNext && 'bg-white border border-gray-300 text-gray-400 hover:border-gray-400 hover:bg-gray-50'
+                    cell.isNext &&
+                      'bg-green-500 text-white ring-2 ring-green-600 hover:bg-green-600',
+                    !cell.isUsed &&
+                      !cell.isNext &&
+                      'bg-white border border-gray-300 text-gray-400 hover:border-gray-400 hover:bg-gray-50'
                   )}
                   title={
                     cell.isUsed
@@ -1339,12 +1360,11 @@ const LabelOffsetSelector = React.memo<LabelOffsetSelectorProps>(function LabelO
             <div className="mt-3 text-xs text-center text-gray-600">
               {offset > 0 ? (
                 <span>
-                  💡 {t('print.offset.startPosition').replace('{position}', (offset + 1).toString())}
+                  💡{' '}
+                  {t('print.offset.startPosition').replace('{position}', (offset + 1).toString())}
                 </span>
               ) : (
-                <span>
-                  ✨ {t('print.offset.newSheet')}
-                </span>
+                <span>✨ {t('print.offset.newSheet')}</span>
               )}
             </div>
           </div>

@@ -3,7 +3,7 @@
  * Récupère automatiquement le token et l'inclut dans les requêtes API
  */
 
-import { useEffect, useState, useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 /**
  * Hook pour récupérer et gérer le token CSRF

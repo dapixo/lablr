@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useParams, useRouter, usePathname } from 'next/navigation'
+import { useParams, usePathname, useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -52,7 +52,7 @@ export function Header({ t }: HeaderProps) {
         }
       }, 100)
     }
-  }, [pathname])
+  }, [])
 
   // Handler pour le lien FAQ
   const handleFaqClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -121,66 +121,65 @@ export function Header({ t }: HeaderProps) {
             ) : user ? (
               // Mode connecté : Mon compte, FAQ, Upgrade (si pas premium), Déconnexion
               <>
-                  <Link
-                    href={`/${locale}/account`}
-                    className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5"
-                  >
-                    <i className="pi pi-user text-xs"></i>
-                    <span>{t('navigation.account')}</span>
-                  </Link>
-                  <a
-                    href={`/${locale}#faq`}
-                    onClick={handleFaqClick}
-                    className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <i className="pi pi-question-circle text-xs"></i>
-                    <span>{t('navigation.faq')}</span>
-                  </a>
-                  {userPlan !== 'premium' && (
-                    <Link
-                      href={`/${locale}/pricing`}
-                      className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5"
-                    >
-                      <i className="pi pi-star text-xs"></i>
-                      <span>{t('navigation.upgrade')}</span>
-                    </Link>
-                  )}
-                  <button
-                    onClick={handleSignOut}
-                    className="text-sm text-gray-700 hover:text-red-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <i className="pi pi-sign-out text-xs"></i>
-                    <span>{t('navigation.signOut')}</span>
-                  </button>
-                </>
-              ) : (
-                // Mode déconnecté : Connexion, FAQ, Tarifs
-                <>
-                  <Link
-                    href={`/${locale}/login`}
-                    className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5"
-                  >
-                    <i className="pi pi-sign-in text-xs"></i>
-                    <span>{t('auth.buttons.signIn')}</span>
-                  </Link>
-                  <a
-                    href={`/${locale}#faq`}
-                    onClick={handleFaqClick}
-                    className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <i className="pi pi-question-circle text-xs"></i>
-                    <span>{t('navigation.faq')}</span>
-                  </a>
+                <Link
+                  href={`/${locale}/account`}
+                  className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5"
+                >
+                  <i className="pi pi-user text-xs"></i>
+                  <span>{t('navigation.account')}</span>
+                </Link>
+                <a
+                  href={`/${locale}#faq`}
+                  onClick={handleFaqClick}
+                  className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5 cursor-pointer"
+                >
+                  <i className="pi pi-question-circle text-xs"></i>
+                  <span>{t('navigation.faq')}</span>
+                </a>
+                {userPlan !== 'premium' && (
                   <Link
                     href={`/${locale}/pricing`}
                     className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5"
                   >
-                    <i className="pi pi-tag text-xs"></i>
-                    <span>{t('navigation.pricing')}</span>
+                    <i className="pi pi-star text-xs"></i>
+                    <span>{t('navigation.upgrade')}</span>
                   </Link>
-                </>
-              )
-            }
+                )}
+                <button
+                  onClick={handleSignOut}
+                  className="text-sm text-gray-700 hover:text-red-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5 cursor-pointer"
+                >
+                  <i className="pi pi-sign-out text-xs"></i>
+                  <span>{t('navigation.signOut')}</span>
+                </button>
+              </>
+            ) : (
+              // Mode déconnecté : Connexion, FAQ, Tarifs
+              <>
+                <Link
+                  href={`/${locale}/login`}
+                  className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5"
+                >
+                  <i className="pi pi-sign-in text-xs"></i>
+                  <span>{t('auth.buttons.signIn')}</span>
+                </Link>
+                <a
+                  href={`/${locale}#faq`}
+                  onClick={handleFaqClick}
+                  className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5 cursor-pointer"
+                >
+                  <i className="pi pi-question-circle text-xs"></i>
+                  <span>{t('navigation.faq')}</span>
+                </a>
+                <Link
+                  href={`/${locale}/pricing`}
+                  className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5"
+                >
+                  <i className="pi pi-tag text-xs"></i>
+                  <span>{t('navigation.pricing')}</span>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>

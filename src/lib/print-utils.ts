@@ -2,7 +2,6 @@ import { generateAddressesHTML as generateHTML } from '@/lib/print/html-generato
 import { generateCSV } from '@/lib/print-formats'
 import type { Address, PrintFormat } from '@/types/address'
 
-
 /**
  * Lance l'impression directement depuis la page actuelle sans ouvrir d'onglet
  * @param offset - Nombre d'étiquettes vides à insérer au début (pour planches partiellement utilisées)

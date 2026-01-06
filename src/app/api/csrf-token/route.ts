@@ -4,13 +4,13 @@
  */
 
 import { type NextRequest, NextResponse } from 'next/server'
-import { refreshCsrfToken, getCsrfTokenFromCookie } from '@/lib/csrf'
+import { getCsrfTokenFromCookie, refreshCsrfToken } from '@/lib/csrf'
 
 /**
  * Génère ou récupère un token CSRF
  * Le token est stocké dans un cookie httpOnly et retourné dans le body
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Vérifier si un token existe déjà
     let token = await getCsrfTokenFromCookie()

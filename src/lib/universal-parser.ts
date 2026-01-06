@@ -118,12 +118,12 @@ function correctMappingForMissingColumns(
     const correctedMapping: ColumnMapping = { ...mapping }
 
     // Ajustement spécifique pour Amazon Seller avec 20 colonnes au lieu de 29
-    if (mapping.fullName === 16) correctedMapping.fullName = 15  // recipient-name
-    if (mapping.addressLine1 === 17) correctedMapping.addressLine1 = 16  // ship-address-1
-    if (mapping.addressLine2 === 18) correctedMapping.addressLine2 = undefined  // ship-address-2 souvent vide
-    if (mapping.city === 20) correctedMapping.city = 17  // ship-city
-    if (mapping.postalCode === 22) correctedMapping.postalCode = 18  // ship-postal-code
-    if (mapping.country === 23) correctedMapping.country = 19  // ship-country
+    if (mapping.fullName === 16) correctedMapping.fullName = 15 // recipient-name
+    if (mapping.addressLine1 === 17) correctedMapping.addressLine1 = 16 // ship-address-1
+    if (mapping.addressLine2 === 18) correctedMapping.addressLine2 = undefined // ship-address-2 souvent vide
+    if (mapping.city === 20) correctedMapping.city = 17 // ship-city
+    if (mapping.postalCode === 22) correctedMapping.postalCode = 18 // ship-postal-code
+    if (mapping.country === 23) correctedMapping.country = 19 // ship-country
 
     return correctedMapping
   }
@@ -363,7 +363,10 @@ function cleanQuotes(field: string): string {
 function parseCSVLine(line: string, separator: string): string[] {
   // Gestion spéciale pour les espaces multiples
   if (separator === 'MULTI_SPACE') {
-    return line.split(/\s{2,}/).map((field) => cleanQuotes(field.trim())).filter(Boolean)
+    return line
+      .split(/\s{2,}/)
+      .map((field) => cleanQuotes(field.trim()))
+      .filter(Boolean)
   }
 
   const columns: string[] = []

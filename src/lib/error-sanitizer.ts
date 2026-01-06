@@ -72,16 +72,12 @@ const DB_ERROR_PATTERNS = [
 ]
 
 /** Patterns de stack traces */
-const STACK_TRACE_PATTERNS = [
-  /at\s+[\w.]+\s+\([^)]+:\d+:\d+\)/,
-  /Error:\s+.+\n\s+at/,
-  /^\s+at\s/m,
-]
+const STACK_TRACE_PATTERNS = [/at\s+[\w.]+\s+\([^)]+:\d+:\d+\)/, /Error:\s+.+\n\s+at/, /^\s+at\s/m]
 
 /** Patterns de chemins de fichiers */
 const FILE_PATH_PATTERNS = [
   /\/[\w/-]+\.(ts|js|tsx|jsx|sql)/i,
-  /[A-Z]:\\[\w\\-]+\.(ts|js|tsx|jsx|sql)/i,
+  /[A-Z]:\\[\w-]+\.(ts|js|tsx|jsx|sql)/i,
 ]
 
 // ================================================================

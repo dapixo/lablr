@@ -239,7 +239,7 @@ export function detectColumns(headers: string[]): DetectionResult {
 export function detectSeparator(line: string): string {
   // Supprimer le BOM UTF-8 s'il est présent au début de la ligne
   let cleanedLine = line
-  if (cleanedLine.charCodeAt(0) === 0xFEFF) {
+  if (cleanedLine.charCodeAt(0) === 0xfeff) {
     cleanedLine = cleanedLine.slice(1)
   }
 
@@ -300,7 +300,7 @@ export function analyzeFileStructure(content: string): DetectionResult {
 function parseHeadersRobustly(line: string, separator: string): string[] {
   // Supprimer le BOM UTF-8 s'il est présent au début de la ligne
   let cleanedLine = line
-  if (cleanedLine.charCodeAt(0) === 0xFEFF) {
+  if (cleanedLine.charCodeAt(0) === 0xfeff) {
     cleanedLine = cleanedLine.slice(1)
   }
 

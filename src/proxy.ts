@@ -6,9 +6,9 @@
  * - Session Supabase via middleware
  */
 
-import { type NextRequest, NextResponse } from 'next/server'
-import { updateSession } from '@/lib/supabase/middleware'
+import type { NextRequest, NextResponse } from 'next/server'
 import { csrfProtection, isCsrfExempt } from '@/lib/csrf'
+import { updateSession } from '@/lib/supabase/middleware'
 
 /**
  * Configuration CSP (Content Security Policy)

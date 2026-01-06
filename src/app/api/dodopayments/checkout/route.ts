@@ -1,18 +1,15 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { setupDodoPayments } from '@/lib/dodopayments/client'
 import { DODO_CONFIG } from '@/lib/dodopayments/config'
-import { createClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
 import { checkRateLimit, withRateLimitHeaders } from '@/lib/rate-limit'
+import { createClient } from '@/lib/supabase/server'
 import type { CheckoutRequest, CheckoutResponse } from '@/types/dodopayments'
 
 /**
  * Domaines autorisés pour CSRF protection
  */
-const ALLOWED_ORIGINS = [
-  'https://lalabel.app',
-  'https://www.lalabel.app',
-]
+const ALLOWED_ORIGINS = ['https://lalabel.app', 'https://www.lalabel.app']
 
 const ALLOWED_DEV_ORIGINS = [
   'http://localhost:3000',
@@ -36,12 +33,12 @@ export async function POST(request: NextRequest) {
   const isDevelopment = process.env.NODE_ENV !== 'production'
 
   // Domaines ngrok (acceptés en dev pour tests webhooks)
-  const isNgrokDomain = referer && (
-    referer.includes('ngrok-free.app') ||
-    referer.includes('ngrok.io') ||
-    referer.includes('ngrok-free.dev') ||
-    referer.includes('ngrok.app')
-  )
+  const isNgrokDomain =
+    referer &&
+    (referer.includes('ngrok-free.app') ||
+      referer.includes('ngrok.io') ||
+      referer.includes('ngrok-free.dev') ||
+      referer.includes('ngrok.app'))
 
   // Origines autorisées selon l'environnement
   const allowedOrigins = isDevelopment
@@ -82,8 +79,7 @@ export async function POST(request: NextRequest) {
       billingCycle === 'yearly' ? DODO_CONFIG.products.yearly : DODO_CONFIG.products.monthly
 
     if (!productId) {
-      const envVar =
-        billingCycle === 'yearly' ? 'DODO_PRODUCT_YEARLY' : 'DODO_PRODUCT_MONTHLY'
+      const envVar = billingCycle === 'yearly' ? 'DODO_PRODUCT_YEARLY' : 'DODO_PRODUCT_MONTHLY'
       return NextResponse.json(
         { error: `Configuration manquante: ${envVar} non définie` },
         { status: 500 }

@@ -8,7 +8,7 @@ const ALL_FAQ_IDS = [
   'platforms',
   'formats',
   'waste',
-  'pricing'
+  'pricing',
 ] as const
 
 /**
@@ -21,4 +21,4 @@ export function getVisibleFAQIds(): readonly string[] {
 // Export pour rétrocompatibilité (affiche toutes les questions)
 export const FAQ_IDS = ALL_FAQ_IDS
 
-export type FAQId = typeof ALL_FAQ_IDS[number]
+export type FAQId = (typeof ALL_FAQ_IDS)[number]

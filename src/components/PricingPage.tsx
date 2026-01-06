@@ -10,10 +10,14 @@ import { Toast } from 'primereact/toast'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 // Lazy loading du AuthModal pour améliorer FCP
-const AuthModal = dynamic(() => import('@/components/auth/AuthModal').then(mod => ({ default: mod.AuthModal })), {
-  loading: () => <Skeleton width="100%" height="400px" />,
-  ssr: false,
-})
+const AuthModal = dynamic(
+  () => import('@/components/auth/AuthModal').then((mod) => ({ default: mod.AuthModal })),
+  {
+    loading: () => <Skeleton width="100%" height="400px" />,
+    ssr: false,
+  }
+)
+
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { useAuth } from '@/hooks/useAuth'
@@ -181,9 +185,7 @@ export function PricingPage({ t }: PricingPageProps) {
               {t('pricing.page.title').split(' ').slice(1).join(' ')}
             </span>
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            {t('pricing.page.subtitle')}
-          </p>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">{t('pricing.page.subtitle')}</p>
         </div>
       </div>
 
@@ -342,7 +344,6 @@ export function PricingPage({ t }: PricingPageProps) {
             </Card>
           </div>
         </div>
-
       </div>
 
       {/* Footer */}

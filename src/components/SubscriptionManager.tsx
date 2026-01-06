@@ -118,7 +118,7 @@ export function SubscriptionManager({ t, embedded = false }: SubscriptionManager
   useEffect(() => {
     hasFetchedRef.current = false // Reset cache quand l'utilisateur change
     fetchSubscription()
-  }, [user, fetchSubscription]) // Dépendances correctes avec useRef
+  }, [fetchSubscription]) // Dépendances correctes avec useRef
 
   /**
    * Ouverture du customer portal Dodo Payments
@@ -404,16 +404,16 @@ export function SubscriptionManager({ t, embedded = false }: SubscriptionManager
                     {subscription.status === 'cancelled'
                       ? t('subscription.endsAt')
                       : subscription.status === 'paused'
-                      ? t('subscription.accessUntil')
-                      : t('subscription.renewsAt')}
+                        ? t('subscription.accessUntil')
+                        : t('subscription.renewsAt')}
                   </p>
                   <p className="text-gray-600">
                     {formatDate(
                       subscription.status === 'cancelled'
                         ? subscription.endsAt
                         : subscription.status === 'paused'
-                        ? subscription.endsAt || subscription.renewsAt
-                        : subscription.renewsAt
+                          ? subscription.endsAt || subscription.renewsAt
+                          : subscription.renewsAt
                     )}
                   </p>
                 </div>

@@ -7,12 +7,12 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { PRODUCT_TO_PLAN_MAP } from './config'
 import {
   activateSubscription,
-  handlePaymentFailure,
   handleCancellation,
   handleExpiration,
-  handleRenewal,
-  handlePlanChange,
   handleGenericUpdate,
+  handlePaymentFailure,
+  handlePlanChange,
+  handleRenewal,
 } from './subscription-helpers'
 
 // ================================================================

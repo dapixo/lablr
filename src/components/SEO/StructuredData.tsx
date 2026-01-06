@@ -20,25 +20,29 @@ export function StructuredData({ locale }: StructuredDataProps) {
     browserRequirements: 'HTML5, CSS3, JavaScript enabled',
     downloadUrl: 'https://lalabel.app',
     installUrl: 'https://lalabel.app',
-    softwareVersion: '3.8',
-    releaseNotes: locale === 'fr'
-      ? 'Système de paiement Lemon Squeezy production-ready avec webhook robuste'
-      : 'Production-ready Lemon Squeezy payment system with robust webhook',
-    featureList: locale === 'fr' ? [
-      'Import multi-plateformes (Amazon, Shopify, eBay)',
-      'Formats A4, Avery et étiquettes thermiques',
-      'Traitement local sécurisé des données',
-      'Interface moderne et responsive',
-      '5 étiquettes par impression gratuites',
-      'Plan Premium illimité'
-    ] : [
-      'Multi-platform import (Amazon, Shopify, eBay)',
-      'A4, Avery and thermal label formats',
-      'Secure local data processing',
-      'Modern responsive interface',
-      '5 free labels per print',
-      'Unlimited Premium plan'
-    ],
+    softwareVersion: '4.0',
+    releaseNotes:
+      locale === 'fr'
+        ? 'Système de paiement Dodo Payments avec webhook robuste et cache React Query optimisé'
+        : 'Dodo Payments system with robust webhook and optimized React Query caching',
+    featureList:
+      locale === 'fr'
+        ? [
+            'Import multi-plateformes (Amazon, Shopify, eBay)',
+            'Formats A4, Avery et étiquettes thermiques',
+            'Traitement local sécurisé des données',
+            'Interface moderne et responsive',
+            '5 étiquettes par impression gratuites',
+            'Plan Premium illimité',
+          ]
+        : [
+            'Multi-platform import (Amazon, Shopify, eBay)',
+            'A4, Avery and thermal label formats',
+            'Secure local data processing',
+            'Modern responsive interface',
+            '5 free labels per print',
+            'Unlimited Premium plan',
+          ],
     offers: [
       {
         '@type': 'Offer',
@@ -49,7 +53,9 @@ export function StructuredData({ locale }: StructuredDataProps) {
         availability: 'https://schema.org/InStock',
         category: 'Free',
         description:
-          locale === 'fr' ? '10 étiquettes gratuites par jour, renouvelées automatiquement' : '10 free labels per day, automatically renewed',
+          locale === 'fr'
+            ? '10 étiquettes gratuites par jour, renouvelées automatiquement'
+            : '10 free labels per day, automatically renewed',
       },
       {
         '@type': 'Offer',
@@ -60,7 +66,10 @@ export function StructuredData({ locale }: StructuredDataProps) {
         priceValidUntil: '2025-12-31',
         availability: 'https://schema.org/InStock',
         category: 'Premium',
-        description: locale === 'fr' ? 'Étiquettes illimitées + support prioritaire' : 'Unlimited labels + priority support',
+        description:
+          locale === 'fr'
+            ? 'Étiquettes illimitées + support prioritaire'
+            : 'Unlimited labels + priority support',
       },
       {
         '@type': 'Offer',
@@ -71,7 +80,10 @@ export function StructuredData({ locale }: StructuredDataProps) {
         priceValidUntil: '2025-12-31',
         availability: 'https://schema.org/InStock',
         category: 'Premium',
-        description: locale === 'fr' ? 'Étiquettes illimitées - 33% d\'économie' : 'Unlimited labels - 33% savings',
+        description:
+          locale === 'fr'
+            ? "Étiquettes illimitées - 33% d'économie"
+            : 'Unlimited labels - 33% savings',
       },
     ],
     author: {
@@ -79,22 +91,19 @@ export function StructuredData({ locale }: StructuredDataProps) {
       name: 'Lalabel',
       url: 'https://lalabel.app',
       logo: 'https://lalabel.app/logo.png',
-      sameAs: [
-        'https://twitter.com/lalabel_app',
-        'https://linkedin.com/company/lalabel'
-      ],
+      sameAs: ['https://twitter.com/lalabel_app', 'https://linkedin.com/company/lalabel'],
       contactPoint: {
         '@type': 'ContactPoint',
         email: 'contact@lalabel.app',
         contactType: 'customer support',
         availableLanguage: ['French', 'English'],
-        areaServed: ['FR', 'BE', 'CH', 'CA', 'US', 'DE', 'IT', 'ES', 'GB', 'NL']
-      }
+        areaServed: ['FR', 'BE', 'CH', 'CA', 'US', 'DE', 'IT', 'ES', 'GB', 'NL'],
+      },
     },
     publisher: {
       '@type': 'Organization',
       name: 'Lalabel',
-      logo: 'https://lalabel.app/logo.png'
+      logo: 'https://lalabel.app/logo.png',
     },
     aggregateRating: {
       '@type': 'AggregateRating',
@@ -102,11 +111,11 @@ export function StructuredData({ locale }: StructuredDataProps) {
       bestRating: '5',
       worstRating: '1',
       reviewCount: '127',
-      ratingCount: '127'
+      ratingCount: '127',
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://lalabel.app/${locale}`
+      '@id': `https://lalabel.app/${locale}`,
     },
     keywords:
       locale === 'fr'
@@ -118,7 +127,7 @@ export function StructuredData({ locale }: StructuredDataProps) {
     isAccessibleForFree: true,
     accessibilityAPI: ['ARIA'],
     accessibilityControl: ['fullKeyboardControl', 'fullMouseControl', 'fullTouchControl'],
-    accessibilityFeature: ['alternativeText', 'structuralNavigation']
+    accessibilityFeature: ['alternativeText', 'structuralNavigation'],
   }
 
   return (

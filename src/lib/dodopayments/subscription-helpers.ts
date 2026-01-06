@@ -143,8 +143,10 @@ export async function updateSubscriptionRPC(
     p_status: params.status || null,
     p_renews_at: params.renewsAt !== undefined ? params.renewsAt : null,
     p_ends_at: params.endsAt !== undefined ? params.endsAt : null,
-    p_grace_period_starts_at: params.gracePeriodStartsAt !== undefined ? params.gracePeriodStartsAt : null,
-    p_grace_period_ends_at: params.gracePeriodEndsAt !== undefined ? params.gracePeriodEndsAt : null,
+    p_grace_period_starts_at:
+      params.gracePeriodStartsAt !== undefined ? params.gracePeriodStartsAt : null,
+    p_grace_period_ends_at:
+      params.gracePeriodEndsAt !== undefined ? params.gracePeriodEndsAt : null,
     p_product_id: params.productId || null,
     p_metadata: params.metadata !== undefined ? params.metadata : null,
   })
