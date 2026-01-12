@@ -28,6 +28,7 @@
     }
   },
   "steps": {
+    "heading": "Comment ça marche ? 3 étapes simples",
     "1": {
       "title": "1. Importez",
       "description": "Glissez votre fichier CSV/TXT (Amazon, Shopify, eBay, Etsy...)"
@@ -718,5 +719,31 @@
     "button": {
       "printLimited": "Imprimer les {limit} premières"
     }
+  },
+  "notFound": {
+    "title": "Page non trouvée",
+    "description": "Oups ! La page que vous recherchez semble introuvable. Elle a peut-être été déplacée ou supprimée.",
+    "cta": "Retour à l'accueil",
+    "popularPages": "Pages populaires",
+    "links": {
+      "generator": {
+        "title": "Générateur d'étiquettes",
+        "description": "Créez vos étiquettes d'expédition gratuitement"
+      },
+      "pricing": {
+        "title": "Tarifs",
+        "description": "Plans gratuit et premium à 6€/mois"
+      },
+      "faq": {
+        "title": "FAQ",
+        "description": "Questions fréquentes sur Lalabel"
+      },
+      "login": {
+        "title": "Connexion",
+        "description": "Accédez à votre compte Lalabel"
+      }
+    },
+    "needHelp": "Besoin d'aide ?",
+    "contactUs": "Contactez-nous"
   }
 }

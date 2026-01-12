@@ -28,6 +28,7 @@
     }
   },
   "steps": {
+    "heading": "How does it work? 3 simple steps",
     "1": {
       "title": "1. Import",
       "description": "Drop your CSV/TXT file (Amazon, Shopify, eBay, Etsy...)"
@@ -718,5 +719,31 @@
     "button": {
       "printLimited": "Print first {limit}"
     }
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "Oops! The page you're looking for seems to be missing. It may have been moved or deleted.",
+    "cta": "Back to Home",
+    "popularPages": "Popular Pages",
+    "links": {
+      "generator": {
+        "title": "Label Generator",
+        "description": "Create your shipping labels for free"
+      },
+      "pricing": {
+        "title": "Pricing",
+        "description": "Free and Premium plans at €6/month"
+      },
+      "faq": {
+        "title": "FAQ",
+        "description": "Frequently asked questions about Lalabel"
+      },
+      "login": {
+        "title": "Login",
+        "description": "Access your Lalabel account"
+      }
+    },
+    "needHelp": "Need help?",
+    "contactUs": "Contact us"
   }
 }

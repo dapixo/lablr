@@ -28,6 +28,7 @@
     }
   },
   "steps": {
+    "heading": "¿Cómo funciona? 3 pasos simples",
     "1": {
       "title": "1. Importa",
       "description": "Arrastra tu archivo CSV/TXT (Amazon, Shopify, eBay, Etsy...)"
@@ -359,6 +360,32 @@
         "activePlan": "Plan activo"
       }
     }
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "description": "¡Ups! La página que buscas parece no existir. Es posible que haya sido movida o eliminada.",
+    "cta": "Volver al inicio",
+    "popularPages": "Páginas populares",
+    "links": {
+      "generator": {
+        "title": "Generador de etiquetas",
+        "description": "Crea tus etiquetas de envío gratis"
+      },
+      "pricing": {
+        "title": "Precios",
+        "description": "Planes gratuito y Premium a 6€/mes"
+      },
+      "faq": {
+        "title": "FAQ",
+        "description": "Preguntas frecuentes sobre Lalabel"
+      },
+      "login": {
+        "title": "Iniciar sesión",
+        "description": "Accede a tu cuenta Lalabel"
+      }
+    },
+    "needHelp": "¿Necesitas ayuda?",
+    "contactUs": "Contáctanos"
   },
   "faq": {
     "title": "Preguntas frecuentes",

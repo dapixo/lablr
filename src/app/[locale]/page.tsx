@@ -275,6 +275,9 @@ export default function Home() {
 
                 {/* Section processus 3 étapes - Version full */}
                 <div id="steps-section" className="max-w-4xl mx-auto">
+                  <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8">
+                    {t('steps.heading')}
+                  </h2>
                   <HeroSteps t={t} variant="full" />
                 </div>
               </div>
@@ -413,7 +416,7 @@ export default function Home() {
       </main>
 
       {/* FAQ Section */}
-      <FAQ t={t} />
+      <FAQ t={t} locale={locale} />
 
       {/* Feedback Section */}
       <FeedbackSection t={t} />

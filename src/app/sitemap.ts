@@ -15,6 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         languages: {
           fr: `${baseUrl}/fr`,
           en: `${baseUrl}/en`,
+          es: `${baseUrl}/es`,
         },
       },
     },
@@ -26,6 +27,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${baseUrl}/en`,
+      lastModified,
+      changeFrequency: 'weekly',
+      priority: 1,
+    },
+    {
+      url: `${baseUrl}/es`,
       lastModified,
       changeFrequency: 'weekly',
       priority: 1,
@@ -44,31 +51,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.8,
     },
+    {
+      url: `${baseUrl}/es/pricing`,
+      lastModified,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
 
-    // Pages compte et authentication
-    {
-      url: `${baseUrl}/fr/account`,
-      lastModified,
-      changeFrequency: 'weekly',
-      priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/en/account`,
-      lastModified,
-      changeFrequency: 'weekly',
-      priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/fr/login`,
-      lastModified,
-      changeFrequency: 'monthly',
-      priority: 0.5,
-    },
-    {
-      url: `${baseUrl}/en/login`,
-      lastModified,
-      changeFrequency: 'monthly',
-      priority: 0.5,
-    },
+    // Note : Les pages /account et /login sont exclues du sitemap
+    // car elles ont robots: { index: false } dans leurs métadonnées
   ]
 }

@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @layer base {
   :root {
@@ -84,4 +84,10 @@
 
 .animation-delay-4000 {
   animation-delay: 4s;
+}
+
+@font-face {
+  font-family: 'primeicons';
+  src: url('_next/static/media/primeicons.55fa2301.woff2') format('woff2');
+  font-display: swap;
 }
