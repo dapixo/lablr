@@ -32,6 +32,9 @@ importers:
       dodopayments:
         specifier: ^2.13.1
         version: 2.13.1
+      dodopayments-checkout:
+        specifier: ^1.7.2
+        version: 1.7.2
       lucide-react:
         specifier: ^0.542.0
         version: 0.542.0(react@19.1.0)
@@ -1305,6 +1308,10 @@ packages:
   doctrine@2.1.0:
     resolution: {integrity: sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw==}
     engines: {node: '>=0.10.0'}
+
+  dodopayments-checkout@1.7.2:
+    resolution: {integrity: sha512-oPJSe85b3Qq4T/7pPgE7Lc+wplF1tsLoVdoPHF8Bpwz6O5ZwkzN2Vwf8EdbHdxYoQiKO9AH8yuT94xtePmg1ZQ==}
+    engines: {node: '>=18.0.0'}
 
   dodopayments@2.13.1:
     resolution: {integrity: sha512-awA3WM6m8vPIaD6k6fNV57Hk6dwooBdyNDbWpXdG8OPrdmma8qjt5NOILRvjHseRWGm2/LewJFq/Md0HFROA4w==}
@@ -3775,6 +3782,8 @@ snapshots:
   doctrine@2.1.0:
     dependencies:
       esutils: 2.0.3
+
+  dodopayments-checkout@1.7.2: {}
 
   dodopayments@2.13.1:
     dependencies:

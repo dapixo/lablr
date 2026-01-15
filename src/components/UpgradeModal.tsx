@@ -82,19 +82,9 @@ export function UpgradeModal({
       triggeredBy: 'limit_exceeded',
     })
 
-    // Créer le checkout Dodo Payments
-    const success = await createCheckout(isAnnual ? 'yearly' : 'monthly')
-
-    if (success) {
-      // Informer l'utilisateur qu'il va être redirigé
-      toast.current?.show({
-        severity: 'info',
-        summary: t('pricing.checkout.redirecting.title'),
-        detail: t('pricing.checkout.redirecting.message'),
-        life: 3000,
-      })
-    }
-  }, [user, userPlan, createCheckout, isAnnual, t, trackUpgradeAttempt])
+    // Créer le checkout Dodo Payments (overlay mode - pas de redirection)
+    await createCheckout(isAnnual ? 'yearly' : 'monthly')
+  }, [user, userPlan, createCheckout, isAnnual, trackUpgradeAttempt])
 
   // Afficher les erreurs de checkout
   useEffect(() => {

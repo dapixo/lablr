@@ -4,90 +4,35 @@ import { Calendar, CreditCard, Package } from 'lucide-react'
 import { useParams } from 'next/navigation'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
-import { Skeleton } from 'primereact/skeleton'
 import { Tag } from 'primereact/tag'
-import { useCallback, useEffect, useState } from 'react'
-import { useAuth } from '@/hooks/useAuth'
-import { useCsrfToken } from '@/hooks/useCsrfToken'
-import { useSubscription } from '@/hooks/useSubscription'
+import { useCallback } from 'react'
 import type { TranslationVariables } from '@/hooks/useTranslations'
 import { getPluralVariables } from '@/lib/i18n-helpers'
 import type { Subscription } from '@/types/subscription'
 
 interface SubscriptionManagerProps {
   t: (key: string, variables?: TranslationVariables) => string
-  embedded?: boolean // Si true, ne génère pas la Card wrapper
+  subscription: Subscription
+  portalUrl: string | null
+  embedded?: boolean
 }
 
 /**
  * Composant de gestion des abonnements Dodo Payments
- * 🚀 OPTIMISÉ : Utilise React Query pour cache automatique
+ * Composant purement présentationnel qui affiche les données reçues en props
  */
-export function SubscriptionManager({ t, embedded = false }: SubscriptionManagerProps) {
+export function SubscriptionManager({
+  t,
+  subscription: subscriptionData,
+  portalUrl,
+  embedded = false,
+}: SubscriptionManagerProps) {
   const { locale } = useParams()
-  const { user, userPlan } = useAuth()
-  const { csrfFetch, loading: csrfLoading } = useCsrfToken()
 
-  // 🚀 NOUVEAU : Utilisation de React Query pour subscription (cache 12h)
-  const {
-    subscription: subscriptionData,
-    isLoading: subscriptionLoading,
-    error: subscriptionError,
-  } = useSubscription(user?.id)
-
-  // État local pour le portal URL (pas caché, généré à la demande)
-  const [portalUrl, setPortalUrl] = useState<string | null>(null)
-  const [loadingPortal, setLoadingPortal] = useState(false)
-
-  /**
-   * Génération du lien du portail client Dodo Payments
-   * ⚡ OPTIMISÉ : Dépendances stables (pas de cascade)
-   */
-  const fetchPortalUrl = useCallback(async () => {
-    if (!user || csrfLoading || !csrfFetch) return
-
-    setLoadingPortal(true)
-
-    try {
-      const response = await csrfFetch('/api/dodopayments/portal', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      })
-
-      if (!response.ok) {
-        if (response.status === 404) {
-          // Pas de subscription active, c'est normal
-          return
-        }
-        throw new Error(`HTTP ${response.status}`)
-      }
-
-      const data = await response.json()
-      setPortalUrl(data.portalUrl)
-    } catch (err) {
-      console.error('Fetch portal URL error:', err)
-      // Ne pas afficher d'erreur à l'utilisateur, juste logger
-    } finally {
-      setLoadingPortal(false)
-    }
-  }, [user, csrfFetch, csrfLoading])
-
-  // Fetch portal URL si subscription active
-  useEffect(() => {
-    if (subscriptionData?.status === 'active' && !portalUrl && !loadingPortal) {
-      fetchPortalUrl()
-    }
-  }, [subscriptionData?.status, portalUrl, loadingPortal, fetchPortalUrl])
-
-  /**
-   * Ouverture du customer portal Dodo Payments
-   * ⚡ OPTIMISÉ : Utilise portalUrl de l'état local
-   */
   const openCustomerPortal = useCallback(() => {
     if (portalUrl) {
       window.open(portalUrl, '_blank', 'noopener,noreferrer')
     } else if (subscriptionData?.urls?.customer_portal) {
-      // Fallback sur l'URL de la subscription si disponible
       window.open(subscriptionData.urls.customer_portal, '_blank', 'noopener,noreferrer')
     }
   }, [portalUrl, subscriptionData?.urls?.customer_portal])
@@ -209,56 +154,6 @@ export function SubscriptionManager({ t, embedded = false }: SubscriptionManager
     [t]
   )
 
-  if (subscriptionLoading) {
-    const loadingContent = (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <Skeleton width="12rem" height="1.5rem" />
-          <Skeleton width="5rem" height="2rem" borderRadius="1rem" />
-        </div>
-        <Skeleton width="100%" height="1rem" />
-        <Skeleton width="80%" height="1rem" />
-        <div className="flex gap-3">
-          <Skeleton width="8rem" height="2.5rem" borderRadius="0.5rem" />
-          <Skeleton width="8rem" height="2.5rem" borderRadius="0.5rem" />
-        </div>
-      </div>
-    )
-
-    return embedded ? loadingContent : <Card className="mb-6">{loadingContent}</Card>
-  }
-
-  if (subscriptionError) {
-    const errorContent = (
-      <div className="text-center py-6">
-        <i className="pi pi-exclamation-triangle text-red-500 text-3xl mb-3 block"></i>
-        <p className="text-red-700 mb-4">{t('subscription.error.loading')}</p>
-        <Button
-          label={t('common.retry')}
-          icon="pi pi-refresh"
-          onClick={() => {
-            // React Query gère le retry automatiquement
-            window.location.reload()
-          }}
-          size="small"
-          outlined
-        />
-      </div>
-    )
-
-    return embedded ? (
-      <div className="border-red-200 bg-red-50 rounded-lg p-4">{errorContent}</div>
-    ) : (
-      <Card className="mb-6 border-red-200 bg-red-50">{errorContent}</Card>
-    )
-  }
-
-  // Utilisateur Free sans abonnement - ne pas afficher car géré par la page Account
-  if (!subscriptionData && userPlan === 'free') {
-    return null
-  }
-
-  // Utilisateur Premium avec abonnement
   const subscriptionContent = (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -268,7 +163,6 @@ export function SubscriptionManager({ t, embedded = false }: SubscriptionManager
 
       {subscriptionData && (
         <>
-          {/* Alerte période de grâce */}
           {subscriptionData.isInGracePeriod && (
             <div
               className={`border rounded-lg p-4 ${
@@ -332,7 +226,6 @@ export function SubscriptionManager({ t, embedded = false }: SubscriptionManager
             </div>
           )}
 
-          {/* Informations générales */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div className="flex items-start gap-3">
@@ -400,13 +293,12 @@ export function SubscriptionManager({ t, embedded = false }: SubscriptionManager
             </div>
           </div>
 
-          {/* Actions */}
           <div className="flex flex-wrap gap-3 pt-4 border-t border-gray-200">
             <Button
               label={t('subscription.manage')}
-              icon={loadingPortal ? 'pi pi-spin pi-spinner' : 'pi pi-external-link'}
+              icon="pi pi-external-link"
               onClick={openCustomerPortal}
-              disabled={!subscriptionData.urls?.customer_portal || loadingPortal}
+              disabled={!portalUrl && !subscriptionData.urls?.customer_portal}
               outlined
               size="small"
             />

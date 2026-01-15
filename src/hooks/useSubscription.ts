@@ -21,13 +21,24 @@ interface SubscriptionResponse {
 }
 
 /**
+ * Options pour le hook useSubscription
+ */
+interface UseSubscriptionOptions {
+  enabled?: boolean
+}
+
+/**
  * Hook React Query pour récupérer l'abonnement utilisateur
  * 🚀 Cache 12h avec invalidation manuelle
  *
  * @param userId - ID de l'utilisateur (null si non connecté)
+ * @param options - Options (enabled pour activer/désactiver le fetch)
  * @returns Query object avec subscription, isLoading, error, et refresh
  */
-export function useSubscription(userId: string | null | undefined) {
+export function useSubscription(
+  userId: string | null | undefined,
+  options?: UseSubscriptionOptions
+) {
   const queryClient = useQueryClient()
 
   const { data, isLoading, error, refetch } = useQuery({
@@ -59,7 +70,7 @@ export function useSubscription(userId: string | null | undefined) {
 
       return result.subscription
     },
-    enabled: !!userId, // Ne fetch que si user connecté
+    enabled: !!userId && (options?.enabled !== false), // Ne fetch que si user connecté ET enabled
     staleTime: 12 * 60 * 60 * 1000, // 12h - Même TTL que le plan
     gcTime: 24 * 60 * 60 * 1000, // 24h - Garbage collection
     retry: 1,

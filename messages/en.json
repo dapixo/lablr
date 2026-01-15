@@ -327,10 +327,6 @@
       }
     },
     "checkout": {
-      "redirecting": {
-        "title": "Redirecting...",
-        "message": "You will be redirected to the secure payment page."
-      },
       "error": {
         "title": "Payment error",
         "message": "Unable to create payment session. Please try again."

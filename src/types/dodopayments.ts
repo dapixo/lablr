@@ -135,8 +135,7 @@ export interface CheckoutRequest {
 
 export interface CheckoutResponse {
   checkoutUrl: string
-  subscription_id?: string
-  payment_id?: string
+  sessionId?: string
 }
 
 export interface SubscriptionStatusUpdate {
@@ -144,4 +143,46 @@ export interface SubscriptionStatusUpdate {
   status: SubscriptionStatus
   nextBillingDate?: string | null
   gracePeriodEndsAt?: string | null
+}
+
+/**
+ * Types pour le SDK Checkout Overlay (dodopayments-checkout)
+ */
+
+export type CheckoutEventType =
+  | 'checkout.opened'
+  | 'checkout.closed'
+  | 'checkout.error'
+  | 'checkout.payment_page_opened'
+  | 'checkout.customer_details_submitted'
+  | 'checkout.redirect'
+  | 'checkout.link_expired'
+  | 'checkout.status'
+  | 'checkout.redirect_requested'
+
+export type CheckoutEventStatus = 'succeeded' | 'failed' | 'processing'
+
+export interface CheckoutEvent {
+  event_type: CheckoutEventType
+  data?: {
+    message?: string | {
+      status?: CheckoutEventStatus
+      redirect_to?: string
+    }
+  }
+}
+
+export interface CheckoutInitializeOptions {
+  mode: 'test' | 'live'
+  displayType?: 'overlay' | 'inline'
+  onEvent: (event: CheckoutEvent) => void
+}
+
+export interface CheckoutOpenOptions {
+  checkoutUrl: string
+  options?: {
+    showTimer?: boolean
+    showSecurityBadge?: boolean
+    manualRedirect?: boolean
+  }
 }

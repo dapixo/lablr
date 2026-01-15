@@ -16,11 +16,12 @@ import { updateSession } from '@/lib/supabase/middleware'
  */
 const CSP_HEADER = `
   default-src 'self';
-  script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.supabase.co;
+  script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.supabase.co https://checkout.dodopayments.com https://test.checkout.dodopayments.com;
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
   img-src 'self' data: https: blob:;
   font-src 'self' https://fonts.gstatic.com data:;
-  connect-src 'self' https://*.supabase.co wss://*.supabase.co;
+  connect-src 'self' https://*.supabase.co https://*.dodopayments.com wss://*.supabase.co;
+  frame-src 'self' https://checkout.dodopayments.com https://test.checkout.dodopayments.com;
   frame-ancestors 'none';
   base-uri 'self';
   form-action 'self';

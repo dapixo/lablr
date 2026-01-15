@@ -122,39 +122,18 @@ export function PricingPage({ t }: PricingPageProps) {
       return
     }
 
-    // Créer le checkout Dodo Payments
-    const success = await createCheckout(isAnnual ? 'yearly' : 'monthly')
-
-    if (success) {
-      // Informer l'utilisateur qu'il va être redirigé
-      toast.current?.show({
-        severity: 'info',
-        summary: t('pricing.checkout.redirecting.title'),
-        detail: t('pricing.checkout.redirecting.message'),
-        life: 3000,
-      })
-    }
-  }, [user, userPlan, createCheckout, isAnnual, t])
+    // Créer le checkout Dodo Payments (overlay mode - pas de redirection)
+    await createCheckout(isAnnual ? 'yearly' : 'monthly')
+  }, [user, userPlan, createCheckout, isAnnual])
 
   // Déclencher l'upgrade automatiquement après connexion
   useEffect(() => {
     if (user && pendingUpgrade && userPlan !== 'premium') {
       setPendingUpgrade(false)
-      // Déclencher le checkout automatiquement
-      const performUpgrade = async () => {
-        const success = await createCheckout(isAnnual ? 'yearly' : 'monthly')
-        if (success) {
-          toast.current?.show({
-            severity: 'info',
-            summary: t('pricing.checkout.redirecting.title'),
-            detail: t('pricing.checkout.redirecting.message'),
-            life: 3000,
-          })
-        }
-      }
-      performUpgrade()
+      // Déclencher le checkout automatiquement (overlay mode)
+      createCheckout(isAnnual ? 'yearly' : 'monthly')
     }
-  }, [user, pendingUpgrade, userPlan, createCheckout, isAnnual, t])
+  }, [user, pendingUpgrade, userPlan, createCheckout, isAnnual])
 
   // Afficher les erreurs de checkout
   useEffect(() => {

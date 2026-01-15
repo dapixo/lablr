@@ -327,10 +327,6 @@
       }
     },
     "checkout": {
-      "redirecting": {
-        "title": "Redirigiendo...",
-        "message": "Serás redirigido a la página de pago segura."
-      },
       "error": {
         "title": "Error de pago",
         "message": "No se pudo crear la sesión de pago. Intenta de nuevo."

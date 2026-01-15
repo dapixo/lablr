@@ -327,10 +327,6 @@
       }
     },
     "checkout": {
-      "redirecting": {
-        "title": "Redirection en cours...",
-        "message": "Vous allez être redirigé vers la page de paiement sécurisée."
-      },
       "error": {
         "title": "Erreur de paiement",
         "message": "Impossible de créer la session de paiement. Veuillez réessayer."

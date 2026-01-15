@@ -101,45 +101,42 @@ export async function POST(request: NextRequest) {
     const userEmail = user.email
     const userName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Utilisateur'
 
-    logger.info('[Dodo Checkout] Creating subscription:', {
+    logger.info('[Dodo Checkout] Creating checkout session:', {
       productId,
       userId,
       billingCycle,
     })
 
-    // Créer le checkout avec Dodo Payments
-    const subscription = await client.subscriptions.create({
-      product_id: productId,
-      quantity: 1,
+    // Créer une session de checkout (la subscription ne sera créée qu'après paiement réussi)
+    const session = await client.checkoutSessions.create({
+      product_cart: [{ product_id: productId, quantity: 1 }],
       customer: {
         email: userEmail!,
         name: userName,
       },
-      billing: {
+      billing_address: {
         country: 'FR',
       },
       metadata: {
         user_id: userId,
         billing_cycle: billingCycle,
       },
-      payment_link: true,
       return_url: DODO_CONFIG.redirectUrls.success,
     })
 
-    if (!subscription.payment_link) {
-      console.error('[Dodo Checkout] No payment link returned')
+    if (!session.checkout_url) {
+      console.error('[Dodo Checkout] No checkout URL returned')
       return NextResponse.json({ error: 'No checkout URL received' }, { status: 500 })
     }
 
-    logger.info('[Dodo Checkout] Subscription created:', {
-      subscriptionId: subscription.subscription_id,
-      paymentId: subscription.payment_id,
+    logger.info('[Dodo Checkout] Session created:', {
+      sessionId: session.session_id,
+      checkoutUrl: session.checkout_url,
     })
 
     const checkoutResponse: CheckoutResponse = {
-      checkoutUrl: subscription.payment_link,
-      subscription_id: subscription.subscription_id,
-      payment_id: subscription.payment_id,
+      checkoutUrl: session.checkout_url,
+      sessionId: session.session_id,
     }
 
     const response = NextResponse.json(checkoutResponse)

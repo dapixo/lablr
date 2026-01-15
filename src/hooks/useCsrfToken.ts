@@ -15,11 +15,19 @@ const csrfTokenKeys = {
 }
 
 /**
+ * Options pour le hook useCsrfToken
+ */
+interface UseCsrfTokenOptions {
+  enabled?: boolean
+}
+
+/**
  * Hook React Query pour récupérer et gérer le token CSRF
  * 🚀 Cache 1h avec invalidation manuelle
+ * @param options - Options du hook (enabled pour activer/désactiver)
  * @returns Token CSRF et fonction pour faire des requêtes protégées
  */
-export function useCsrfToken() {
+export function useCsrfToken(options?: UseCsrfTokenOptions) {
   const queryClient = useQueryClient()
 
   const {
@@ -45,6 +53,7 @@ export function useCsrfToken() {
       debugLog('🔐 CSRF token loaded')
       return data.csrfToken
     },
+    enabled: options?.enabled !== false, // Par défaut enabled, sauf si explicitement false
     staleTime: 60 * 60 * 1000, // 1h - Token valide pendant 1h
     gcTime: 24 * 60 * 60 * 1000, // 24h - Garbage collection
     retry: 2, // 2 retries car critique pour les requêtes protégées
