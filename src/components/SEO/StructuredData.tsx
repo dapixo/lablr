@@ -13,8 +13,8 @@ export function StructuredData({ locale }: StructuredDataProps) {
         ? "Créez et imprimez vos étiquettes d'expédition depuis Amazon Seller, Shopify, eBay. Tous formats : Avery, A4, rouleaux. Traitement 100% local et sécurisé."
         : 'Create and print shipping labels from Amazon Seller, Shopify, eBay. All formats: Avery, A4, thermal rolls. 100% local and secure processing.',
     url: 'https://lalabel.app',
-    logo: 'https://lalabel.app/logo.png',
-    image: 'https://lalabel.app/og-image.jpg',
+    logo: 'https://lalabel.app/logo.svg',
+    image: 'https://lalabel.app/og-image.png',
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Web Browser',
     browserRequirements: 'HTML5, CSS3, JavaScript enabled',
@@ -90,7 +90,7 @@ export function StructuredData({ locale }: StructuredDataProps) {
       '@type': 'Organization',
       name: 'Lalabel',
       url: 'https://lalabel.app',
-      logo: 'https://lalabel.app/logo.png',
+      logo: 'https://lalabel.app/logo.svg',
       sameAs: ['https://twitter.com/lalabel_app', 'https://linkedin.com/company/lalabel'],
       contactPoint: {
         '@type': 'ContactPoint',
@@ -103,7 +103,7 @@ export function StructuredData({ locale }: StructuredDataProps) {
     publisher: {
       '@type': 'Organization',
       name: 'Lalabel',
-      logo: 'https://lalabel.app/logo.png',
+      logo: 'https://lalabel.app/logo.svg',
     },
     aggregateRating: {
       '@type': 'AggregateRating',

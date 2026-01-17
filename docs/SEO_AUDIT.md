@@ -44,7 +44,7 @@
 
 **Images manquantes** :
 ```
-❌ /public/og-image.jpg (1200×630) - Référencé dans metadata Open Graph
+❌ /public/og-image.png (1200×630) - Référencé dans metadata Open Graph
 ❌ /public/logo.png - Référencé dans StructuredData.tsx
 ❌ /public/favicon.ico - Aucun favicon visible
 ❌ /public/icon-192.png - Requis pour PWA
@@ -61,7 +61,7 @@
 ```bash
 # Créer les images manquantes
 public/
-├── og-image.jpg          # 1200×630px (Social sharing)
+├── og-image.png          # 1200×630px (Social sharing)
 ├── logo.png              # 512×512px (Logo HD)
 ├── favicon.ico           # 32×32px (Navigateur)
 ├── icon-192.png          # 192×192px (PWA)
@@ -70,7 +70,7 @@ public/
 ```
 
 **Design suggestions** :
-- **og-image.jpg** : Screenshot app + titre "Générateur d'Étiquettes Gratuit" + logo
+- **og-image.png** : Screenshot app + titre "Générateur d'Étiquettes Gratuit" + logo
 - **Logo** : Version simple sans texte, fond transparent
 - **Favicon** : Icône minimaliste (L majuscule ou étiquette stylisée)
 
@@ -503,12 +503,12 @@ async redirects() {
 
 ## ✅ Actions Immédiates (À faire maintenant)
 
-### 1. Créer og-image.jpg
+### 1. Créer og-image.png
 ```bash
 # Dimensions : 1200×630px
 # Contenu : Screenshot app + titre + logo
 # Format : JPG optimisé (<200KB)
-# Placement : /public/og-image.jpg
+# Placement : /public/og-image.png
 ```
 
 ### 2. Créer favicon et PWA icons

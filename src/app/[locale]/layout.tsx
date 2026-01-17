@@ -17,6 +17,16 @@ export async function generateMetadata({
   const { locale } = await params
   const baseUrl = 'https://lalabel.app'
 
+  // Configuration icons commune à toutes les locales
+  const icons = {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
+  }
+
   // SEO optimized metadata based on locale
   if (locale === 'fr') {
     return {
@@ -44,7 +54,7 @@ export async function generateMetadata({
         siteName: 'Lalabel',
         images: [
           {
-            url: `${baseUrl}/og-image.jpg`,
+            url: `${baseUrl}/og-image.png`,
             width: 1200,
             height: 630,
             alt: "Lalabel - Générateur d'étiquettes d'expédition",
@@ -56,9 +66,10 @@ export async function generateMetadata({
         title: "Lalabel - Générateur d'Étiquettes d'Expédition",
         description:
           "Créez et imprimez vos étiquettes d'expédition depuis Amazon, Shopify, eBay. Gratuit et sécurisé.",
-        images: [`${baseUrl}/og-image.jpg`],
+        images: [`${baseUrl}/og-image.png`],
       },
       manifest: '/manifest.json',
+      icons,
     }
   } else if (locale === 'en') {
     return {
@@ -86,7 +97,7 @@ export async function generateMetadata({
         siteName: 'Lalabel',
         images: [
           {
-            url: `${baseUrl}/og-image.jpg`,
+            url: `${baseUrl}/og-image.png`,
             width: 1200,
             height: 630,
             alt: 'Lalabel - Shipping Label Generator',
@@ -98,9 +109,10 @@ export async function generateMetadata({
         title: 'Lalabel - Shipping Label Generator',
         description:
           'Create and print shipping labels from Amazon, Shopify, eBay. Free and secure.',
-        images: [`${baseUrl}/og-image.jpg`],
+        images: [`${baseUrl}/og-image.png`],
       },
       manifest: '/manifest.json',
+      icons,
     }
   } else {
     // Espagnol (ES)
@@ -129,7 +141,7 @@ export async function generateMetadata({
         siteName: 'Lalabel',
         images: [
           {
-            url: `${baseUrl}/og-image.jpg`,
+            url: `${baseUrl}/og-image.png`,
             width: 1200,
             height: 630,
             alt: 'Lalabel - Generador de etiquetas de envío',
@@ -141,9 +153,10 @@ export async function generateMetadata({
         title: 'Lalabel - Generador de Etiquetas de Envío',
         description:
           'Crea e imprime etiquetas de envío desde Amazon, Shopify, eBay. Gratis y seguro.',
-        images: [`${baseUrl}/og-image.jpg`],
+        images: [`${baseUrl}/og-image.png`],
       },
       manifest: '/manifest.json',
+      icons,
     }
   }
 }

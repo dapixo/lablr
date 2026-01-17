@@ -11,7 +11,7 @@
 
 ```
 public/
-├── og-image.jpg          # 1200×630px - Open Graph (réseaux sociaux)
+├── og-image.png          # 1200×630px - Open Graph (réseaux sociaux)
 ├── logo.png              # 512×512px - Logo HD
 ├── favicon.ico           # 32×32px - Navigateur
 ├── icon-192.png          # 192×192px - PWA Android
@@ -24,7 +24,7 @@ public/
 
 ## 🎨 Spécifications par Image
 
-### 1. og-image.jpg (Open Graph)
+### 1. og-image.png (Open Graph)
 **Dimensions** : 1200×630px (ratio 1.91:1)
 **Format** : JPG optimisé
 **Poids cible** : <200KB
@@ -54,7 +54,7 @@ public/
 **Export** :
 ```bash
 # Optimisation JPG
-convert og-image.png -quality 85 -strip public/og-image.jpg
+convert og-image.png -quality 85 -strip public/og-image.png
 ```
 
 ---
@@ -433,7 +433,7 @@ echo "✅ Images SEO créées avec succès!"
 
 ### Avant Production
 
-- [ ] og-image.jpg (1200×630, <200KB)
+- [ ] og-image.png (1200×630, <200KB)
 - [ ] logo.png (512×512, <50KB)
 - [ ] favicon.ico (32×32 multi-size)
 - [ ] icon-192.png + icon-512.png (<80KB total)
@@ -451,7 +451,7 @@ echo "✅ Images SEO créées avec succès!"
 ls -lh public/*.{jpg,png,ico}
 
 # Vérifier formats
-file public/og-image.jpg
+file public/og-image.png
 file public/logo.png
 
 # Test manifest.json
