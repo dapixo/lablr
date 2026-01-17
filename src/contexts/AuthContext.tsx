@@ -1,23 +1,14 @@
 'use client'
 
 import type { AuthError, User } from '@supabase/supabase-js'
+import { useQueryClient } from '@tanstack/react-query'
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
-import { EMAIL_VALIDATION_ERRORS, validateEmailDomain } from '@/lib/disposable-email-domains'
+import { createValidationError } from '@/lib/auth-helpers'
+import { debugLog } from '@/lib/debug'
+import { validateEmailDomain } from '@/lib/disposable-email-domains'
+import { findExpiredSubscriptions, shouldSkipExpirationCheck } from '@/lib/subscription-helpers'
 import { createClient } from '@/lib/supabase/client'
 import type { UserPlan } from '@/types/user'
-
-/**
- * Helper pour les logs de debug
- * Active les logs seulement avec ?debug=true
- */
-const debugLog = (...args: unknown[]) => {
-  if (
-    typeof window !== 'undefined' &&
-    new URLSearchParams(window.location.search).get('debug') === 'true'
-  ) {
-    console.log(...args)
-  }
-}
 
 /**
  * Interface AuthContext - Simple et Clean
@@ -52,157 +43,157 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
  */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const supabase = createClient()
+  const queryClient = useQueryClient()
 
   // 🔐 État d'authentification (session uniquement)
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // 💰 État plan utilisateur (séparé, non-bloquant)
+  // 💰 État plan utilisateur (géré par React Query)
+  // Note: On garde les états locaux pour compatibilité API, mais la source de vérité est React Query
   const [userPlan, setUserPlan] = useState<UserPlan>('free')
   const [planLoading, setPlanLoading] = useState(false)
   const [planError, setPlanError] = useState<string | null>(null)
-  const hasInitiallyFetched = useRef<Set<string>>(new Set()) // Track pour quels users on a déjà fetch
+
+  // 🚀 OPTIMISÉ: Cache expiration check uniquement (plan caché par React Query avec TTL 12h)
+  const expirationCheckRef = useRef<Map<string, number>>(new Map())
+
+  // ⚡ TTL expiration check : 24 heures
+  const EXPIRATION_CHECK_TTL = 24 * 60 * 60 * 1000 // 24 heures
 
   /**
    * Vérifie et nettoie automatiquement les abonnements expirés
-   * 🎯 Appelée avant chaque vérification de plan pour maintenir la cohérence
+   * 🎯 OPTIMISÉ : Appelée max 1 fois toutes les 30 minutes par utilisateur
+   * ⚡ REFACTORISÉ : Utilise les fonctions pures de subscription-helpers.ts
    */
   const checkAndCleanExpiredSubscriptions = useCallback(
-    async (userId: string) => {
+    async (userId: string): Promise<boolean> => {
+      const lastCheck = expirationCheckRef.current.get(userId)
+      const nowTimestamp = Date.now()
+
+      // ⚡ Utiliser le helper pour vérifier le cache
+      if (shouldSkipExpirationCheck(lastCheck, nowTimestamp, EXPIRATION_CHECK_TTL)) {
+        debugLog('⚡ Skipping expiration check - checked recently for user:', userId)
+        return false
+      }
+
       try {
         debugLog('🔍 Checking for expired subscriptions for user:', userId)
+        expirationCheckRef.current.set(userId, nowTimestamp)
 
-        // Récupérer les subscriptions avec ends_at ou grace_period_ends_at passé
+        // Récupérer les subscriptions avec ends_at ou grace_period_ends_at
         const { data: subs, error: fetchError } = await supabase
           .from('subscriptions')
-          .select('lemon_squeezy_id, status, ends_at, grace_period_ends_at')
+          .select('subscription_id, status, ends_at, grace_period_ends_at')
           .eq('user_id', userId)
 
         if (fetchError) {
           debugLog('❌ Error fetching subscriptions:', fetchError)
-          return
+          return false
         }
 
         if (!subs || subs.length === 0) {
           debugLog('✅ No subscriptions found')
-          return
+          return false
         }
 
-        const now = new Date()
-        let shouldDowngrade = false
+        // ⚡ Utiliser le helper pour trouver toutes les subscriptions expirées
+        const expiredSubs = findExpiredSubscriptions(subs, new Date())
 
-        for (const sub of subs) {
-          let isExpired = false
-          let reason = ''
-
-          // Cas 1: Période de grâce expirée (past_due/unpaid)
-          if (sub.grace_period_ends_at && new Date(sub.grace_period_ends_at) < now) {
-            isExpired = true
-            reason = `Grace period expired (${sub.grace_period_ends_at})`
-          }
-          // Cas 2: Subscription annulée et ends_at passé
-          else if (sub.status === 'cancelled' && sub.ends_at && new Date(sub.ends_at) < now) {
-            isExpired = true
-            reason = `Cancelled subscription ended (${sub.ends_at})`
-          }
-          // Cas 3: Subscription en pause et période payée expirée
-          else if (sub.status === 'paused' && sub.ends_at && new Date(sub.ends_at) < now) {
-            isExpired = true
-            reason = `Paused subscription period ended (${sub.ends_at})`
-          }
-
-          if (isExpired) {
-            debugLog(`⏰ Subscription ${sub.lemon_squeezy_id} expired: ${reason}`)
-
-            // Marquer comme expired dans la DB
-            await supabase
-              .from('subscriptions')
-              .update({
-                status: 'expired',
-                status_formatted: 'Expired',
-                grace_period_starts_at: null,
-                grace_period_ends_at: null,
-                updated_at: new Date().toISOString(),
-              })
-              .eq('lemon_squeezy_id', sub.lemon_squeezy_id)
-
-            shouldDowngrade = true
-          }
+        if (expiredSubs.length === 0) {
+          debugLog('✅ No expired subscriptions')
+          return false
         }
 
-        // Rétrograder l'utilisateur si nécessaire
-        if (shouldDowngrade) {
-          debugLog(`⬇️ Downgrading user ${userId} to free plan`)
-
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .update({ plan: 'free' })
-            .eq('user_id', userId)
-
-          if (profileError) {
-            debugLog('❌ Error downgrading user:', profileError)
-          } else {
-            debugLog('✅ User automatically downgraded to free plan')
-          }
+        // Marquer toutes les subscriptions expirées dans la DB
+        for (const expiredSub of expiredSubs) {
+          await supabase
+            .from('subscriptions')
+            .update({
+              status: 'expired',
+              grace_period_starts_at: null,
+              grace_period_ends_at: null,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('subscription_id', expiredSub.subscription_id)
         }
 
+        // Rétrograder l'utilisateur
+        debugLog(`⬇️ Downgrading user ${userId} to free plan`)
+
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({ plan: 'free' })
+          .eq('user_id', userId)
+
+        if (profileError) {
+          debugLog('❌ Error downgrading user:', profileError)
+        } else {
+          debugLog('✅ User automatically downgraded to free plan')
+        }
+
+        return true // Au moins une subscription expirée
       } catch (error) {
         debugLog('❌ Error in checkAndCleanExpiredSubscriptions:', error)
+        return false
       }
     },
     [supabase]
   )
 
   /**
-   * Récupère le plan utilisateur de manière non-bloquante
-   * 🎯 Lazy loading - ne bloque pas l'authentification
+   * Récupère le plan utilisateur via React Query
+   * 🚀 OPTIMISÉ : Cache géré par React Query (12h TTL)
+   * ⚡ Vérifications expiration en arrière-plan (non-bloquant)
    */
   const fetchUserPlan = useCallback(
-    async (userId: string) => {
-      // Éviter les appels redondants pour le même utilisateur
-      if (hasInitiallyFetched.current.has(userId)) {
-        debugLog('🚀 Skipping fetchUserPlan - already fetched for user:', userId)
-        return
-      }
-
+    async (userId: string, _forceRefresh = false) => {
       setPlanLoading(true)
       setPlanError(null)
 
       try {
-        debugLog('📡 Fetching user plan for:', userId)
-        hasInitiallyFetched.current.add(userId)
+        debugLog('📡 Fetching user plan via React Query for:', userId)
 
-        // 🔥 NOUVEAU: Vérifier et nettoyer les abonnements expirés AVANT de récupérer le plan
-        await checkAndCleanExpiredSubscriptions(userId)
+        // 🚀 OPTIMISÉ: Vérifier expirations en arrière-plan (non-bloquant)
+        checkAndCleanExpiredSubscriptions(userId).catch((err) => {
+          debugLog('⚠️ Background expiration check failed:', err)
+        })
 
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('plan')
-          .eq('user_id', userId)
-          .single()
-
-        if (error) {
-          // Si profil pas trouvé, créer avec plan gratuit
-          if (error.code === 'PGRST116') {
-            debugLog('📝 Creating new profile with free plan')
-            const { error: insertError } = await supabase
+        // ⚡ Utiliser React Query pour le fetch avec cache automatique
+        const plan = await queryClient.fetchQuery({
+          queryKey: ['userPlan', userId],
+          queryFn: async (): Promise<UserPlan> => {
+            const { data, error } = await supabase
               .from('profiles')
-              .insert({ user_id: userId, plan: 'free' })
+              .select('plan')
+              .eq('user_id', userId)
+              .single()
 
-            if (insertError) {
-              throw insertError
+            if (error) {
+              // Si profil pas trouvé, créer avec plan gratuit
+              if (error.code === 'PGRST116') {
+                debugLog('📝 Creating new profile with free plan')
+                const { error: insertError } = await supabase
+                  .from('profiles')
+                  .insert({ user_id: userId, plan: 'free' })
+
+                if (insertError) {
+                  throw insertError
+                }
+
+                return 'free'
+              }
+              throw error
             }
 
-            setUserPlan('free')
-          } else {
-            throw error
-          }
-        } else {
-          const plan = (data?.plan as UserPlan) || 'free'
-          debugLog('📋 User plan loaded:', plan)
-          setUserPlan(plan)
-        }
+            return (data?.plan as UserPlan) || 'free'
+          },
+          staleTime: 12 * 60 * 60 * 1000, // 12h - Cache plan
+        })
+
+        debugLog('📋 User plan loaded:', plan)
+        setUserPlan(plan)
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to load user plan'
         debugLog('❌ Error fetching user plan:', errorMessage)
@@ -213,12 +204,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setPlanLoading(false)
       }
     },
-    [supabase]
+    [supabase, queryClient, checkAndCleanExpiredSubscriptions]
   )
 
   /**
    * Hook principal d'authentification
-   * ✨ Pattern Supabase standard - simple et fiable
+   * ⚡ OPTIMISÉ : Filtre les événements non pertinents pour éviter appels redondants
    */
   useEffect(() => {
     debugLog('🔄 Setting up auth listener')
@@ -228,6 +219,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       debugLog('🔐 Auth event:', event, 'User:', session?.user?.email || 'none')
 
+      // ⚡ Filtrer les événements non pertinents pour éviter appels inutiles
+      // TOKEN_REFRESHED ne nécessite pas de recharger le plan
+      const shouldFetchPlan =
+        event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'USER_UPDATED'
+
       // 🎯 Mise à jour immédiate de l'état d'auth
       const newUser = session?.user || null
       setUser(newUser)
@@ -235,18 +231,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setError(null)
 
       // 💰 Chargement du plan en arrière-plan (non-bloquant)
-      if (newUser?.id) {
+      if (newUser?.id && shouldFetchPlan) {
         // Pas d'await - non-bloquant pour l'UX
         fetchUserPlan(newUser.id).catch((err) => {
           debugLog('⚠️ Background plan fetch failed:', err)
         })
-      } else {
+      } else if (event === 'SIGNED_OUT') {
         // Reset plan si déconnexion
         setUserPlan('free')
         setPlanError(null)
         setPlanLoading(false)
-        // Reset le cache quand l'utilisateur se déconnecte
-        hasInitiallyFetched.current.clear()
+        // Reset cache expiration et invalider React Query cache
+        expirationCheckRef.current.clear()
+        queryClient.clear() // Nettoie tous les caches React Query
       }
     })
 
@@ -254,10 +251,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       debugLog('🧹 Cleaning up auth listener')
       subscription.unsubscribe()
     }
-  }, [fetchUserPlan, supabase.auth])
+  }, [fetchUserPlan, supabase.auth, queryClient])
 
   /**
    * Rafraîchissement manuel du plan utilisateur (force le refresh)
+   * ⚡ OPTIMISÉ : Invalide le cache React Query et force un refetch
    */
   const refreshUserPlan = useCallback(async () => {
     if (!user?.id) {
@@ -265,22 +263,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return
     }
 
-    // Forcer le refresh en réinitialisant le cache
-    hasInitiallyFetched.current.delete(user.id)
-    await fetchUserPlan(user.id)
-  }, [user?.id, fetchUserPlan])
+    debugLog('🔄 Force refresh user plan via React Query for:', user.id)
 
-  /**
-   * Helper pour créer une erreur de validation email
-   */
-  const createValidationError = useCallback(
-    (errorCode: keyof typeof EMAIL_VALIDATION_ERRORS): AuthError =>
-      ({
-        message: EMAIL_VALIDATION_ERRORS[errorCode],
-        status: 400,
-      }) as AuthError,
-    []
-  )
+    // Invalider le cache React Query
+    await queryClient.invalidateQueries({
+      queryKey: ['userPlan', user.id],
+    })
+
+    // Invalider aussi le cache expiration pour forcer un check
+    expirationCheckRef.current.delete(user.id)
+
+    // Refetch immédiatement
+    await fetchUserPlan(user.id, true)
+  }, [user?.id, queryClient, fetchUserPlan])
 
   /**
    * Envoi du code OTP avec validation
@@ -294,13 +289,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const emailValidation = validateEmailDomain(email)
 
       if (!emailValidation.isValid) {
-        const validationError = createValidationError('INVALID_FORMAT')
+        const validationError = createValidationError('INVALID_FORMAT') as AuthError
         setError(validationError.message)
         return { error: validationError }
       }
 
       if (emailValidation.isDisposable) {
-        const validationError = createValidationError('DISPOSABLE_DOMAIN')
+        const validationError = createValidationError('DISPOSABLE_DOMAIN') as AuthError
         setError(validationError.message)
         return { error: validationError }
       }
@@ -324,7 +319,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { error: new Error(errorMessage) as AuthError }
       }
     },
-    [supabase.auth, createValidationError]
+    [supabase.auth]
   )
 
   /**
@@ -338,13 +333,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const emailValidation = validateEmailDomain(email)
 
       if (!emailValidation.isValid) {
-        const validationError = createValidationError('INVALID_FORMAT')
+        const validationError = createValidationError('INVALID_FORMAT') as AuthError
         setError(validationError.message)
         return { error: validationError }
       }
 
       if (emailValidation.isDisposable) {
-        const validationError = createValidationError('DISPOSABLE_DOMAIN')
+        const validationError = createValidationError('DISPOSABLE_DOMAIN') as AuthError
         setError(validationError.message)
         return { error: validationError }
       }
@@ -367,7 +362,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { error: new Error(errorMessage) as AuthError }
       }
     },
-    [supabase.auth, createValidationError]
+    [supabase.auth]
   )
 
   /**
@@ -464,70 +459,73 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   /**
    * Mise à jour du nom utilisateur
    */
-  const updateUserName = useCallback(async (fullName: string) => {
-    if (!user?.id) {
-      const error = new Error('No user logged in') as AuthError
-      setError(error.message)
-      return { error }
-    }
-
-    const trimmedName = fullName.trim()
-
-    if (!trimmedName) {
-      const error = new Error('Le nom ne peut pas être vide') as AuthError
-      setError(error.message)
-      return { error }
-    }
-
-    // Validation sécurité : longueur max
-    if (trimmedName.length > 100) {
-      const error = new Error('Le nom ne peut pas dépasser 100 caractères') as AuthError
-      setError(error.message)
-      return { error }
-    }
-
-    // Validation sécurité : caractères autorisés (lettres, espaces, traits d'union, apostrophes)
-    const nameRegex = /^[\p{L}\p{M}\s\-'\.]+$/u
-    if (!nameRegex.test(trimmedName)) {
-      const error = new Error('Le nom contient des caractères non autorisés') as AuthError
-      setError(error.message)
-      return { error }
-    }
-
-    // Validation sécurité : pas de caractères de contrôle
-    if (/[\x00-\x1F\x7F-\x9F]/.test(trimmedName)) {
-      const error = new Error('Le nom contient des caractères invalides') as AuthError
-      setError(error.message)
-      return { error }
-    }
-
-    try {
-      // Mise à jour des métadonnées utilisateur Supabase
-      const { data, error } = await supabase.auth.updateUser({
-        data: {
-          full_name: trimmedName
-        }
-      })
-
-      if (error) {
+  const updateUserName = useCallback(
+    async (fullName: string) => {
+      if (!user?.id) {
+        const error = new Error('No user logged in') as AuthError
         setError(error.message)
         return { error }
       }
 
-      // Mise à jour locale immédiate (l'auth listener se chargera du reste)
-      if (data.user) {
-        setUser(data.user)
+      const trimmedName = fullName.trim()
+
+      if (!trimmedName) {
+        const error = new Error('Le nom ne peut pas être vide') as AuthError
+        setError(error.message)
+        return { error }
       }
 
-      debugLog('✅ User name updated successfully:', fullName)
-      setError(null)
-      return { error: null }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update user name'
-      setError(errorMessage)
-      return { error: new Error(errorMessage) as AuthError }
-    }
-  }, [user?.id, supabase.auth])
+      // Validation sécurité : longueur max
+      if (trimmedName.length > 100) {
+        const error = new Error('Le nom ne peut pas dépasser 100 caractères') as AuthError
+        setError(error.message)
+        return { error }
+      }
+
+      // Validation sécurité : caractères autorisés (lettres, espaces, traits d'union, apostrophes)
+      const nameRegex = /^[\p{L}\p{M}\s\-'.]+$/u
+      if (!nameRegex.test(trimmedName)) {
+        const error = new Error('Le nom contient des caractères non autorisés') as AuthError
+        setError(error.message)
+        return { error }
+      }
+
+      // Validation sécurité : pas de caractères de contrôle
+      if (/[\x00-\x1F\x7F-\x9F]/.test(trimmedName)) {
+        const error = new Error('Le nom contient des caractères invalides') as AuthError
+        setError(error.message)
+        return { error }
+      }
+
+      try {
+        // Mise à jour des métadonnées utilisateur Supabase
+        const { data, error } = await supabase.auth.updateUser({
+          data: {
+            full_name: trimmedName,
+          },
+        })
+
+        if (error) {
+          setError(error.message)
+          return { error }
+        }
+
+        // Mise à jour locale immédiate (l'auth listener se chargera du reste)
+        if (data.user) {
+          setUser(data.user)
+        }
+
+        debugLog('✅ User name updated successfully:', fullName)
+        setError(null)
+        return { error: null }
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to update user name'
+        setError(errorMessage)
+        return { error: new Error(errorMessage) as AuthError }
+      }
+    },
+    [user?.id, supabase.auth]
+  )
 
   /**
    * Clear error state

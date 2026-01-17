@@ -6,7 +6,46 @@ import { getVisibleFAQIds } from '@/constants/faq'
 
 interface FAQProps {
   t: (key: string) => string
+  locale?: string
 }
+
+/**
+ * Composant générant le schema FAQPage pour le SEO
+ * Permet d'apparaître dans les Featured Snippets Google
+ */
+const FAQSchema = React.memo(function FAQSchema({
+  t,
+  locale = 'fr',
+}: {
+  t: (key: string) => string
+  locale?: string
+}) {
+  const schema = useMemo(() => {
+    const faqIds = getVisibleFAQIds()
+    const mainEntity = faqIds.map((faqId) => ({
+      '@type': 'Question',
+      name: t(`faq.questions.${faqId}.question`),
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: t(`faq.questions.${faqId}.answer`),
+      },
+    }))
+
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity,
+      inLanguage: locale === 'fr' ? 'fr-FR' : 'en-US',
+    }
+  }, [t, locale])
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  )
+})
 
 const FAQHeader = React.memo(function FAQHeader({ t }: { t: (key: string) => string }) {
   return (
@@ -54,7 +93,7 @@ const FAQCallToAction = React.memo(function FAQCallToAction({ t }: { t: (key: st
   )
 })
 
-export const FAQ = React.memo(function FAQ({ t }: FAQProps) {
+export const FAQ = React.memo(function FAQ({ t, locale = 'fr' }: FAQProps) {
   const faqItems = useMemo(
     () =>
       getVisibleFAQIds().map((faqId) => (
@@ -80,52 +119,57 @@ export const FAQ = React.memo(function FAQ({ t }: FAQProps) {
     [t]
   )
   return (
-    <section id="faq" className="bg-gray-50 py-16">
-      <div className="container mx-auto px-4 md:px-6">
-        <FAQHeader t={t} />
+    <>
+      {/* Schema FAQPage pour SEO et Featured Snippets Google */}
+      <FAQSchema t={t} locale={locale} />
 
-        {/* Accordion */}
-        <div className="max-w-4xl mx-auto">
-          <Accordion multiple className="faq-accordion">
-            {faqItems}
-          </Accordion>
+      <section id="faq" className="bg-gray-50 py-16">
+        <div className="container mx-auto px-4 md:px-6">
+          <FAQHeader t={t} />
+
+          {/* Accordion */}
+          <div className="max-w-4xl mx-auto">
+            <Accordion multiple className="faq-accordion">
+              {faqItems}
+            </Accordion>
+          </div>
+
+          <FAQCallToAction t={t} />
         </div>
 
-        <FAQCallToAction t={t} />
-      </div>
-
-      <style jsx>{`
-        :global(.faq-accordion .p-accordion-tab) {
-          border: 1px solid #e5e7eb;
-          border-radius: 0.75rem;
-          overflow: hidden;
-          margin-bottom: 1rem;
-          background: white;
-        }
-        :global(.faq-accordion .p-accordion-header) {
-          border: none;
-          border-radius: 0.75rem;
-          background: white;
-        }
-        :global(.faq-accordion .p-accordion-header:hover) {
-          background: #f9fafb;
-        }
-        :global(.faq-accordion .p-accordion-header.p-highlight) {
-          background: #eff6ff;
-          border-color: #3b82f6;
-        }
-        :global(.faq-accordion .p-accordion-content) {
-          border: none;
-          background: white;
-          padding: 0 !important;
-        }
-        :global(.faq-accordion .p-accordion-toggle-icon) {
-          color: #6b7280;
-        }
-        :global(.faq-accordion .p-accordion-header.p-highlight .p-accordion-toggle-icon) {
-          color: #3b82f6;
-        }
-      `}</style>
-    </section>
+        <style jsx>{`
+          :global(.faq-accordion .p-accordion-tab) {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            background: white;
+          }
+          :global(.faq-accordion .p-accordion-header) {
+            border: none;
+            border-radius: 0.75rem;
+            background: white;
+          }
+          :global(.faq-accordion .p-accordion-header:hover) {
+            background: #f9fafb;
+          }
+          :global(.faq-accordion .p-accordion-header.p-highlight) {
+            background: #eff6ff;
+            border-color: #3b82f6;
+          }
+          :global(.faq-accordion .p-accordion-content) {
+            border: none;
+            background: white;
+            padding: 0 !important;
+          }
+          :global(.faq-accordion .p-accordion-toggle-icon) {
+            color: #6b7280;
+          }
+          :global(.faq-accordion .p-accordion-header.p-highlight .p-accordion-toggle-icon) {
+            color: #3b82f6;
+          }
+        `}</style>
+      </section>
+    </>
   )
 })

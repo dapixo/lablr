@@ -14,9 +14,12 @@ class InMemoryRateLimiter {
 
   constructor() {
     // Nettoyage automatique toutes les 10 minutes
-    this.cleanupInterval = setInterval(() => {
-      this.cleanup()
-    }, 10 * 60 * 1000)
+    this.cleanupInterval = setInterval(
+      () => {
+        this.cleanup()
+      },
+      10 * 60 * 1000
+    )
   }
 
   /**
@@ -28,11 +31,11 @@ class InMemoryRateLimiter {
 
     // Nettoyer les anciennes requêtes si nécessaire
     if (now - entry.lastCleanup > windowMs / 2) {
-      entry.requests = entry.requests.filter(timestamp => now - timestamp < windowMs)
+      entry.requests = entry.requests.filter((timestamp) => now - timestamp < windowMs)
       entry.lastCleanup = now
     }
 
-    const validRequests = entry.requests.filter(timestamp => now - timestamp < windowMs)
+    const validRequests = entry.requests.filter((timestamp) => now - timestamp < windowMs)
     const success = validRequests.length < maxRequests
     const remaining = Math.max(0, maxRequests - validRequests.length - (success ? 1 : 0))
     const oldestRequest = validRequests[0]
@@ -99,6 +102,11 @@ export const RATE_LIMIT_CONFIGS = {
     maxRequests: 10,
     windowMs: 60 * 1000, // 10 req/minute
   },
+  // Checkout - Protection contre abus de création de sessions
+  checkout: {
+    maxRequests: 10,
+    windowMs: 60 * 1000, // 10 req/minute
+  },
   // Webhooks - Volume élevé mais légitime
   webhook: {
     maxRequests: 100,
@@ -136,13 +144,19 @@ export type RateLimiterType = keyof typeof RATE_LIMIT_CONFIGS
 /**
  * Helper principal pour appliquer le rate limiting
  */
-export async function checkRateLimit(request: Request, type: RateLimiterType = 'default'): Promise<{
-  success: true;
-  headers: Record<string, string>;
-} | {
-  success: false;
-  response: Response;
-}> {
+export async function checkRateLimit(
+  request: Request,
+  type: RateLimiterType = 'default'
+): Promise<
+  | {
+      success: true
+      headers: Record<string, string>
+    }
+  | {
+      success: false
+      response: Response
+    }
+> {
   const ip = getClientIP(request)
   const identifier = `${type}:${ip}`
   const config = RATE_LIMIT_CONFIGS[type]

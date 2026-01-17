@@ -14,7 +14,6 @@ import {
   isRateLimitError,
 } from '@/lib/auth-helpers'
 import { validateEmailDomain } from '@/lib/disposable-email-domains'
-import { isPremiumModeEnabled } from '@/lib/feature-flags'
 
 interface AuthModalProps {
   visible: boolean
@@ -337,7 +336,7 @@ export function AuthModal({ visible, onHide, onSuccess, t }: AuthModalProps) {
         ) : (
           <>
             {/* Message d'introduction avec design moderne */}
-            {isPremiumModeEnabled() && (<div className="mb-6 relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 via-blue-500 to-blue-400 p-6 shadow-xl">
+            <div className="mb-6 relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 via-blue-500 to-blue-400 p-6 shadow-xl">
               {/* Pattern décoratif en fond */}
               <div className="absolute inset-0 opacity-10">
                 <div className="absolute -right-8 -top-8 w-32 h-32 bg-white rounded-full blur-2xl"></div>
@@ -359,7 +358,6 @@ export function AuthModal({ visible, onHide, onSuccess, t }: AuthModalProps) {
                 </div>
               </div>
             </div>
-          )}
 
             {/* Formulaire d'email */}
             <form id="auth-form" onSubmit={handleEmailSubmit} className="space-y-4">
@@ -408,10 +406,10 @@ export function AuthModal({ visible, onHide, onSuccess, t }: AuthModalProps) {
             {/* Garanties de confidentialité */}
             <div className="pt-4 border-t border-gray-100">
               <div className="grid grid-cols-3 gap-4 text-center">
-                {isPremiumModeEnabled() &&(<div className="text-xs text-gray-500 flex flex-col items-center gap-1">
+                <div className="text-xs text-gray-500 flex flex-col items-center gap-1">
                   <i className="pi pi-check-circle text-green-500 text-sm"></i>
                   <span>{t('auth.guarantees.free')}</span>
-                </div>)}
+                </div>
                 <div className="text-xs text-gray-500 flex flex-col items-center gap-1">
                   <i className="pi pi-lock text-blue-500 text-sm"></i>
                   <span>{t('auth.guarantees.secure')}</span>

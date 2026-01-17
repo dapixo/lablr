@@ -2,11 +2,16 @@ import { generateAddressesHTML as generateHTML } from '@/lib/print/html-generato
 import { generateCSV } from '@/lib/print-formats'
 import type { Address, PrintFormat } from '@/types/address'
 
-
 /**
  * Lance l'impression directement depuis la page actuelle sans ouvrir d'onglet
+ * @param offset - Nombre d'étiquettes vides à insérer au début (pour planches partiellement utilisées)
  */
-export function printAddresses(addresses: Address[], format: PrintFormat, printCSS: string): void {
+export function printAddresses(
+  addresses: Address[],
+  format: PrintFormat,
+  printCSS: string,
+  offset: number = 0
+): void {
   // Créer un ID unique pour cette session d'impression
   const printSessionId = `lablr-print-${Date.now()}`
   const printStyleId = `${printSessionId}-styles`
@@ -20,8 +25,8 @@ export function printAddresses(addresses: Address[], format: PrintFormat, printC
   printStyleElement.id = printStyleId
   document.head.appendChild(printStyleElement)
 
-  // Générer le HTML des adresses
-  const addressesHTML = generateHTML(addresses, format)
+  // Générer le HTML des adresses avec offset
+  const addressesHTML = generateHTML(addresses, format, offset)
 
   // Appliquer les styles d'impression
   printStyleElement.textContent = `

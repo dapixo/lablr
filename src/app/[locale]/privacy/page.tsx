@@ -1,8 +1,8 @@
 'use client'
 
 import { useParams } from 'next/navigation'
-import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
+import { Header } from '@/components/Header'
 import { useTranslations } from '@/hooks/useTranslations'
 
 export default function PrivacyPage() {
@@ -18,9 +18,7 @@ export default function PrivacyPage() {
         <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12">
           {/* Header */}
           <div className="mb-8 border-b border-gray-200 pb-6">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
-              {t('privacy.title')}
-            </h1>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('privacy.title')}</h1>
             <p className="text-gray-600">
               {t('privacy.effectiveDate')}: {t('privacy.date')}
             </p>
@@ -28,9 +26,7 @@ export default function PrivacyPage() {
 
           {/* Introduction */}
           <div className="prose prose-blue max-w-none">
-            <p className="text-gray-700 leading-relaxed mb-8">
-              {t('privacy.intro')}
-            </p>
+            <p className="text-gray-700 leading-relaxed mb-8">{t('privacy.intro')}</p>
 
             {/* Section 1: Informations collectées */}
             <section className="mb-8">
@@ -83,9 +79,7 @@ export default function PrivacyPage() {
                 <span className="text-blue-500">4.</span>
                 {t('privacy.yourChoices.title')}
               </h2>
-              <p className="text-gray-700 leading-relaxed">
-                {t('privacy.yourChoices.content')}
-              </p>
+              <p className="text-gray-700 leading-relaxed">{t('privacy.yourChoices.content')}</p>
             </section>
 
             {/* Section 5: Sécurité */}
@@ -94,9 +88,7 @@ export default function PrivacyPage() {
                 <span className="text-blue-500">5.</span>
                 {t('privacy.security.title')}
               </h2>
-              <p className="text-gray-700 leading-relaxed">
-                {t('privacy.security.content')}
-              </p>
+              <p className="text-gray-700 leading-relaxed">{t('privacy.security.content')}</p>
             </section>
 
             {/* Section 6: Contact */}

@@ -92,14 +92,15 @@ ${t('feedback.email.thanks')}`)
         <div className="text-center">
           <div className="p-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
             <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('feedback.cta.title')}</h3>
-            <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-              {t('feedback.cta.description')}
-            </p>
+            <p className="text-gray-600 mb-8 max-w-2xl mx-auto">{t('feedback.cta.description')}</p>
 
             {/* Suggestions intégrées */}
             <div className="grid sm:grid-cols-2 gap-4 mb-8 max-w-3xl mx-auto">
               {suggestions.map((suggestion, index) => (
-                <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-white hover:bg-gray-50 transition-colors border border-gray-200">
+                <div
+                  key={index}
+                  className="flex items-center gap-3 p-3 rounded-lg bg-white hover:bg-gray-50 transition-colors border border-gray-200"
+                >
                   <Lightbulb className="h-4 w-4 text-amber-500 flex-shrink-0" />
                   <span className="text-gray-700 text-sm">{suggestion}</span>
                 </div>

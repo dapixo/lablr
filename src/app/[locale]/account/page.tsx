@@ -5,60 +5,72 @@ import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import { InputText } from 'primereact/inputtext'
-import { Skeleton } from 'primereact/skeleton'
 import { Toast } from 'primereact/toast'
-import { Suspense, useEffect, useRef, useState } from 'react'
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
+import { AccountPageSkeleton } from '@/components/AccountPageSkeleton'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { SubscriptionManager } from '@/components/SubscriptionManager'
+import { useAccountData } from '@/hooks/useAccountData'
 import { useAuth } from '@/hooks/useAuth'
+import { useDodoCheckout } from '@/hooks/useDodoCheckout'
 import { useTranslations } from '@/hooks/useTranslations'
-import { useUsageTracking } from '@/hooks/useUsageTracking'
-import { isPremiumModeEnabled } from '@/lib/feature-flags'
-import { getPluralVariables } from '@/lib/i18n-helpers'
+import { debugLog } from '@/lib/debug'
 
 function AccountPageContent() {
   const { locale } = useParams()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { user, userPlan, loading, deleteAccount, refreshUserPlan, updateUserName } = useAuth()
+  const { user, loading, deleteAccount, updateUserName, refreshUserPlan } = useAuth()
   const t = useTranslations(locale as string)
   const toast = useRef<Toast>(null)
   const [isDeleting, setIsDeleting] = useState(false)
-  const { labelsUsed, remainingLabels, loading: usageLoading } = useUsageTracking()
+  const { accountData, isLoading: accountLoading, refreshAccountData } = useAccountData(user?.id)
+  const { clearPendingCheckout } = useDodoCheckout()
 
-  // États pour l'édition du nom
   const [isEditingName, setIsEditingName] = useState(false)
   const [editedName, setEditedName] = useState('')
   const [isUpdatingName, setIsUpdatingName] = useState(false)
+  const paymentProcessedRef = useRef(false)
 
-  // Initialiser le nom édité quand l'utilisateur change
+  const getUserDisplayName = useCallback(() => {
+    return accountData?.user.fullName || accountData?.user.email?.split('@')[0] || ''
+  }, [accountData])
+
+  const cleanUrlParams = useCallback((param: string) => {
+    const url = new URL(window.location.href)
+    url.searchParams.delete(param)
+    window.history.replaceState({}, '', url.toString())
+  }, [])
+
+  const showToast = useCallback(
+    (severity: 'success' | 'info' | 'error', summary: string, detail: string, life = 3000) => {
+      toast.current?.show({ severity, summary, detail, life })
+    },
+    []
+  )
+
   useEffect(() => {
-    if (user?.user_metadata?.full_name) {
-      setEditedName(user.user_metadata.full_name)
-    } else if (user?.email) {
-      setEditedName(user.email.split('@')[0])
+    if (accountData?.user.fullName) {
+      setEditedName(accountData.user.fullName)
+    } else if (accountData?.user.email) {
+      setEditedName(accountData.user.email.split('@')[0])
     }
-  }, [user])
+  }, [accountData])
 
-  const handleStartEditName = () => {
+  const handleStartEditName = useCallback(() => {
     setIsEditingName(true)
-    setEditedName(user?.user_metadata?.full_name || user?.email?.split('@')[0] || '')
-  }
+    setEditedName(getUserDisplayName())
+  }, [getUserDisplayName])
 
-  const handleCancelEditName = () => {
+  const handleCancelEditName = useCallback(() => {
     setIsEditingName(false)
-    setEditedName(user?.user_metadata?.full_name || user?.email?.split('@')[0] || '')
-  }
+    setEditedName(getUserDisplayName())
+  }, [getUserDisplayName])
 
-  const handleSaveName = async () => {
+  const handleSaveName = useCallback(async () => {
     if (!editedName.trim()) {
-      toast.current?.show({
-        severity: 'error',
-        summary: 'Erreur',
-        detail: t('account.userInfo.editName.errors.empty'),
-        life: 3000,
-      })
+      showToast('error', 'Erreur', t('account.userInfo.editName.errors.empty'))
       return
     }
 
@@ -67,35 +79,20 @@ function AccountPageContent() {
       const { error } = await updateUserName(editedName.trim())
 
       if (error) {
-        toast.current?.show({
-          severity: 'error',
-          summary: 'Erreur',
-          detail: error.message,
-          life: 4000,
-        })
+        showToast('error', 'Erreur', error.message, 4000)
       } else {
-        toast.current?.show({
-          severity: 'success',
-          summary: 'Succès',
-          detail: t('account.userInfo.editName.success'),
-          life: 3000,
-        })
+        showToast('success', 'Succès', t('account.userInfo.editName.success'))
         setIsEditingName(false)
       }
     } catch (error) {
       console.error('Update name error:', error)
-      toast.current?.show({
-        severity: 'error',
-        summary: 'Erreur',
-        detail: 'Une erreur est survenue lors de la mise à jour',
-        life: 4000,
-      })
+      showToast('error', 'Erreur', 'Une erreur est survenue lors de la mise à jour', 4000)
     } finally {
       setIsUpdatingName(false)
     }
-  }
+  }, [editedName, showToast, t, updateUserName])
 
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = useCallback(() => {
     confirmDialog({
       message: t('userMenu.confirmDelete.message'),
       header: t('userMenu.confirmDelete.header'),
@@ -105,83 +102,126 @@ function AccountPageContent() {
         setIsDeleting(true)
         try {
           await deleteAccount()
-          toast.current?.show({
-            severity: 'success',
-            summary: t('userMenu.toast.deleteSuccess.summary'),
-            detail: t('userMenu.toast.deleteSuccess.detail'),
-            life: 2000, // Durée d'affichage du toast
-          })
-          // Redirection immédiate après suppression réussie
+          showToast(
+            'success',
+            t('userMenu.toast.deleteSuccess.summary'),
+            t('userMenu.toast.deleteSuccess.detail'),
+            2000
+          )
           router.push(`/${locale}`)
         } catch (error) {
           console.error('Delete account error:', error)
-          toast.current?.show({
-            severity: 'error',
-            summary: t('userMenu.toast.deleteError.summary'),
-            detail: t('userMenu.toast.deleteError.detail'),
-          })
+          showToast(
+            'error',
+            t('userMenu.toast.deleteError.summary'),
+            t('userMenu.toast.deleteError.detail')
+          )
         } finally {
           setIsDeleting(false)
         }
       },
-      reject: () => {
-        // L'utilisateur a annulé
-      },
       acceptLabel: t('userMenu.confirmDelete.accept'),
       rejectLabel: t('userMenu.confirmDelete.reject'),
     })
-  }
+  }, [deleteAccount, locale, router, showToast, t])
 
-  // Gestion des paramètres d'URL (success/cancelled)
+  // Étape 1: Détecter le succès/annulation dans l'URL et stocker dans sessionStorage
   useEffect(() => {
     const success = searchParams.get('success')
     const cancelled = searchParams.get('cancelled')
+    // Dodo Payments envoie status=active et subscription_id après paiement réussi
+    const status = searchParams.get('status')
+    const subscriptionId = searchParams.get('subscription_id')
 
-    if (success === 'true' && user) {
-      // 🎉 Paiement réussi
-      toast.current?.show({
-        severity: 'success',
-        summary: t('account.payment.success.title'),
-        detail: t('account.payment.success.message'),
-        life: 5000,
-      })
+    // Paiement réussi (ancien format success=true OU nouveau format Dodo status=active)
+    const isPaymentSuccess = success === 'true' || (status === 'active' && subscriptionId)
 
-      // 🔄 Refresh du plan utilisateur pour s'assurer qu'il est à jour
-      refreshUserPlan()
+    if (isPaymentSuccess) {
+      debugLog('[Account] Payment success detected in URL, storing in sessionStorage')
+      sessionStorage.setItem('payment_success', 'true')
+      clearPendingCheckout()
 
-      // 🧹 Nettoyer l'URL après affichage
+      // Nettoyer les params de l'URL immédiatement
       const url = new URL(window.location.href)
       url.searchParams.delete('success')
+      url.searchParams.delete('status')
+      url.searchParams.delete('subscription_id')
       window.history.replaceState({}, '', url.toString())
     }
 
-    if (cancelled === 'true' && user) {
-      // ⚠️ Paiement annulé
-      toast.current?.show({
-        severity: 'info',
-        summary: t('account.payment.cancelled.title'),
-        detail: t('account.payment.cancelled.message'),
-        life: 4000,
-      })
-
-      // 🧹 Nettoyer l'URL après affichage
-      const url = new URL(window.location.href)
-      url.searchParams.delete('cancelled')
-      window.history.replaceState({}, '', url.toString())
+    if (cancelled === 'true') {
+      debugLog('[Account] Payment cancelled detected in URL, storing in sessionStorage')
+      sessionStorage.setItem('payment_cancelled', 'true')
+      clearPendingCheckout()
+      cleanUrlParams('cancelled')
     }
-  }, [searchParams, user, t, refreshUserPlan])
+  }, [searchParams, clearPendingCheckout, cleanUrlParams])
 
-  // Redirection si pas d'utilisateur
+  // Étape 2: Afficher le toast une fois les données chargées
+  useEffect(() => {
+    // Attendre que tout soit chargé
+    if (loading || accountLoading || !accountData || !user) return
+    if (paymentProcessedRef.current) return
+
+    const paymentSuccess = sessionStorage.getItem('payment_success')
+    const paymentCancelled = sessionStorage.getItem('payment_cancelled')
+
+    if (paymentSuccess) {
+      paymentProcessedRef.current = true
+      sessionStorage.removeItem('payment_success')
+      debugLog('[Account] Showing payment success toast')
+
+      // Petit délai pour s'assurer que le Toast est bien monté
+      setTimeout(() => {
+        showToast(
+          'success',
+          t('account.payment.success.title'),
+          t('account.payment.success.message'),
+          6000
+        )
+        // Rafraîchir les données en background
+        refreshAccountData()
+        refreshUserPlan()
+      }, 300)
+    }
+
+    if (paymentCancelled && !paymentProcessedRef.current) {
+      paymentProcessedRef.current = true
+      sessionStorage.removeItem('payment_cancelled')
+      debugLog('[Account] Showing payment cancelled toast')
+
+      setTimeout(() => {
+        showToast(
+          'info',
+          t('account.payment.cancelled.title'),
+          t('account.payment.cancelled.message'),
+          4000
+        )
+      }, 300)
+    }
+  }, [loading, accountLoading, accountData, user, t, showToast, refreshAccountData, refreshUserPlan])
+
   useEffect(() => {
     if (!loading && !user) {
       router.push(`/${locale}/login`)
     }
   }, [loading, user, router, locale])
 
-  // Afficher un loader pendant la redirection ou si pas d'utilisateur
-  if (!user) {
-    return null
+  if (loading || accountLoading || !accountData) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header t={t} />
+        <main className="flex-1 bg-gray-50">
+          <AccountPageSkeleton />
+        </main>
+        <Footer t={t} />
+        {/* Toast toujours monté pour recevoir les notifications de paiement */}
+        <Toast ref={toast} />
+      </div>
+    )
   }
+
+  const { plan: userPlan, subscription, portalUrl, user: accountUser } = accountData
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -203,148 +243,53 @@ function AccountPageContent() {
               </div>
             </div>
 
-            {/* Status du compte et Gestion d'abonnement (uniquement si mode premium activé) */}
-            {isPremiumModeEnabled() && (
-              <Card className="mb-6">
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                      {userPlan === 'premium'
-                        ? t('subscription.title')
-                        : t('account.planStatus.title')}
-                    </h2>
-                  </div>
+            {/* Status du compte et Gestion d'abonnement */}
+            <Card className="mb-6">
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                    {userPlan === 'premium'
+                      ? t('subscription.title')
+                      : t('account.planStatus.title')}
+                  </h2>
+                </div>
 
-                {/* Plan actuel */}
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-200">
                   <div className="flex items-center justify-between mb-4">
-                    {loading ? (
-                      /* Skeleton loader pour le plan */
-                      <>
-                        <div className="flex items-center gap-3">
-                          <Skeleton shape="circle" size="2.5rem" />
-                          <div>
-                            <h3 className="font-semibold text-gray-900">
-                              {t('account.planStatus.currentPlan')}
-                            </h3>
-                            <Skeleton width="6rem" height="1rem" className="mt-1" />
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <Skeleton width="5rem" height="1.5rem" borderRadius="9999px" />
-                        </div>
-                      </>
-                    ) : (
-                      /* Contenu réel */
-                      <>
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-md">
-                            <i className="pi pi-star text-white text-lg"></i>
-                          </div>
-                          <div>
-                            <h3 className="font-semibold text-gray-900">
-                              {t('account.planStatus.currentPlan')}
-                            </h3>
-                            <p className="text-sm text-gray-600">
-                              {userPlan === 'premium'
-                                ? t('pricing.premium.title')
-                                : t('account.planStatus.freePlan')}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div
-                            className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                              userPlan === 'premium'
-                                ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white'
-                                : 'bg-blue-100 text-blue-800'
-                            }`}
-                          >
-                            <i
-                              className={`mr-2 ${userPlan === 'premium' ? 'pi pi-star' : 'pi pi-gift'}`}
-                            ></i>
-                            {userPlan === 'premium'
-                              ? t('pricing.premium.title')
-                              : t('pricing.plans.free.name')}
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-
-                  {/* Usage quotidien */}
-                  <div className="space-y-3">
-                    {loading || usageLoading ? (
-                      /* Skeleton loader global */
-                      <>
-                        <div className="flex justify-between items-center text-sm">
-                          <Skeleton width="8rem" height="1rem" />
-                          <Skeleton width="6rem" height="1rem" />
-                        </div>
-                        <div className="w-full">
-                          <Skeleton width="100%" height="0.5rem" borderRadius="9999px" />
-                        </div>
-                        <Skeleton width="10rem" height="1rem" />
-                      </>
-                    ) : userPlan === 'premium' ? (
-                      /* Utilisateur Premium */
-                      <div className="text-center pt-4">
-                        <div className="inline-flex items-center gap-2 text-blue-600 font-medium">
-                          <i className="pi pi-infinity text-xl"></i>
-                          <span className="text-lg">
-                            {t('account.planStatus.premiumStatus.unlimitedLabels')}
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-600 mt-2">
-                          {t('account.planStatus.premiumStatus.description')}
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-md">
+                        <i className="pi pi-star text-white text-lg"></i>
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">
+                          {t('account.planStatus.currentPlan')}
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                          {userPlan === 'premium'
+                            ? t('pricing.premium.title')
+                            : t('account.planStatus.freePlan')}
                         </p>
                       </div>
-                    ) : (
-                      /* Contenu réel pour utilisateurs gratuits */
-                      <>
-                        <div className="flex justify-between items-center text-sm">
-                          <span className="text-gray-600">
-                            {t('account.planStatus.dailyUsage')}
-                          </span>
-                          <span className="font-medium text-gray-900">
-                            {labelsUsed}/10 {t('account.planStatus.labelsUsed')}
-                          </span>
-                        </div>
-
-                        {/* Barre de progression */}
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className={`h-2 rounded-full transition-all duration-300 ${
-                              remainingLabels === 0
-                                ? 'bg-red-500'
-                                : remainingLabels <= 3
-                                  ? 'bg-orange-500'
-                                  : 'bg-green-500'
-                            }`}
-                            style={{ width: `${(labelsUsed / 10) * 100}%` }}
-                          ></div>
-                        </div>
-
-                        <div className="text-sm text-gray-600">
-                          {remainingLabels > 0 ? (
-                            <span>
-                              {t(
-                                'account.planStatus.remainingLabels',
-                                getPluralVariables(remainingLabels)
-                              )}
-                            </span>
-                          ) : (
-                            <span className="text-red-600 font-medium">
-                              {t('account.planStatus.limitReached')}
-                            </span>
-                          )}
-                        </div>
-                      </>
-                    )}
+                    </div>
+                    <div className="text-right">
+                      <div
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                          userPlan === 'premium'
+                            ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white'
+                            : 'bg-blue-100 text-blue-800'
+                        }`}
+                      >
+                        <i
+                          className={`mr-2 ${userPlan === 'premium' ? 'pi pi-star' : 'pi pi-gift'}`}
+                        ></i>
+                        {userPlan === 'premium'
+                          ? t('pricing.premium.title')
+                          : t('pricing.plans.free.name')}
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Call to action upgrade - uniquement pour les utilisateurs gratuits */}
-                  {!loading && userPlan === 'free' && (
+                  {userPlan === 'free' && (
                     <div className="mt-6 pt-4 border-t border-blue-200">
                       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div className="flex-1">
@@ -383,17 +328,19 @@ function AccountPageContent() {
                   )}
                 </div>
 
-                  {/* Gestion des abonnements - intégrée pour les utilisateurs Premium */}
-                  {userPlan === 'premium' && (
-                    <div className="pt-6 border-t border-gray-200">
-                      <SubscriptionManager t={t} embedded={true} />
-                    </div>
-                  )}
-                </div>
-              </Card>
-            )}
+                {userPlan === 'premium' && subscription && (
+                  <div className="pt-6 border-t border-gray-200">
+                    <SubscriptionManager
+                      t={t}
+                      subscription={subscription}
+                      portalUrl={portalUrl}
+                      embedded={true}
+                    />
+                  </div>
+                )}
+              </div>
+            </Card>
 
-            {/* Informations utilisateur */}
             <Card className="mb-6">
               <div className="space-y-6">
                 <div className="flex items-start justify-between">
@@ -404,7 +351,6 @@ function AccountPageContent() {
                   </div>
                 </div>
 
-                {/* Nom complet */}
                 <div className="border-b border-gray-200 pb-4">
                   <div className="flex items-center justify-between mb-2">
                     <div className="text-sm font-medium text-gray-700">
@@ -460,27 +406,23 @@ function AccountPageContent() {
                       </div>
                     </div>
                   ) : (
-                    <p className="text-gray-900 text-lg">
-                      {user.user_metadata?.full_name || user.email?.split('@')[0] || 'N/A'}
-                    </p>
+                    <p className="text-gray-900 text-lg">{getUserDisplayName() || 'N/A'}</p>
                   )}
                 </div>
 
-                {/* Email */}
                 <div className="border-b border-gray-200 pb-4">
                   <div className="block text-sm font-medium text-gray-700 mb-2">
                     {t('account.userInfo.email')}
                   </div>
-                  <p className="text-gray-900 text-lg">{user.email}</p>
+                  <p className="text-gray-900 text-lg">{accountUser.email}</p>
                 </div>
 
-                {/* Date de création */}
                 <div>
                   <div className="block text-sm font-medium text-gray-700 mb-2">
                     {t('account.userInfo.memberSince')}
                   </div>
                   <p className="text-gray-600">
-                    {new Date(user.created_at).toLocaleDateString(locale as string, {
+                    {new Date(accountUser.createdAt).toLocaleDateString(locale as string, {
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric',

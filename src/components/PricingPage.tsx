@@ -7,18 +7,21 @@ import { Card } from 'primereact/card'
 import { Skeleton } from 'primereact/skeleton'
 import { Tag } from 'primereact/tag'
 import { Toast } from 'primereact/toast'
-import type React from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 // Lazy loading du AuthModal pour améliorer FCP
-const AuthModal = dynamic(() => import('@/components/auth/AuthModal').then(mod => ({ default: mod.AuthModal })), {
-  loading: () => <Skeleton width="100%" height="400px" />,
-  ssr: false,
-})
+const AuthModal = dynamic(
+  () => import('@/components/auth/AuthModal').then((mod) => ({ default: mod.AuthModal })),
+  {
+    loading: () => <Skeleton width="100%" height="400px" />,
+    ssr: false,
+  }
+)
+
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { useAuth } from '@/hooks/useAuth'
-import { useLemonSqueezyCheckout } from '@/hooks/useLemonSqueezyCheckout'
+import { useDodoCheckout } from '@/hooks/useDodoCheckout'
 
 type TranslationFunction = (key: string) => string
 
@@ -40,17 +43,10 @@ interface PricingPlan {
 const PRICING_CONFIG = {
   annualPrice: '€4',
   discountPercentage: '-33%',
-  featureCount: 4,
-} as const
-
-const CARD_STYLES = {
-  free: {
-    base: 'p-10 shadow-xl rounded-2xl bg-white hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 h-full',
-    withUser: 'border-2 border-blue-500',
-    withoutUser: 'border border-gray-200',
+  featureCount: {
+    free: 4,
+    premium: 6,
   },
-  premium:
-    'p-10 shadow-2xl border-2 border-blue-500 rounded-2xl bg-gradient-to-br from-white to-blue-50 hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-2 relative overflow-hidden h-full',
 } as const
 
 /**
@@ -62,8 +58,9 @@ function createPricingPlan(
   isAnnual = false
 ): PricingPlan {
   const baseKey = `pricing.${planType}`
+  const featureCount = PRICING_CONFIG.featureCount[planType]
 
-  const features = Array.from({ length: PRICING_CONFIG.featureCount }, (_, index) =>
+  const features = Array.from({ length: featureCount }, (_, index) =>
     t(`${baseKey}.features.${index}`)
   ).filter(Boolean) // Filtre les traductions vides
 
@@ -94,7 +91,7 @@ export function PricingPage({ t }: PricingPageProps) {
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [pendingUpgrade, setPendingUpgrade] = useState(false)
   const { user, userPlan, loading } = useAuth()
-  const { createCheckout, isLoading: isUpgrading, error: checkoutError } = useLemonSqueezyCheckout()
+  const { createCheckout, isLoading: isUpgrading, error: checkoutError } = useDodoCheckout()
   const toast = useRef<Toast>(null)
 
   const { freePlan, premiumPlan } = useMemo(
@@ -125,39 +122,18 @@ export function PricingPage({ t }: PricingPageProps) {
       return
     }
 
-    // Créer le checkout Lemon Squeezy
-    const success = await createCheckout(isAnnual ? 'yearly' : 'monthly')
-
-    if (success) {
-      // Informer l'utilisateur qu'il va être redirigé
-      toast.current?.show({
-        severity: 'info',
-        summary: t('pricing.checkout.redirecting.title'),
-        detail: t('pricing.checkout.redirecting.message'),
-        life: 3000,
-      })
-    }
-  }, [user, userPlan, createCheckout, isAnnual, t])
+    // Créer le checkout Dodo Payments (overlay mode - pas de redirection)
+    await createCheckout(isAnnual ? 'yearly' : 'monthly')
+  }, [user, userPlan, createCheckout, isAnnual])
 
   // Déclencher l'upgrade automatiquement après connexion
   useEffect(() => {
     if (user && pendingUpgrade && userPlan !== 'premium') {
       setPendingUpgrade(false)
-      // Déclencher le checkout automatiquement
-      const performUpgrade = async () => {
-        const success = await createCheckout(isAnnual ? 'yearly' : 'monthly')
-        if (success) {
-          toast.current?.show({
-            severity: 'info',
-            summary: t('pricing.checkout.redirecting.title'),
-            detail: t('pricing.checkout.redirecting.message'),
-            life: 3000,
-          })
-        }
-      }
-      performUpgrade()
+      // Déclencher le checkout automatiquement (overlay mode)
+      createCheckout(isAnnual ? 'yearly' : 'monthly')
     }
-  }, [user, pendingUpgrade, userPlan, createCheckout, isAnnual, t])
+  }, [user, pendingUpgrade, userPlan, createCheckout, isAnnual])
 
   // Afficher les erreurs de checkout
   useEffect(() => {
@@ -188,9 +164,7 @@ export function PricingPage({ t }: PricingPageProps) {
               {t('pricing.page.title').split(' ').slice(1).join(' ')}
             </span>
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            {t('pricing.page.subtitle')}
-          </p>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">{t('pricing.page.subtitle')}</p>
         </div>
       </div>
 
@@ -349,7 +323,6 @@ export function PricingPage({ t }: PricingPageProps) {
             </Card>
           </div>
         </div>
-
       </div>
 
       {/* Footer */}

@@ -2,7 +2,7 @@
   "name": "Lalabel - Générateur d'Étiquettes d'Expédition",
   "short_name": "Lalabel",
   "description": "Créez et imprimez vos étiquettes d'expédition depuis Amazon, Shopify, eBay. Tous formats : Avery, A4, rouleaux.",
-  "start_url": "/",
+  "start_url": "/fr",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#3b82f6",
@@ -10,25 +10,16 @@
   "scope": "/",
   "lang": "fr",
   "categories": ["business", "productivity", "utilities"],
-  "screenshots": [
-    {
-      "src": "/screenshot-wide.jpg",
-      "sizes": "1280x720",
-      "type": "image/jpeg",
-      "form_factor": "wide"
-    },
-    {
-      "src": "/screenshot-narrow.jpg",
-      "sizes": "750x1334",
-      "type": "image/jpeg",
-      "form_factor": "narrow"
-    }
-  ],
   "icons": [
     {
-      "src": "/favicon.ico",
-      "sizes": "48x48",
-      "type": "image/x-icon"
+      "src": "/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
     },
     {
       "src": "/icon-192.png",

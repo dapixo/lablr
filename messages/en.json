@@ -28,6 +28,7 @@
     }
   },
   "steps": {
+    "heading": "How does it work? 3 simple steps",
     "1": {
       "title": "1. Import",
       "description": "Drop your CSV/TXT file (Amazon, Shopify, eBay, Etsy...)"
@@ -49,7 +50,9 @@
     "processing": "Processing...",
     "error": {
       "reading": "Error reading file"
-    }
+    },
+    "or": "or",
+    "createManually": "Create manually"
   },
   "addresses": {
     "title": "Extracted addresses ({count})",
@@ -68,7 +71,14 @@
     "noResults": {
       "title": "No results found",
       "description": "Try with different keywords or check spelling"
-    }
+    },
+    "emptyManual": {
+      "title": "No addresses yet",
+      "description": "Add your first address manually",
+      "addButton": "Add an address",
+      "importLink": "Import a file"
+    },
+    "generateLabels": "Generate labels"
   },
   "editor": {
     "title": {
@@ -137,7 +147,8 @@
     "formatAriaLabel": "Choose a print format",
     "buttons": {
       "print": "Print",
-      "download": "Download CSV"
+      "download": "Download CSV",
+      "upgradeToPremiumFormat": "Upgrade to Premium for {format}"
     },
     "preview": {
       "title": "Preview - {format}",
@@ -149,6 +160,36 @@
       "rollPagination": "... and {count} more label{s}",
       "csvPagination": "... and {count} more line{s} ({total} addresses total)",
       "emptyLabel": "Empty label"
+    },
+    "offset": {
+      "title": "Partially used sheet?",
+      "description": "If you have already used some labels, indicate how many to avoid waste",
+      "labelUsed": "Labels already removed:",
+      "decrease": "Decrease",
+      "increase": "Increase",
+      "previewTitle": "Preview of your sheet:",
+      "cellUsed": "Label already removed",
+      "cellNext": "Next label to print",
+      "cellAvailable": "Available label",
+      "startPosition": "Printing will start at position {position}",
+      "newSheet": "New sheet - printing from position 1",
+      "summary": "{count} label(s) already removed",
+      "summaryNone": "New sheet",
+      "reset": "Reset",
+      "clickInstruction": "Click on the last removed label:",
+      "selectPosition": "Select position"
+    },
+    "antiWaste": {
+      "title": "💡 Premium Tip: Anti-waste mode",
+      "description": "Save paper by reusing partially used sheets! With Premium, select where to start printing.",
+      "learnMore": "Upgrade to Premium"
+    },
+    "waiting": {
+      "title": "Preparing your print...",
+      "message": "Your print will start in a few moments",
+      "premiumTitle": "Instant printing with Premium",
+      "premiumMessage": "Premium users enjoy instant printing with no waiting time. Upgrade to Premium now!",
+      "upgradeButton": "Upgrade to Premium"
     }
   },
   "formats": {
@@ -191,8 +232,8 @@
     },
     "tagline": "Lalabel - Label Generator",
     "welcome": {
-      "title": "🎉 Create 10 free labels daily",
-      "description": "A simple sign-in allows you to print up to 10 labels for free every day. Need more? Upgrade to Premium for just $5/month.",
+      "title": "🎉 Print up to 5 labels for free",
+      "description": "A simple login allows you to print up to 5 labels per print job. Need more? Go Premium for only €4/month.",
       "privacy": "Your import data is never stored"
     },
     "required": {
@@ -224,7 +265,7 @@
       }
     },
     "guarantees": {
-      "free": "10 labels/day free",
+      "free": "5 labels per print",
       "secure": "Secure data",
       "noStorage": "No storage"
     },
@@ -260,9 +301,11 @@
       "perMonth": "/month",
       "features": {
         "0": "Unlimited labels",
-        "1": "All printing formats",
-        "2": "Perfect for high volume",
-        "3": "Priority support"
+        "1": "All formats (14, 16, 21 labels, rolls...)",
+        "2": "Anti-waste mode (sheet reuse)",
+        "3": "Instant printing (no waiting)",
+        "4": "Perfect for high volume",
+        "5": "Priority support"
       }
     },
     "limits": {
@@ -284,10 +327,6 @@
       }
     },
     "checkout": {
-      "redirecting": {
-        "title": "Redirecting...",
-        "message": "You will be redirected to the secure payment page."
-      },
       "error": {
         "title": "Payment error",
         "message": "Unable to create payment session. Please try again."
@@ -297,8 +336,8 @@
       "title": "Free",
       "price": "€0",
       "features": {
-        "0": "10 labels per day",
-        "1": "All printing formats",
+        "0": "5 labels per print",
+        "1": "10 labels format + CSV Export",
         "2": "Perfect for small shipments",
         "3": "Standard support"
       }
@@ -345,11 +384,15 @@
       },
       "formats": {
         "question": "What print formats are available?",
-        "answer": "We offer several formats: standard and compact A4, adhesive labels with 10, 14, 16 or 21 labels per page, label rolls for thermal printers, and CSV export. All formats include real-time preview."
+        "answer": "With the free plan, you have access to the 10-label adhesive format and CSV export. The Premium plan unlocks all formats: 14, 16 and 21 labels per page, label rolls for thermal printers, standard and compact A4 formats. All formats include real-time preview."
+      },
+      "waste": {
+        "question": "How can I avoid wasting label sheets?",
+        "answer": "With the Premium plan, you have access to anti-waste mode which allows you to reuse partially used sheets. If you've already removed 3 labels from a sheet, simply select the offset so printing starts from the 4th position. Perfect for saving paper and money!"
       },
       "pricing": {
         "question": "How does the freemium model work?",
-        "answer": "Lalabel offers you 10 free labels every day, automatically renewed. It's perfect for small shipments. If you need more, our Premium plan starting from €4/month gives you access to unlimited labels with priority support."
+        "answer": "Lalabel offers you up to 5 free labels per print job. Perfect for small shipments. If you need more, our Premium plan starting at €4/month gives you unlimited labels with priority support."
       }
     }
   },
@@ -478,6 +521,11 @@
         "message": "Your subscription encountered a payment issue, but you retain Premium access for another {days} day{plural}.",
         "action": "To avoid any interruption, please update your payment method before {date}."
       }
+    },
+    "cancelled": {
+      "payment": {
+        "message": "Your payment was cancelled. You remain on the free plan with 5 labels per print."
+      }
     }
   },
   "status": {
@@ -486,6 +534,7 @@
     "addressesExtracted": "addresses extracted",
     "noAddressFound": "No addresses found",
     "checkFileFormat": "Check that your file contains address columns (name, address, city, postal code).",
+    "importNewFile": "Import another file",
     "pageNumber": "Page {number}"
   },
   "fileAnalysis": {
@@ -627,7 +676,7 @@
       "title": "Information We Collect",
       "purchase": {
         "title": "Purchase Information",
-        "content": "When you purchase Lalabel, our payment processor (LemonSqueezy or equivalent) collects your name, email address, and payment information. We do not store your payment data."
+        "content": "When you purchase Lalabel, our payment processor (Dodo Payments or equivalent) collects your name, email address, and payment information. We do not store your payment data."
       },
       "analytics": {
         "title": "Analytics and Cookies",
@@ -655,5 +704,42 @@
       "title": "Contact",
       "content": "If you have any questions, contact us at"
     }
+  },
+  "upgrade": {
+    "title": "Upgrade to Premium for Unlimited Printing",
+    "subtitle": "Unlock all premium features",
+    "message": {
+      "addressesDetected": "{count} address{plural} detected",
+      "freeLimit": "You can print up to {limit} labels for free per print job."
+    },
+    "button": {
+      "printLimited": "Print first {limit}"
+    }
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "Oops! The page you're looking for seems to be missing. It may have been moved or deleted.",
+    "cta": "Back to Home",
+    "popularPages": "Popular Pages",
+    "links": {
+      "generator": {
+        "title": "Label Generator",
+        "description": "Create your shipping labels for free"
+      },
+      "pricing": {
+        "title": "Pricing",
+        "description": "Free and Premium plans at €6/month"
+      },
+      "faq": {
+        "title": "FAQ",
+        "description": "Frequently asked questions about Lalabel"
+      },
+      "login": {
+        "title": "Login",
+        "description": "Access your Lalabel account"
+      }
+    },
+    "needHelp": "Need help?",
+    "contactUs": "Contact us"
   }
 }

@@ -20,6 +20,10 @@ interface AddressListProps {
   onEditAddress?: (address: Address) => void
   onDeleteAddress?: (addressId: string) => void
   onAddAddress?: () => void
+  onImportFile?: () => void
+  onGenerateLabels?: () => void
+  isManualMode?: boolean
+  showGenerateButton?: boolean
   t: (key: string) => string
 }
 
@@ -32,6 +36,10 @@ export function AddressList({
   onEditAddress,
   onDeleteAddress,
   onAddAddress,
+  onImportFile,
+  onGenerateLabels,
+  isManualMode = false,
+  showGenerateButton = false,
   t,
 }: AddressListProps) {
   const [currentPage, setCurrentPage] = useState(0)
@@ -115,7 +123,7 @@ export function AddressList({
     setSearchQuery(e.target.value)
   }, [])
 
-  if (addresses.length === 0 && errors.length === 0) {
+  if (addresses.length === 0 && errors.length === 0 && !isManualMode) {
     return null
   }
 
@@ -151,10 +159,12 @@ export function AddressList({
               addresses={addresses}
               searchQuery={searchQuery}
               onSearchChange={handleSearchChange}
+              isManualMode={isManualMode}
               t={t}
             />
           </div>
-          {onAddAddress && (
+          {/* Bouton "Ajouter une adresse" - Masqué en mode manuel avec 0 adresses (déjà dans EmptyManualState) */}
+          {onAddAddress && !(isManualMode && addresses.length === 0) && (
             <Button
               onClick={onAddAddress}
               label={t('addresses.addButton')}
@@ -208,9 +218,23 @@ export function AddressList({
                 />
               </div>
             )}
+
+            {/* Bouton "Générer les étiquettes" - Affiché en dessous des adresses en mode manuel */}
+            {showGenerateButton && onGenerateLabels && (
+              <div className="mt-6 flex justify-center">
+                <Button
+                  onClick={onGenerateLabels}
+                  label={t('addresses.generateLabels')}
+                  icon="pi pi-print"
+                  className="p-button-primary p-button-lg"
+                />
+              </div>
+            )}
           </>
         ) : searchQuery.trim() && addresses.length > 0 ? (
           <EmptySearchState t={t} />
+        ) : isManualMode && addresses.length === 0 ? (
+          <EmptyManualState t={t} onAddAddress={onAddAddress} onImportFile={onImportFile} />
         ) : null}
       </Panel>
     </div>
@@ -248,6 +272,7 @@ const AddressCard = React.memo<AddressCardProps>(function AddressCard({
                   icon="pi pi-pencil"
                   className="p-button-text p-button-sm"
                   size="small"
+                  aria-label="Modifier l'adresse"
                 />
               )}
               {onDelete && (
@@ -256,6 +281,7 @@ const AddressCard = React.memo<AddressCardProps>(function AddressCard({
                   icon="pi pi-trash"
                   className="p-button-text p-button-sm p-button-danger"
                   size="small"
+                  aria-label="Supprimer l'adresse"
                 />
               )}
             </div>
@@ -299,6 +325,7 @@ const AddressCard = React.memo<AddressCardProps>(function AddressCard({
                 icon="pi pi-pencil"
                 className="p-button-text p-button-sm"
                 size="small"
+                aria-label="Modifier l'adresse"
               />
             )}
             {onDelete && (
@@ -307,6 +334,7 @@ const AddressCard = React.memo<AddressCardProps>(function AddressCard({
                 icon="pi pi-trash"
                 className="p-button-text p-button-sm p-button-danger"
                 size="small"
+                aria-label="Supprimer l'adresse"
               />
             )}
           </div>
@@ -321,6 +349,7 @@ interface SearchBarProps {
   addresses: Address[]
   searchQuery: string
   onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  isManualMode: boolean
   t: (key: string) => string
 }
 
@@ -328,9 +357,11 @@ const SearchBar = React.memo<SearchBarProps>(function SearchBar({
   addresses,
   searchQuery,
   onSearchChange,
+  isManualMode,
   t,
 }) {
-  if (addresses.length <= 5) {
+  // Afficher la recherche dès qu'il y a au moins 1 adresse
+  if (addresses.length === 0) {
     return <div /> // Placeholder vide pour maintenir la structure flex
   }
 
@@ -343,6 +374,7 @@ const SearchBar = React.memo<SearchBarProps>(function SearchBar({
         value={searchQuery}
         onChange={onSearchChange}
         placeholder={t('addresses.search.placeholder')}
+        aria-label={t('addresses.search.placeholder')}
         className="w-full"
       />
     </IconField>
@@ -360,6 +392,48 @@ const EmptySearchState = React.memo(function EmptySearchState({
       <Search className="h-12 w-12 mx-auto text-gray-400 mb-3" />
       <p className="text-gray-600 text-lg font-medium">{t('addresses.noResults.title')}</p>
       <p className="text-gray-500 text-sm">{t('addresses.noResults.description')}</p>
+    </div>
+  )
+})
+
+// Composant EmptyState pour le mode création manuelle
+const EmptyManualState = React.memo(function EmptyManualState({
+  t,
+  onAddAddress,
+  onImportFile,
+}: {
+  t: (key: string) => string
+  onAddAddress?: () => void
+  onImportFile?: () => void
+}) {
+  return (
+    <div className="text-center py-12">
+      <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-4">
+        <User className="h-8 w-8 text-blue-500" />
+      </div>
+      <p className="text-gray-600 text-lg font-medium mb-2">{t('addresses.emptyManual.title')}</p>
+      <p className="text-gray-500 text-sm mb-6">{t('addresses.emptyManual.description')}</p>
+
+      <div className="flex flex-col items-center gap-3">
+        {onAddAddress && (
+          <Button
+            onClick={onAddAddress}
+            label={t('addresses.emptyManual.addButton')}
+            icon="pi pi-plus"
+            className="p-button-primary"
+          />
+        )}
+        {onImportFile && (
+          <button
+            type="button"
+            onClick={onImportFile}
+            aria-label={t('addresses.emptyManual.importLink')}
+            className="text-sm text-blue-600 hover:text-blue-700 hover:underline"
+          >
+            {t('addresses.emptyManual.importLink')}
+          </button>
+        )}
+      </div>
     </div>
   )
 })

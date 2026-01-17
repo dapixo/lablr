@@ -45,10 +45,33 @@ function wrapAddressItem(content: string, format: PrintFormat): string {
 }
 
 /**
- * Génère le HTML complet pour l'impression des adresses
+ * Génère une étiquette vide pour combler les positions déjà utilisées
  */
-export function generateAddressesHTML(addresses: Address[], format: PrintFormat): string {
+function generateEmptyLabel(): string {
+  return '<div class="label-item label-empty"></div>'
+}
+
+/**
+ * Génère le HTML complet pour l'impression des adresses
+ * @param addresses - Tableau des adresses à imprimer
+ * @param format - Format d'impression
+ * @param offset - Nombre d'étiquettes vides à insérer au début (pour planches partiellement utilisées)
+ */
+export function generateAddressesHTML(
+  addresses: Address[],
+  format: PrintFormat,
+  offset: number = 0
+): string {
   const config = PRINT_CONFIGS[format]
+
+  // Génération des étiquettes vides pour l'offset (seulement pour les grilles)
+  const emptyLabels =
+    config.layout.type === 'grid' && offset > 0
+      ? Array(offset)
+          .fill(null)
+          .map(() => generateEmptyLabel())
+          .join('')
+      : ''
 
   // Génération du contenu des adresses
   const addressesContent = addresses
@@ -58,18 +81,21 @@ export function generateAddressesHTML(addresses: Address[], format: PrintFormat)
     })
     .join('')
 
+  // Combinaison des étiquettes vides + adresses
+  const fullContent = emptyLabels + addressesContent
+
   // Wrapper selon le type de layout
   switch (config.layout.type) {
     case 'grid':
-      return `<div class="${config.styling.containerClass}">${addressesContent}</div>`
+      return `<div class="${config.styling.containerClass}">${fullContent}</div>`
 
     case 'compact':
-      return `<div class="${config.styling.containerClass}">${addressesContent}</div>`
+      return `<div class="${config.styling.containerClass}">${fullContent}</div>`
 
     case 'roll':
-      return addressesContent // Pas de wrapper pour le rouleau
+      return fullContent // Pas de wrapper pour le rouleau
     default:
-      return addressesContent // Pas de wrapper pour les listes
+      return fullContent // Pas de wrapper pour les listes
   }
 }
 

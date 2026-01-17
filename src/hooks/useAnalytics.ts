@@ -9,13 +9,11 @@ export interface LabelGeneratedEvent {
   format: string
   count: number
   userPlan: 'free' | 'premium'
-  remainingLabels?: number
 }
 
 export interface UpgradeEvent {
   source: 'limit_modal' | 'pricing_page' | 'header_button' | 'account_page'
-  remainingLabels?: number
-  triggeredBy: 'limit_reached' | 'proactive' | 'discovery'
+  triggeredBy: 'limit_exceeded' | 'proactive' | 'discovery'
 }
 
 export interface PaymentEvent {
@@ -42,7 +40,6 @@ export interface AuthEvent {
  * Hook principal pour analytics Lablr
  */
 export function useAnalytics() {
-
   /**
    * Track génération d'étiquettes
    */
@@ -51,7 +48,6 @@ export function useAnalytics() {
       format: event.format,
       count: event.count,
       userPlan: event.userPlan,
-      ...(event.remainingLabels !== undefined && { remainingLabels: event.remainingLabels }),
     })
   }
 
@@ -62,7 +58,6 @@ export function useAnalytics() {
     track('Upgrade Attempt', {
       source: event.source,
       triggeredBy: event.triggeredBy,
-      ...(event.remainingLabels !== undefined && { remainingLabels: event.remainingLabels }),
     })
   }
 
@@ -114,7 +109,11 @@ export function useAnalytics() {
   /**
    * Track erreurs utilisateur importantes
    */
-  const trackError = (errorType: string, errorMessage: string, context?: Record<string, string | number | boolean>) => {
+  const trackError = (
+    errorType: string,
+    errorMessage: string,
+    context?: Record<string, string | number | boolean>
+  ) => {
     track('User Error', {
       errorType,
       errorMessage: errorMessage.slice(0, 100), // Limiter la longueur

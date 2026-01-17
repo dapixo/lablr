@@ -1,11 +1,13 @@
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { PrimeReactProvider } from 'primereact/api'
-import { Analytics } from '@vercel/analytics/react'
-import { SpeedInsights } from '@vercel/speed-insights/next'
 import { StructuredData } from '@/components/SEO/StructuredData'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { TranslationsProvider } from '@/contexts/TranslationsContext'
 import { locales } from '@/i18n/config'
+import { QueryProvider } from '@/providers/QueryProvider'
 
 export async function generateMetadata({
   params,
@@ -15,19 +17,30 @@ export async function generateMetadata({
   const { locale } = await params
   const baseUrl = 'https://lalabel.app'
 
+  // Configuration icons commune à toutes les locales
+  const icons = {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
+  }
+
   // SEO optimized metadata based on locale
   if (locale === 'fr') {
     return {
       title: "Lalabel - Générateur d'Étiquettes d'Expédition | Impression Amazon, Shopify, eBay",
       description:
-        "Créez 10 étiquettes d'expédition gratuites par jour. Compatible Amazon Seller, Shopify, eBay. Premium illimité à 6€/mois. Formats Avery, A4, rouleaux thermiques.",
+        "Créez vos étiquettes d'expédition Amazon, Shopify, eBay. Gratuit : 10/jour. Premium illimité : 6€/mois. Formats Avery, A4, rouleaux.",
       keywords:
         'impression étiquettes expédition, générateur étiquettes, imprimer étiquettes adresse, Amazon Seller, Shopify, eBay, étiquettes Avery, A4, gratuit',
       alternates: {
         canonical: `${baseUrl}/${locale}`,
         languages: {
-          'fr': `${baseUrl}/fr`,
-          'en': `${baseUrl}/en`,
+          fr: `${baseUrl}/fr`,
+          en: `${baseUrl}/en`,
+          es: `${baseUrl}/es`,
           'x-default': `${baseUrl}/fr`,
         },
       },
@@ -41,7 +54,7 @@ export async function generateMetadata({
         siteName: 'Lalabel',
         images: [
           {
-            url: `${baseUrl}/og-image.jpg`,
+            url: `${baseUrl}/og-image.png`,
             width: 1200,
             height: 630,
             alt: "Lalabel - Générateur d'étiquettes d'expédition",
@@ -53,32 +66,24 @@ export async function generateMetadata({
         title: "Lalabel - Générateur d'Étiquettes d'Expédition",
         description:
           "Créez et imprimez vos étiquettes d'expédition depuis Amazon, Shopify, eBay. Gratuit et sécurisé.",
-        images: [`${baseUrl}/og-image.jpg`],
+        images: [`${baseUrl}/og-image.png`],
       },
       manifest: '/manifest.json',
-      icons: {
-        icon: [
-          { url: '/favicon.ico', sizes: '32x32' },
-          { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
-        ],
-        apple: [
-          { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-        ],
-      },
+      icons,
     }
-  } else {
+  } else if (locale === 'en') {
     return {
       title: 'Lalabel - Shipping Label Generator | Print Amazon, Shopify, eBay Labels',
       description:
-        'Create 10 free shipping labels daily. Compatible Amazon Seller, Shopify, eBay. Unlimited Premium €6/month. Avery formats, A4, thermal rolls.',
+        'Print shipping labels from Amazon, Shopify, eBay. Free: 10/day. Unlimited Premium: €6/mo. Avery, A4, thermal rolls.',
       keywords:
         'shipping label generator, print shipping labels, address labels, Amazon Seller, Shopify, eBay, Avery labels, A4, free',
       alternates: {
         canonical: `${baseUrl}/${locale}`,
         languages: {
-          'fr': `${baseUrl}/fr`,
-          'en': `${baseUrl}/en`,
+          fr: `${baseUrl}/fr`,
+          en: `${baseUrl}/en`,
+          es: `${baseUrl}/es`,
           'x-default': `${baseUrl}/fr`,
         },
       },
@@ -92,7 +97,7 @@ export async function generateMetadata({
         siteName: 'Lalabel',
         images: [
           {
-            url: `${baseUrl}/og-image.jpg`,
+            url: `${baseUrl}/og-image.png`,
             width: 1200,
             height: 630,
             alt: 'Lalabel - Shipping Label Generator',
@@ -104,19 +109,54 @@ export async function generateMetadata({
         title: 'Lalabel - Shipping Label Generator',
         description:
           'Create and print shipping labels from Amazon, Shopify, eBay. Free and secure.',
-        images: [`${baseUrl}/og-image.jpg`],
+        images: [`${baseUrl}/og-image.png`],
       },
       manifest: '/manifest.json',
-      icons: {
-        icon: [
-          { url: '/favicon.ico', sizes: '32x32' },
-          { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
-        ],
-        apple: [
-          { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+      icons,
+    }
+  } else {
+    // Espagnol (ES)
+    return {
+      title: 'Lalabel - Generador de Etiquetas de Envío | Imprimir Amazon, Shopify, eBay',
+      description:
+        'Crea etiquetas de envío de Amazon, Shopify, eBay. Gratis: 10/día. Premium ilimitado: 6€/mes. Formatos Avery, A4, rollos.',
+      keywords:
+        'generador etiquetas envío, imprimir etiquetas, etiquetas dirección, Amazon Seller, Shopify, eBay, etiquetas Avery, A4, gratis',
+      alternates: {
+        canonical: `${baseUrl}/${locale}`,
+        languages: {
+          fr: `${baseUrl}/fr`,
+          en: `${baseUrl}/en`,
+          es: `${baseUrl}/es`,
+          'x-default': `${baseUrl}/fr`,
+        },
+      },
+      openGraph: {
+        title: 'Lalabel - Generador de Etiquetas de Envío Gratis',
+        description:
+          'Crea e imprime etiquetas de envío desde Amazon, Shopify, eBay. Todos los formatos: Avery, A4, rollos térmicos.',
+        type: 'website',
+        locale: 'es_ES',
+        url: `${baseUrl}/${locale}`,
+        siteName: 'Lalabel',
+        images: [
+          {
+            url: `${baseUrl}/og-image.png`,
+            width: 1200,
+            height: 630,
+            alt: 'Lalabel - Generador de etiquetas de envío',
+          },
         ],
       },
+      twitter: {
+        card: 'summary_large_image',
+        title: 'Lalabel - Generador de Etiquetas de Envío',
+        description:
+          'Crea e imprime etiquetas de envío desde Amazon, Shopify, eBay. Gratis y seguro.',
+        images: [`${baseUrl}/og-image.png`],
+      },
+      manifest: '/manifest.json',
+      icons,
     }
   }
 }
@@ -146,11 +186,15 @@ export default async function LocaleLayout({
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       <link rel="dns-prefetch" href="https://api.supabase.co" />
-      <link rel="dns-prefetch" href="https://api.lemonsqueezy.com" />
+      <link rel="dns-prefetch" href="https://checkout.dodopayments.com" />
 
       <StructuredData locale={locale} />
       <PrimeReactProvider>
-        <AuthProvider>{children}</AuthProvider>
+        <QueryProvider>
+          <TranslationsProvider locale={locale}>
+            <AuthProvider>{children}</AuthProvider>
+          </TranslationsProvider>
+        </QueryProvider>
       </PrimeReactProvider>
       <Analytics />
       <SpeedInsights />

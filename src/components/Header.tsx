@@ -1,10 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { useParams, useRouter, usePathname } from 'next/navigation'
+import { useParams, usePathname, useRouter } from 'next/navigation'
+import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
-import { isPremiumModeEnabled } from '@/lib/feature-flags'
 
 interface HeaderProps {
   t: (key: string) => string
@@ -18,6 +18,7 @@ export function Header({ t }: HeaderProps) {
   const { user, loading, userPlan, signOut } = useAuth()
   const [isHydrated, setIsHydrated] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const queryClient = useQueryClient()
 
   // Éviter les erreurs d'hydratation en attendant que le client soit prêt
   useEffect(() => {
@@ -53,7 +54,7 @@ export function Header({ t }: HeaderProps) {
         }
       }, 100)
     }
-  }, [pathname])
+  }, [])
 
   // Handler pour le lien FAQ
   const handleFaqClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -89,6 +90,37 @@ export function Header({ t }: HeaderProps) {
     }
   }, [signOut, router, locale])
 
+  /**
+   * 🚀 OPTIMISATION Phase 3 : Prefetch des données de la page Account au hover
+   * Impact : Latence perçue ~0ms (données déjà en cache React Query)
+   */
+  const prefetchAccountData = useCallback(() => {
+    if (!user?.id) return
+
+    // Prefetch CSRF token (nécessaire pour les utilisateurs Premium)
+    // Catch silencieux pour éviter les erreurs de console
+    queryClient.prefetchQuery({
+      queryKey: ['csrfToken'],
+      queryFn: () =>
+        fetch('/api/csrf-token', { credentials: 'include' })
+          .then((r) => r.json())
+          .catch(() => null), // Ignorer les erreurs de prefetch
+      staleTime: 60 * 60 * 1000, // 1h
+    })
+
+    // Prefetch subscription uniquement si Premium
+    if (userPlan === 'premium') {
+      queryClient.prefetchQuery({
+        queryKey: ['subscription', 'detail', user.id],
+        queryFn: () =>
+          fetch('/api/subscription', { credentials: 'include' })
+            .then((r) => r.json())
+            .catch(() => null), // Ignorer les erreurs de prefetch
+        staleTime: 12 * 60 * 60 * 1000, // 12h
+      })
+    }
+  }, [user?.id, userPlan, queryClient])
+
   return (
     <header
       className={`sticky top-0 z-50 transition-all duration-300 ${
@@ -122,68 +154,68 @@ export function Header({ t }: HeaderProps) {
             ) : user ? (
               // Mode connecté : Mon compte, FAQ, Upgrade (si pas premium), Déconnexion
               <>
+                {/* 🚀 OPTIMISÉ Phase 3 : Prefetch au hover/focus pour latence perçue ~0ms */}
+                <Link
+                  href={`/${locale}/account`}
+                  className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5"
+                  onMouseEnter={prefetchAccountData}
+                  onFocus={prefetchAccountData}
+                >
+                  <i className="pi pi-user text-xs"></i>
+                  <span>{t('navigation.account')}</span>
+                </Link>
+                <a
+                  href={`/${locale}#faq`}
+                  onClick={handleFaqClick}
+                  className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5 cursor-pointer"
+                >
+                  <i className="pi pi-question-circle text-xs"></i>
+                  <span>{t('navigation.faq')}</span>
+                </a>
+                {userPlan !== 'premium' && (
                   <Link
-                    href={`/${locale}/account`}
+                    href={`/${locale}/pricing`}
                     className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5"
                   >
-                    <i className="pi pi-user text-xs"></i>
-                    <span>{t('navigation.account')}</span>
+                    <i className="pi pi-star text-xs"></i>
+                    <span>{t('navigation.upgrade')}</span>
                   </Link>
-                  <a
-                    href={`/${locale}#faq`}
-                    onClick={handleFaqClick}
-                    className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <i className="pi pi-question-circle text-xs"></i>
-                    <span>{t('navigation.faq')}</span>
-                  </a>
-                  {isPremiumModeEnabled() && userPlan !== 'premium' && (
-                    <Link
-                      href={`/${locale}/pricing`}
-                      className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5"
-                    >
-                      <i className="pi pi-star text-xs"></i>
-                      <span>{t('navigation.upgrade')}</span>
-                    </Link>
-                  )}
-                  <button
-                    onClick={handleSignOut}
-                    className="text-sm text-gray-700 hover:text-red-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <i className="pi pi-sign-out text-xs"></i>
-                    <span>{t('navigation.signOut')}</span>
-                  </button>
-                </>
-              ) : (
-                // Mode déconnecté : Connexion, FAQ, Tarifs
-                <>
-                  <Link
-                    href={`/${locale}/login`}
-                    className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5"
-                  >
-                    <i className="pi pi-sign-in text-xs"></i>
-                    <span>{t('auth.buttons.signIn')}</span>
-                  </Link>
-                  <a
-                    href={`/${locale}#faq`}
-                    onClick={handleFaqClick}
-                    className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <i className="pi pi-question-circle text-xs"></i>
-                    <span>{t('navigation.faq')}</span>
-                  </a>
-                  {isPremiumModeEnabled() && (
-                    <Link
-                      href={`/${locale}/pricing`}
-                      className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5"
-                    >
-                      <i className="pi pi-tag text-xs"></i>
-                      <span>{t('navigation.pricing')}</span>
-                    </Link>
-                  )}
-                </>
-              )
-            }
+                )}
+                <button
+                  onClick={handleSignOut}
+                  className="text-sm text-gray-700 hover:text-red-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5 cursor-pointer"
+                >
+                  <i className="pi pi-sign-out text-xs"></i>
+                  <span>{t('navigation.signOut')}</span>
+                </button>
+              </>
+            ) : (
+              // Mode déconnecté : Connexion, FAQ, Tarifs
+              <>
+                <Link
+                  href={`/${locale}/login`}
+                  className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5"
+                >
+                  <i className="pi pi-sign-in text-xs"></i>
+                  <span>{t('auth.buttons.signIn')}</span>
+                </Link>
+                <a
+                  href={`/${locale}#faq`}
+                  onClick={handleFaqClick}
+                  className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5 cursor-pointer"
+                >
+                  <i className="pi pi-question-circle text-xs"></i>
+                  <span>{t('navigation.faq')}</span>
+                </a>
+                <Link
+                  href={`/${locale}/pricing`}
+                  className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5"
+                >
+                  <i className="pi pi-tag text-xs"></i>
+                  <span>{t('navigation.pricing')}</span>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>

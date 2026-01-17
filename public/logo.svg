@@ -1,0 +1,17 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Fond arrondi avec gradient -->
+  <rect width="32" height="32" rx="8" fill="url(#blueGradient)"/>
+
+  <!-- Icone tag (etiquette) -->
+  <path d="M10 11.5C10 10.672 10.672 10 11.5 10H16.586C16.851 10 17.105 10.105 17.293 10.293L21.707 14.707C22.098 15.098 22.098 15.732 21.707 16.122L16.122 21.707C15.732 22.098 15.098 22.098 14.707 21.707L10.293 17.293C10.105 17.105 10 16.851 10 16.586V11.5Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+  <!-- Point sur l etiquette -->
+  <circle cx="13" cy="13" r="1.25" fill="white"/>
+</svg>

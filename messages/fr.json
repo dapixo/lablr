@@ -28,6 +28,7 @@
     }
   },
   "steps": {
+    "heading": "Comment ça marche ? 3 étapes simples",
     "1": {
       "title": "1. Importez",
       "description": "Glissez votre fichier CSV/TXT (Amazon, Shopify, eBay, Etsy...)"
@@ -49,7 +50,9 @@
     "processing": "Traitement en cours...",
     "error": {
       "reading": "Erreur lors de la lecture du fichier"
-    }
+    },
+    "or": "ou",
+    "createManually": "Créer manuellement"
   },
   "addresses": {
     "title": "Adresses extraites ({count})",
@@ -68,7 +71,14 @@
     "noResults": {
       "title": "Aucun résultat trouvé",
       "description": "Essayez avec d'autres mots-clés ou vérifiez l'orthographe"
-    }
+    },
+    "emptyManual": {
+      "title": "Aucune adresse pour le moment",
+      "description": "Ajoutez votre première adresse manuellement",
+      "addButton": "Ajouter une adresse",
+      "importLink": "Importer un fichier"
+    },
+    "generateLabels": "Générer les étiquettes"
   },
   "editor": {
     "title": {
@@ -137,7 +147,8 @@
     "formatAriaLabel": "Choisir un format d'impression",
     "buttons": {
       "print": "Imprimer",
-      "download": "Télécharger CSV"
+      "download": "Télécharger CSV",
+      "upgradeToPremiumFormat": "Passer à Premium pour {format}"
     },
     "preview": {
       "title": "Aperçu - {format}",
@@ -149,6 +160,36 @@
       "rollPagination": "... et {count} étiquette{s} supplémentaires",
       "csvPagination": "... et {count} ligne{s} supplémentaires ({total} adresses au total)",
       "emptyLabel": "Étiquette vide"
+    },
+    "offset": {
+      "title": "Planche partiellement utilisée ?",
+      "description": "Si vous avez déjà utilisé quelques étiquettes, indiquez combien pour éviter le gaspillage",
+      "labelUsed": "Étiquettes déjà retirées :",
+      "decrease": "Diminuer",
+      "increase": "Augmenter",
+      "previewTitle": "Preview de votre planche :",
+      "cellUsed": "Étiquette déjà retirée",
+      "cellNext": "Prochaine étiquette à imprimer",
+      "cellAvailable": "Étiquette disponible",
+      "startPosition": "Impression commencera à la position {position}",
+      "newSheet": "Planche neuve - impression depuis la position 1",
+      "summary": "{count} étiquette(s) déjà retirée(s)",
+      "summaryNone": "Planche neuve",
+      "reset": "Réinitialiser",
+      "clickInstruction": "Cliquez sur la dernière étiquette retirée :",
+      "selectPosition": "Sélectionner position"
+    },
+    "antiWaste": {
+      "title": "💡 Astuce Premium : Mode anti-gaspillage",
+      "description": "Économisez du papier en réutilisant vos planches partiellement utilisées ! Avec Premium, sélectionnez où commencer l'impression.",
+      "learnMore": "Passer à Premium"
+    },
+    "waiting": {
+      "title": "Préparation de votre impression...",
+      "message": "Votre impression sera lancée dans quelques instants",
+      "premiumTitle": "Impression instantanée avec Premium",
+      "premiumMessage": "Les utilisateurs Premium bénéficient d'impressions instantanées sans temps d'attente. Passez Premium dès maintenant !",
+      "upgradeButton": "Passer à Premium"
     }
   },
   "formats": {
@@ -191,8 +232,8 @@
     },
     "tagline": "Lalabel - Générateur d'étiquettes",
     "welcome": {
-      "title": "🎉 Créez 10 étiquettes gratuites par jour",
-      "description": "Une simple connexion vous permet d'imprimer jusqu'à 10 étiquettes gratuitement chaque jour. Besoin de plus ? Passez Premium pour seulement 4€/mois.",
+      "title": "🎉 Imprimez jusqu'à 5 étiquettes gratuitement",
+      "description": "Une simple connexion vous permet d'imprimer jusqu'à 5 étiquettes par impression. Besoin de plus ? Passez Premium pour seulement 4€/mois.",
       "privacy": "Vos données d'import ne sont jamais conservées"
     },
     "required": {
@@ -224,7 +265,7 @@
       }
     },
     "guarantees": {
-      "free": "10 étiquettes/jour gratuites",
+      "free": "5 étiquettes par impression",
       "secure": "Données sécurisées",
       "noStorage": "Aucune conservation"
     },
@@ -260,9 +301,11 @@
       "perMonth": "/mois",
       "features": {
         "0": "Étiquettes illimitées",
-        "1": "Tous les formats d'impression",
-        "2": "Idéal pour les gros volumes",
-        "3": "Support prioritaire"
+        "1": "Tous les formats (14, 16, 21 étiquettes, rouleaux...)",
+        "2": "Mode anti-gaspillage (réutilisation de planches)",
+        "3": "Impressions instantanées (sans attente)",
+        "4": "Idéal pour les gros volumes",
+        "5": "Support prioritaire"
       }
     },
     "limits": {
@@ -284,10 +327,6 @@
       }
     },
     "checkout": {
-      "redirecting": {
-        "title": "Redirection en cours...",
-        "message": "Vous allez être redirigé vers la page de paiement sécurisée."
-      },
       "error": {
         "title": "Erreur de paiement",
         "message": "Impossible de créer la session de paiement. Veuillez réessayer."
@@ -297,8 +336,8 @@
       "title": "Gratuit",
       "price": "0€",
       "features": {
-        "0": "10 étiquettes par jour",
-        "1": "Tous les formats d'impression",
+        "0": "5 étiquettes par impression",
+        "1": "Format 10 étiquettes + Export CSV",
         "2": "Parfait pour les petites expéditions",
         "3": "Support standard"
       }
@@ -345,11 +384,15 @@
       },
       "formats": {
         "question": "Quels formats d'impression sont disponibles ?",
-        "answer": "Nous proposons plusieurs formats : A4 standard et compact, étiquettes autocollantes avec 10, 14, 16 ou 21 étiquettes par page, rouleaux d'étiquettes pour imprimantes thermiques, et export CSV. Tous les formats incluent un aperçu en temps réel."
+        "answer": "Avec le plan gratuit, vous avez accès au format 10 étiquettes autocollantes et à l'export CSV. Le plan Premium débloque tous les formats : 14, 16 et 21 étiquettes par page, rouleaux d'étiquettes pour imprimantes thermiques, formats A4 standard et compact. Tous les formats incluent un aperçu en temps réel."
+      },
+      "waste": {
+        "question": "Comment éviter le gaspillage de planches d'étiquettes ?",
+        "answer": "Avec le plan Premium, vous avez accès au mode anti-gaspillage qui vous permet de réutiliser vos planches partiellement utilisées. Si vous avez déjà retiré 3 étiquettes d'une planche, sélectionnez simplement l'offset pour que l'impression commence à partir de la 4ème position. Parfait pour économiser du papier et de l'argent !"
       },
       "pricing": {
         "question": "Comment fonctionne le modèle freemium ?",
-        "answer": "Lalabel vous offre 10 étiquettes gratuites chaque jour, renouvelées automatiquement. C'est parfait pour les petites expéditions. Si vous avez besoin de plus, notre plan Premium à partir de 4€/mois. vous donne accès à des étiquettes illimitées avec support prioritaire."
+        "answer": "Lalabel vous offre jusqu'à 5 étiquettes par impression gratuitement. C'est parfait pour les petites expéditions. Si vous avez besoin de plus, notre plan Premium à partir de 4€/mois vous donne accès à des étiquettes illimitées avec support prioritaire."
       }
     }
   },
@@ -478,6 +521,11 @@
         "message": "Votre abonnement a rencontré un problème de paiement, mais vous conservez l'accès Premium pendant encore {days} jour{plural}.",
         "action": "Pour éviter toute interruption, veuillez mettre à jour votre méthode de paiement avant le {date}."
       }
+    },
+    "cancelled": {
+      "payment": {
+        "message": "Votre paiement a été annulé. Vous restez sur le plan gratuit avec 5 étiquettes par impression."
+      }
     }
   },
   "status": {
@@ -486,6 +534,7 @@
     "addressesExtracted": "adresses extraites",
     "noAddressFound": "Aucune adresse trouvée",
     "checkFileFormat": "Vérifiez que votre fichier contient des colonnes d'adresses (nom, adresse, ville, code postal).",
+    "importNewFile": "Importer un autre fichier",
     "pageNumber": "Page {number}"
   },
   "fileAnalysis": {
@@ -627,7 +676,7 @@
       "title": "Informations que nous collectons",
       "purchase": {
         "title": "Informations d'achat",
-        "content": "Lorsque vous achetez Lalabel, notre processeur de paiement (LemonSqueezy ou équivalent) collecte votre nom, votre adresse e-mail et vos informations de paiement. Nous ne conservons pas vos données de paiement."
+        "content": "Lorsque vous achetez Lalabel, notre processeur de paiement (Dodo Payments ou équivalent) collecte votre nom, votre adresse e-mail et vos informations de paiement. Nous ne conservons pas vos données de paiement."
       },
       "analytics": {
         "title": "Analyses et cookies",
@@ -655,5 +704,42 @@
       "title": "Contact",
       "content": "Si vous avez des questions, contactez-nous à"
     }
+  },
+  "upgrade": {
+    "title": "Passez à Premium pour des impressions illimitées",
+    "subtitle": "Débloquez toutes les fonctionnalités premium",
+    "message": {
+      "addressesDetected": "{count} adresse{plural} détectée{plural}",
+      "freeLimit": "Vous pouvez imprimer jusqu'à {limit} étiquettes gratuitement par impression."
+    },
+    "button": {
+      "printLimited": "Imprimer les {limit} premières"
+    }
+  },
+  "notFound": {
+    "title": "Page non trouvée",
+    "description": "Oups ! La page que vous recherchez semble introuvable. Elle a peut-être été déplacée ou supprimée.",
+    "cta": "Retour à l'accueil",
+    "popularPages": "Pages populaires",
+    "links": {
+      "generator": {
+        "title": "Générateur d'étiquettes",
+        "description": "Créez vos étiquettes d'expédition gratuitement"
+      },
+      "pricing": {
+        "title": "Tarifs",
+        "description": "Plans gratuit et premium à 6€/mois"
+      },
+      "faq": {
+        "title": "FAQ",
+        "description": "Questions fréquentes sur Lalabel"
+      },
+      "login": {
+        "title": "Connexion",
+        "description": "Accédez à votre compte Lalabel"
+      }
+    },
+    "needHelp": "Besoin d'aide ?",
+    "contactUs": "Contactez-nous"
   }
 }

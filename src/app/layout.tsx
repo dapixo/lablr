@@ -20,20 +20,14 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Lalabel - Générateur d\'Étiquettes d\'Expédition',
-  description: 'Créez et imprimez vos étiquettes d\'expédition facilement',
+  title: "Lalabel - Générateur d'Étiquettes d'Expédition",
+  description: "Créez et imprimez vos étiquettes d'expédition facilement",
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {children}
-      </body>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
     </html>
   )
 }

@@ -28,6 +28,7 @@
     }
   },
   "steps": {
+    "heading": "¿Cómo funciona? 3 pasos simples",
     "1": {
       "title": "1. Importa",
       "description": "Arrastra tu archivo CSV/TXT (Amazon, Shopify, eBay, Etsy...)"
@@ -49,7 +50,9 @@
     "processing": "Procesando...",
     "error": {
       "reading": "Error al leer el archivo"
-    }
+    },
+    "or": "o",
+    "createManually": "Crear manualmente"
   },
   "addresses": {
     "title": "Direcciones extraídas ({count})",
@@ -68,7 +71,14 @@
     "noResults": {
       "title": "No se encontraron resultados",
       "description": "Prueba con otras palabras clave o verifica la ortografía"
-    }
+    },
+    "emptyManual": {
+      "title": "Ninguna dirección por el momento",
+      "description": "Añade tu primera dirección manualmente",
+      "addButton": "Añadir una dirección",
+      "importLink": "Importar un archivo"
+    },
+    "generateLabels": "Generar etiquetas"
   },
   "editor": {
     "title": {
@@ -137,7 +147,8 @@
     "formatAriaLabel": "Elegir un formato de impresión",
     "buttons": {
       "print": "Imprimir",
-      "download": "Descargar CSV"
+      "download": "Descargar CSV",
+      "upgradeToPremiumFormat": "Pasar a Premium para {format}"
     },
     "preview": {
       "title": "Vista previa - {format}",
@@ -149,6 +160,36 @@
       "rollPagination": "... y {count} etiqueta{s} adicionales",
       "csvPagination": "... y {count} línea{s} adicionales ({total} direcciones en total)",
       "emptyLabel": "Etiqueta vacía"
+    },
+    "offset": {
+      "title": "¿Hoja parcialmente utilizada?",
+      "description": "Si ya ha utilizado algunas etiquetas, indique cuántas para evitar el desperdicio",
+      "labelUsed": "Etiquetas ya retiradas:",
+      "decrease": "Disminuir",
+      "increase": "Aumentar",
+      "previewTitle": "Vista previa de su hoja:",
+      "cellUsed": "Etiqueta ya retirada",
+      "cellNext": "Próxima etiqueta a imprimir",
+      "cellAvailable": "Etiqueta disponible",
+      "startPosition": "La impresión comenzará en la posición {position}",
+      "newSheet": "Hoja nueva - impresión desde la posición 1",
+      "summary": "{count} etiqueta(s) ya retirada(s)",
+      "summaryNone": "Hoja nueva",
+      "reset": "Restablecer",
+      "clickInstruction": "Haga clic en la última etiqueta retirada:",
+      "selectPosition": "Seleccionar posición"
+    },
+    "antiWaste": {
+      "title": "💡 Consejo Premium: Modo anti-desperdicio",
+      "description": "¡Ahorra papel reutilizando hojas parcialmente usadas! Con Premium, selecciona dónde comenzar la impresión.",
+      "learnMore": "Pasar a Premium"
+    },
+    "waiting": {
+      "title": "Preparando tu impresión...",
+      "message": "Tu impresión comenzará en unos momentos",
+      "premiumTitle": "Impresión instantánea con Premium",
+      "premiumMessage": "Los usuarios Premium disfrutan de impresiones instantáneas sin tiempo de espera. ¡Pasa a Premium ahora!",
+      "upgradeButton": "Pasar a Premium"
     }
   },
   "formats": {
@@ -191,8 +232,8 @@
     },
     "tagline": "Lalabel - Generador de etiquetas",
     "welcome": {
-      "title": "🎉 Crea 10 etiquetas gratis por día",
-      "description": "Con una simple conexión puedes imprimir hasta 10 etiquetas gratis cada día. ¿Necesitas más? Pasa a Premium por solo 4€/mes.",
+      "title": "🎉 Imprime hasta 5 etiquetas gratis",
+      "description": "Un simple inicio de sesión te permite imprimir hasta 5 etiquetas por impresión. ¿Necesitas más? Pasa a Premium por solo 4€/mes.",
       "privacy": "Tus datos importados nunca se almacenan"
     },
     "required": {
@@ -224,7 +265,7 @@
       }
     },
     "guarantees": {
-      "free": "10 etiquetas/día gratis",
+      "free": "5 etiquetas por impresión",
       "secure": "Datos seguros",
       "noStorage": "Sin almacenamiento"
     },
@@ -260,9 +301,11 @@
       "perMonth": "/mes",
       "features": {
         "0": "Etiquetas ilimitadas",
-        "1": "Todos los formatos de impresión",
-        "2": "Ideal para grandes volúmenes",
-        "3": "Soporte prioritario"
+        "1": "Todos los formatos (14, 16, 21 etiquetas, rollos...)",
+        "2": "Modo anti-desperdicio (reutilización de hojas)",
+        "3": "Impresiones instantáneas (sin espera)",
+        "4": "Ideal para grandes volúmenes",
+        "5": "Soporte prioritario"
       }
     },
     "limits": {
@@ -284,10 +327,6 @@
       }
     },
     "checkout": {
-      "redirecting": {
-        "title": "Redirigiendo...",
-        "message": "Serás redirigido a la página de pago segura."
-      },
       "error": {
         "title": "Error de pago",
         "message": "No se pudo crear la sesión de pago. Intenta de nuevo."
@@ -297,8 +336,8 @@
       "title": "Gratis",
       "price": "0€",
       "features": {
-        "0": "10 etiquetas por día",
-        "1": "Todos los formatos de impresión",
+        "0": "5 etiquetas por impresión",
+        "1": "Formato 10 etiquetas + Exportar CSV",
         "2": "Perfecto para pequeños envíos",
         "3": "Soporte estándar"
       }
@@ -317,6 +356,32 @@
         "activePlan": "Plan activo"
       }
     }
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "description": "¡Ups! La página que buscas parece no existir. Es posible que haya sido movida o eliminada.",
+    "cta": "Volver al inicio",
+    "popularPages": "Páginas populares",
+    "links": {
+      "generator": {
+        "title": "Generador de etiquetas",
+        "description": "Crea tus etiquetas de envío gratis"
+      },
+      "pricing": {
+        "title": "Precios",
+        "description": "Planes gratuito y Premium a 6€/mes"
+      },
+      "faq": {
+        "title": "FAQ",
+        "description": "Preguntas frecuentes sobre Lalabel"
+      },
+      "login": {
+        "title": "Iniciar sesión",
+        "description": "Accede a tu cuenta Lalabel"
+      }
+    },
+    "needHelp": "¿Necesitas ayuda?",
+    "contactUs": "Contáctanos"
   },
   "faq": {
     "title": "Preguntas frecuentes",
@@ -345,11 +410,15 @@
       },
       "formats": {
         "question": "¿Qué formatos de impresión están disponibles?",
-        "answer": "Ofrecemos varios formatos: A4 estándar y compacto, etiquetas adhesivas con 10, 14, 16 o 21 etiquetas por página, rollos de etiquetas para impresoras térmicas y exportación a CSV. Todos los formatos incluyen una vista previa en tiempo real."
+        "answer": "Con el plan gratuito, tienes acceso al formato de 10 etiquetas adhesivas y a la exportación CSV. El plan Premium desbloquea todos los formatos: 14, 16 y 21 etiquetas por página, rollos de etiquetas para impresoras térmicas, formatos A4 estándar y compacto. Todos los formatos incluyen una vista previa en tiempo real."
+      },
+      "waste": {
+        "question": "¿Cómo evitar el desperdicio de hojas de etiquetas?",
+        "answer": "Con el plan Premium, tienes acceso al modo anti-desperdicio que te permite reutilizar hojas parcialmente usadas. Si ya has quitado 3 etiquetas de una hoja, simplemente selecciona el offset para que la impresión comience desde la 4ª posición. ¡Perfecto para ahorrar papel y dinero!"
       },
       "pricing": {
         "question": "¿Cómo funciona el modelo freemium?",
-        "answer": "Lalabel te ofrece 10 etiquetas gratis cada día, renovadas automáticamente. Es perfecto para pequeños envíos. Si necesitas más, nuestro plan Premium a 6€/mes (o 48€/año) te da acceso a etiquetas ilimitadas con soporte prioritario."
+        "answer": "Lalabel te ofrece hasta 5 etiquetas gratuitas por impresión. Perfecto para pequeños envíos. Si necesitas más, nuestro plan Premium desde 4€/mes te da acceso a etiquetas ilimitadas con soporte prioritario."
       }
     }
   },
@@ -478,6 +547,11 @@
         "message": "Tu suscripción ha encontrado un problema de pago, pero conservas el acceso Premium durante {days} día{plural} más.",
         "action": "Para evitar cualquier interrupción, actualiza tu método de pago antes del {date}."
       }
+    },
+    "cancelled": {
+      "payment": {
+        "message": "Tu pago fue cancelado. Permaneces en el plan gratuito con 5 etiquetas por impresión."
+      }
     }
   },
   "status": {
@@ -486,6 +560,7 @@
     "addressesExtracted": "direcciones extraídas",
     "noAddressFound": "No se encontraron direcciones",
     "checkFileFormat": "Verifica que tu archivo contenga columnas de direcciones (nombre, dirección, ciudad, código postal).",
+    "importNewFile": "Importar otro archivo",
     "pageNumber": "Página {number}"
   },
   "fileAnalysis": {
@@ -627,7 +702,7 @@
       "title": "Información que Recopilamos",
       "purchase": {
         "title": "Información de Compra",
-        "content": "Cuando compra Lalabel, nuestro procesador de pagos (LemonSqueezy o equivalente) recopila su nombre, dirección de correo electrónico e información de pago. No almacenamos sus datos de pago."
+        "content": "Cuando compra Lalabel, nuestro procesador de pagos (Dodo Payments o equivalente) recopila su nombre, dirección de correo electrónico e información de pago. No almacenamos sus datos de pago."
       },
       "analytics": {
         "title": "Análisis y Cookies",
@@ -654,6 +729,17 @@
     "contact": {
       "title": "Contacto",
       "content": "Si tiene alguna pregunta, contáctenos en"
+    }
+  },
+  "upgrade": {
+    "title": "Pasa a Premium para impresiones ilimitadas",
+    "subtitle": "Desbloquea todas las funcionalidades premium",
+    "message": {
+      "addressesDetected": "{count} dirección{plural} detectada{plural}",
+      "freeLimit": "Puedes imprimir hasta {limit} etiquetas gratis por impresión."
+    },
+    "button": {
+      "printLimited": "Imprimir las primeras {limit}"
     }
   }
 }

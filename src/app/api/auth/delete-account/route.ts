@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
+import { checkRateLimit, withRateLimitHeaders } from '@/lib/rate-limit'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
-import { checkRateLimit, withRateLimitHeaders } from '@/lib/rate-limit'
 
 export async function DELETE(request: NextRequest) {
   // Appliquer rate limiting strict pour les opérations d'authentification
