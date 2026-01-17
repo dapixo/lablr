@@ -372,7 +372,7 @@ export default function Home() {
                             <div className="flex justify-start">
                               <a
                                 href={`mailto:contact@lalabel.app?subject=${encodeURIComponent(t('fileAnalysis.emailSubject'))}&body=${encodeURIComponent(t('fileAnalysis.emailBody'))}`}
-                                className="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-100 hover:bg-orange-200 text-orange-800 text-xs font-medium rounded-md transition-colors duration-200 border border-orange-300 hover:border-orange-400"
+                                className="inline-flex items-center gap-1 px-3 py-2 bg-orange-100 hover:bg-orange-200 text-orange-800 text-xs font-medium rounded-md transition-colors duration-200 border border-orange-300 hover:border-orange-400"
                               >
                                 <i className="pi pi-send text-xs"></i>
                                 {t('fileAnalysis.sendFile')}

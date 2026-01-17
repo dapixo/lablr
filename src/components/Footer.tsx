@@ -155,7 +155,7 @@ export function Footer({ t }: FooterProps) {
                   value={locale}
                   onChange={(e) => handleLanguageChange(e.target.value)}
                   disabled={isPending}
-                  className="text-sm text-gray-700 bg-white border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="text-sm text-gray-700 bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   aria-label={t('footer.languageSelector.label')}
                 >
                   <option value="fr">Français</option>

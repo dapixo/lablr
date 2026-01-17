@@ -26,7 +26,9 @@ export function useDodoCheckout() {
   const [checkoutStatus, setCheckoutStatus] = useState<'idle' | 'processing' | 'succeeded' | 'failed'>('idle')
   const { user } = useAuth()
   const isInitializedRef = useRef(false)
+  const isInitializingRef = useRef(false)
   const onSuccessCallbackRef = useRef<(() => void) | null>(null)
+  const eventHandlerRef = useRef<((event: CheckoutEvent) => void) | null>(null)
 
   /**
    * Gestionnaire d'événements du checkout
@@ -101,32 +103,46 @@ export function useDodoCheckout() {
     }
   }, [checkoutStatus])
 
+  // Stocker le handler dans une ref pour l'initialisation lazy
+  eventHandlerRef.current = handleCheckoutEvent
+
   /**
-   * Initialise le SDK Dodo Payments (une seule fois)
+   * Initialise le SDK Dodo Payments (lazy - appelé seulement au premier checkout)
    */
-  useEffect(() => {
-    if (typeof window === 'undefined' || isInitializedRef.current) return
-
-    const initializeSDK = async () => {
-      try {
-        const module = await import('dodopayments-checkout')
-        DodoPayments = module.DodoPayments
-
-        DodoPayments.Initialize({
-          mode: getDodoMode(),
-          displayType: 'overlay',
-          onEvent: handleCheckoutEvent as (event: unknown) => void,
-        })
-
-        isInitializedRef.current = true
-        debugLog('[Dodo Checkout] SDK initialized in', getDodoMode(), 'mode')
-      } catch (err) {
-        console.error('[Dodo Checkout] Failed to initialize SDK:', err)
-      }
+  const initializeSDK = useCallback(async (): Promise<boolean> => {
+    if (typeof window === 'undefined') return false
+    if (isInitializedRef.current) return true
+    if (isInitializingRef.current) {
+      // Attendre que l'initialisation en cours se termine
+      await new Promise(resolve => setTimeout(resolve, 100))
+      return isInitializedRef.current
     }
 
-    initializeSDK()
-  }, [handleCheckoutEvent])
+    isInitializingRef.current = true
+
+    try {
+      const module = await import('dodopayments-checkout')
+      DodoPayments = module.DodoPayments
+
+      DodoPayments.Initialize({
+        mode: getDodoMode(),
+        displayType: 'overlay',
+        onEvent: (event: unknown) => {
+          if (eventHandlerRef.current) {
+            eventHandlerRef.current(event as CheckoutEvent)
+          }
+        },
+      })
+
+      isInitializedRef.current = true
+      debugLog('[Dodo Checkout] SDK initialized in', getDodoMode(), 'mode')
+      return true
+    } catch (err) {
+      console.error('[Dodo Checkout] Failed to initialize SDK:', err)
+      isInitializingRef.current = false
+      return false
+    }
+  }, [])
 
   /**
    * Crée une session de checkout et ouvre l'overlay
@@ -138,8 +154,10 @@ export function useDodoCheckout() {
         return false
       }
 
-      if (!DodoPayments) {
-        setError('SDK non initialisé')
+      // Initialisation lazy du SDK
+      const initialized = await initializeSDK()
+      if (!initialized || !DodoPayments) {
+        setError('Impossible d\'initialiser le système de paiement')
         return false
       }
 
@@ -198,7 +216,7 @@ export function useDodoCheckout() {
         return false
       }
     },
-    [user]
+    [user, initializeSDK]
   )
 
   /**

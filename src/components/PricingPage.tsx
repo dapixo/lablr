@@ -248,7 +248,7 @@ export function PricingPage({ t }: PricingPageProps) {
               {/* Badge de réduction -33% en haut à droite - au-dessus du rond */}
               {isAnnual && (
                 <div className="absolute top-4 right-4 z-20">
-                  <div className="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1.5 rounded-lg shadow-lg transform rotate-12 font-bold text-sm">
+                  <div className="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-2 rounded-lg shadow-lg transform rotate-12 font-bold text-sm">
                     🎉 -33%
                   </div>
                 </div>
@@ -265,7 +265,7 @@ export function PricingPage({ t }: PricingPageProps) {
                   <div className="inline-flex items-center bg-gray-100 rounded-full p-1 gap-1">
                     <button
                       onClick={() => setIsAnnual(false)}
-                      className={`px-4 py-1.5 rounded-full font-medium transition-all duration-200 text-xs ${
+                      className={`px-4 py-2 rounded-full font-medium transition-all duration-200 text-xs ${
                         !isAnnual ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600'
                       }`}
                     >
@@ -273,7 +273,7 @@ export function PricingPage({ t }: PricingPageProps) {
                     </button>
                     <button
                       onClick={() => setIsAnnual(true)}
-                      className={`px-4 py-1.5 rounded-full font-medium transition-all duration-200 text-xs ${
+                      className={`px-4 py-2 rounded-full font-medium transition-all duration-200 text-xs ${
                         isAnnual ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600'
                       }`}
                     >

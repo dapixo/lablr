@@ -17,7 +17,7 @@ const LANGUAGES: readonly Language[] = [
 ] as const
 
 const BUTTON_STYLES = {
-  base: 'flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-sm font-medium transition-all duration-200 disabled:opacity-50',
+  base: 'flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 disabled:opacity-50',
   active: 'bg-white text-gray-900 shadow-sm',
   inactive: 'text-gray-600 hover:text-gray-900 hover:bg-gray-50',
 } as const

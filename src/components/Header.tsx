@@ -167,7 +167,7 @@ export function Header({ t }: HeaderProps) {
                 <a
                   href={`/${locale}#faq`}
                   onClick={handleFaqClick}
-                  className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5 cursor-pointer"
+                  className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-2 cursor-pointer"
                 >
                   <i className="pi pi-question-circle text-xs"></i>
                   <span>{t('navigation.faq')}</span>
@@ -183,7 +183,7 @@ export function Header({ t }: HeaderProps) {
                 )}
                 <button
                   onClick={handleSignOut}
-                  className="text-sm text-gray-700 hover:text-red-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5 cursor-pointer"
+                  className="text-sm text-gray-700 hover:text-red-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-2 cursor-pointer"
                 >
                   <i className="pi pi-sign-out text-xs"></i>
                   <span>{t('navigation.signOut')}</span>
@@ -202,14 +202,14 @@ export function Header({ t }: HeaderProps) {
                 <a
                   href={`/${locale}#faq`}
                   onClick={handleFaqClick}
-                  className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5 cursor-pointer"
+                  className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-2 cursor-pointer"
                 >
                   <i className="pi pi-question-circle text-xs"></i>
                   <span>{t('navigation.faq')}</span>
                 </a>
                 <Link
                   href={`/${locale}/pricing`}
-                  className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5"
+                  className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-2"
                 >
                   <i className="pi pi-tag text-xs"></i>
                   <span>{t('navigation.pricing')}</span>

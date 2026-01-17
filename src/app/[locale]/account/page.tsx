@@ -13,7 +13,6 @@ import { Header } from '@/components/Header'
 import { SubscriptionManager } from '@/components/SubscriptionManager'
 import { useAccountData } from '@/hooks/useAccountData'
 import { useAuth } from '@/hooks/useAuth'
-import { useDodoCheckout } from '@/hooks/useDodoCheckout'
 import { useTranslations } from '@/hooks/useTranslations'
 import { debugLog } from '@/lib/debug'
 
@@ -26,7 +25,6 @@ function AccountPageContent() {
   const toast = useRef<Toast>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   const { accountData, isLoading: accountLoading, refreshAccountData } = useAccountData(user?.id)
-  const { clearPendingCheckout } = useDodoCheckout()
 
   const [isEditingName, setIsEditingName] = useState(false)
   const [editedName, setEditedName] = useState('')
@@ -139,7 +137,6 @@ function AccountPageContent() {
     if (isPaymentSuccess) {
       debugLog('[Account] Payment success detected in URL, storing in sessionStorage')
       sessionStorage.setItem('payment_success', 'true')
-      clearPendingCheckout()
 
       // Nettoyer les params de l'URL immédiatement
       const url = new URL(window.location.href)
@@ -152,10 +149,9 @@ function AccountPageContent() {
     if (cancelled === 'true') {
       debugLog('[Account] Payment cancelled detected in URL, storing in sessionStorage')
       sessionStorage.setItem('payment_cancelled', 'true')
-      clearPendingCheckout()
       cleanUrlParams('cancelled')
     }
-  }, [searchParams, clearPendingCheckout, cleanUrlParams])
+  }, [searchParams, cleanUrlParams])
 
   // Étape 2: Afficher le toast une fois les données chargées
   useEffect(() => {
