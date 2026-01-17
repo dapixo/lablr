@@ -102,9 +102,9 @@ export function formatSubscription(subscriptionData: SubscriptionWithPlan): Form
     trialEndsAt: null,
     cardBrand: subscriptionData.card_brand,
     cardLastFour: subscriptionData.card_last_four,
-    urls: subscriptionData.urls || {
-      customer_portal: null,
-      update_payment_method: null,
+    urls: {
+      customer_portal: subscriptionData.urls?.customer_portal ?? null,
+      update_payment_method: subscriptionData.urls?.update_payment_method ?? null,
     },
     isInGracePeriod,
     gracePeriodEndsAt: subscriptionData.grace_period_ends_at,

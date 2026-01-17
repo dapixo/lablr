@@ -1,10 +1,18 @@
+'use client'
+
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
+import { useTranslations } from '@/hooks/useTranslations'
 
 /**
- * Page 404 personnalisée
- * Version statique pour le prerendering (pas de contexte de traduction)
+ * Page 404 multilingue
+ * Rendue dans le contexte [locale] avec accès aux traductions
  */
 export default function NotFound() {
+  const params = useParams()
+  const locale = (params?.locale as string) || 'fr'
+  const t = useTranslations()
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center px-4">
       <div className="max-w-2xl w-full text-center">
@@ -23,33 +31,33 @@ export default function NotFound() {
 
         {/* Titre et description */}
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-          Page non trouvée
+          {t('notFound.title')}
         </h1>
         <p className="text-lg text-gray-600 mb-8">
-          Oups ! La page que vous recherchez semble introuvable.
+          {t('notFound.description')}
         </p>
 
         {/* CTA principal */}
         <div className="mb-12">
           <Link
-            href="/fr"
+            href={`/${locale}`}
             className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-lg shadow-blue-600/30"
           >
             <i className="pi pi-home"></i>
-            <span>Retour à l&apos;accueil</span>
+            <span>{t('notFound.cta')}</span>
           </Link>
         </div>
 
         {/* Liens internes utiles - SEO */}
         <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-100">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">
-            Pages populaires
+            {t('notFound.popularPages')}
           </h2>
 
           <div className="grid md:grid-cols-2 gap-4 text-left">
             {/* Générateur d'étiquettes */}
             <Link
-              href="/fr"
+              href={`/${locale}`}
               className="flex items-start gap-3 p-4 rounded-lg hover:bg-blue-50 transition-colors group"
             >
               <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-200 transition-colors">
@@ -57,58 +65,64 @@ export default function NotFound() {
               </div>
               <div>
                 <h3 className="font-medium text-gray-900 mb-1">
-                  Générateur d&apos;étiquettes
+                  {t('notFound.links.generator.title')}
                 </h3>
                 <p className="text-sm text-gray-600">
-                  Créez vos étiquettes d&apos;expédition gratuitement
+                  {t('notFound.links.generator.description')}
                 </p>
               </div>
             </Link>
 
             {/* Tarifs */}
             <Link
-              href="/fr/pricing"
+              href={`/${locale}/pricing`}
               className="flex items-start gap-3 p-4 rounded-lg hover:bg-green-50 transition-colors group"
             >
               <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0 group-hover:bg-green-200 transition-colors">
                 <i className="pi pi-tag text-green-600"></i>
               </div>
               <div>
-                <h3 className="font-medium text-gray-900 mb-1">Tarifs</h3>
+                <h3 className="font-medium text-gray-900 mb-1">
+                  {t('notFound.links.pricing.title')}
+                </h3>
                 <p className="text-sm text-gray-600">
-                  Plans gratuit et premium à 6€/mois
+                  {t('notFound.links.pricing.description')}
                 </p>
               </div>
             </Link>
 
             {/* FAQ */}
             <Link
-              href="/fr#faq"
+              href={`/${locale}#faq`}
               className="flex items-start gap-3 p-4 rounded-lg hover:bg-purple-50 transition-colors group"
             >
               <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0 group-hover:bg-purple-200 transition-colors">
                 <i className="pi pi-question-circle text-purple-600"></i>
               </div>
               <div>
-                <h3 className="font-medium text-gray-900 mb-1">FAQ</h3>
+                <h3 className="font-medium text-gray-900 mb-1">
+                  {t('notFound.links.faq.title')}
+                </h3>
                 <p className="text-sm text-gray-600">
-                  Questions fréquentes sur Lalabel
+                  {t('notFound.links.faq.description')}
                 </p>
               </div>
             </Link>
 
             {/* Connexion */}
             <Link
-              href="/fr/login"
+              href={`/${locale}/login`}
               className="flex items-start gap-3 p-4 rounded-lg hover:bg-orange-50 transition-colors group"
             >
               <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center flex-shrink-0 group-hover:bg-orange-200 transition-colors">
                 <i className="pi pi-user text-orange-600"></i>
               </div>
               <div>
-                <h3 className="font-medium text-gray-900 mb-1">Connexion</h3>
+                <h3 className="font-medium text-gray-900 mb-1">
+                  {t('notFound.links.login.title')}
+                </h3>
                 <p className="text-sm text-gray-600">
-                  Accédez à votre compte Lalabel
+                  {t('notFound.links.login.description')}
                 </p>
               </div>
             </Link>
@@ -117,12 +131,12 @@ export default function NotFound() {
 
         {/* Message de contact */}
         <p className="mt-8 text-sm text-gray-500">
-          Besoin d&apos;aide ?{' '}
+          {t('notFound.needHelp')}{' '}
           <a
             href="mailto:contact@lalabel.app"
             className="text-blue-600 hover:text-blue-700 font-medium underline"
           >
-            Contactez-nous
+            {t('notFound.contactUs')}
           </a>
         </p>
       </div>
