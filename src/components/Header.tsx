@@ -157,7 +157,7 @@ export function Header({ t }: HeaderProps) {
                 {/* 🚀 OPTIMISÉ Phase 3 : Prefetch au hover/focus pour latence perçue ~0ms */}
                 <Link
                   href={`/${locale}/account`}
-                  className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5"
+                  className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-2"
                   onMouseEnter={prefetchAccountData}
                   onFocus={prefetchAccountData}
                 >
@@ -175,7 +175,7 @@ export function Header({ t }: HeaderProps) {
                 {userPlan !== 'premium' && (
                   <Link
                     href={`/${locale}/pricing`}
-                    className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5"
+                    className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-2"
                   >
                     <i className="pi pi-star text-xs"></i>
                     <span>{t('navigation.upgrade')}</span>
@@ -194,7 +194,7 @@ export function Header({ t }: HeaderProps) {
               <>
                 <Link
                   href={`/${locale}/login`}
-                  className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-1.5"
+                  className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 hidden md:inline-flex items-center gap-2"
                 >
                   <i className="pi pi-sign-in text-xs"></i>
                   <span>{t('auth.buttons.signIn')}</span>
