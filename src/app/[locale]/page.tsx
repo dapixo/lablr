@@ -25,8 +25,10 @@ const PrintPreview = dynamic(
   () => import('@/components/print-preview').then((mod) => ({ default: mod.PrintPreview })),
   {
     loading: () => (
-      <div className="bg-white rounded-xl shadow-sm p-6">
-        <Skeleton width="100%" height="400px" />
+      <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
+        <Skeleton width="200px" height="40px" className="rounded" />
+        <Skeleton width="100%" height="500px" className="rounded" />
+        <Skeleton width="150px" height="48px" className="rounded" />
       </div>
     ),
     ssr: false,
@@ -39,7 +41,15 @@ const AddressList = dynamic(
   {
     loading: () => (
       <div className="bg-white rounded-xl shadow-sm p-6">
-        <Skeleton width="100%" height="300px" />
+        <div className="space-y-4 mb-6">
+          <Skeleton width="300px" height="40px" className="rounded" />
+          <Skeleton width="100%" height="48px" className="rounded" />
+        </div>
+        <div className="space-y-3">
+          {[...Array(5)].map((_, i) => (
+            <Skeleton key={i} width="100%" height="120px" className="rounded" />
+          ))}
+        </div>
       </div>
     ),
     ssr: false,
@@ -62,6 +72,7 @@ export default function Home() {
   const [showPrintPreview, setShowPrintPreview] = useState(false)
   const printPreviewRef = useRef<HTMLDivElement>(null)
   const statsCardRef = useRef<HTMLDivElement>(null)
+  const hasPrefetchedRef = useRef(false)
 
   // Utility function for smooth scrolling with header offset
   const scrollToElement = useCallback((element: HTMLElement, offset: number = 0) => {
@@ -111,6 +122,26 @@ export default function Home() {
       return () => clearTimeout(timeoutId)
     }
   }, [shouldAutoScroll, addresses.length, scrollToStatsCard])
+
+  // ⚡ OPTIMISATION Phase 3: Prefetch intelligent des composants lourds
+  // Prefetch PrintPreview et AddressList dès qu'on détecte une intention d'utilisation
+  useEffect(() => {
+    if (!hasPrefetchedRef.current && typeof window !== 'undefined') {
+      // Prefetch après un court délai (utilisateur a le temps de lire le hero)
+      const timeoutId = setTimeout(() => {
+        // Prefetch silencieux des composants lourds
+        import('@/components/print-preview').catch(() => {
+          /* Ignore prefetch errors */
+        })
+        import('@/components/address-list').catch(() => {
+          /* Ignore prefetch errors */
+        })
+        hasPrefetchedRef.current = true
+      }, 2000) // 2s après le chargement initial
+
+      return () => clearTimeout(timeoutId)
+    }
+  }, [])
 
   const handleEditAddress = useCallback((address: Address) => {
     setEditingAddress(address)

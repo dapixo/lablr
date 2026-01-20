@@ -4,6 +4,40 @@ const nextConfig: NextConfig = {
   // Désactiver React StrictMode pour éviter les appels doublés
   reactStrictMode: false,
 
+  // ⚡ OPTIMISATION: Configuration de production pour bundle size
+  compiler: {
+    // Retirer les console.log en production
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn'],
+    } : false,
+  },
+
+  // ⚡ Next.js 16: Configuration Turbopack (activé par défaut)
+  // Config vide car Turbopack gère automatiquement les optimisations
+  turbopack: {},
+
+  // ⚡ OPTIMISATION: Configuration webpack pour build production
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      // Ignorer les packages côté serveur uniquement dans le bundle client
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+      }
+    }
+
+    // Activer le tree-shaking agressif
+    config.optimization = {
+      ...config.optimization,
+      usedExports: true,
+      sideEffects: true,
+    }
+
+    return config
+  },
+
   // Permettre les requêtes cross-origin depuis ngrok en développement
   allowedDevOrigins: [
     'localhost:3000',

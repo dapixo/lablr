@@ -6,7 +6,7 @@ import { PrimeReactProvider } from 'primereact/api'
 import { StructuredData } from '@/components/SEO/StructuredData'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { TranslationsProvider } from '@/contexts/TranslationsContext'
-import { locales } from '@/i18n/config'
+import { locales, type Locale } from '@/i18n/config'
 import { QueryProvider } from '@/providers/QueryProvider'
 
 export async function generateMetadata({
@@ -174,7 +174,7 @@ export default async function LocaleLayout({
 }) {
   const { locale } = await params
   // Validate that the incoming `locale` parameter is valid
-  if (!locales.includes(locale as 'fr' | 'en')) {
+  if (!locales.includes(locale as Locale)) {
     notFound()
   }
 
@@ -182,11 +182,41 @@ export default async function LocaleLayout({
 
   return (
     <>
-      {/* Préchargement des ressources critiques pour améliorer FCP */}
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      {/* Préchargement des ressources critiques pour améliorer FCP et réduire CLS */}
+      <link
+        rel="preload"
+        href="/_next/static/media/primeicons.55fa2301.woff2"
+        as="font"
+        type="font/woff2"
+        crossOrigin="anonymous"
+      />
       <link rel="dns-prefetch" href="https://api.supabase.co" />
       <link rel="dns-prefetch" href="https://checkout.dodopayments.com" />
+
+      {/* ⚡ OPTIMISATION Phase 3: Critical CSS inline pour LCP (H1 hero) */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+            /* Critical CSS pour l'élément LCP (H1 hero) */
+            .text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+            .font-bold { font-weight: 700; }
+            .leading-tight { line-height: 1.25; }
+            .mb-6 { margin-bottom: 1.5rem; }
+            .text-gray-900 { color: rgb(17 24 39); }
+            .bg-gradient-to-r { background-image: linear-gradient(to right, var(--tw-gradient-stops)); }
+            .from-blue-600 { --tw-gradient-from: #2563eb; --tw-gradient-to: rgb(37 99 235 / 0); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+            .to-blue-400 { --tw-gradient-to: #60a5fa; }
+            .bg-clip-text { -webkit-background-clip: text; background-clip: text; }
+            .text-transparent { color: transparent; }
+            @media (min-width: 768px) {
+              .md\\:text-5xl { font-size: 3rem; line-height: 1; }
+            }
+            @media (min-width: 1024px) {
+              .lg\\:text-6xl { font-size: 3.75rem; line-height: 1; }
+            }
+          `,
+        }}
+      />
 
       <StructuredData locale={locale} />
       <PrimeReactProvider>
