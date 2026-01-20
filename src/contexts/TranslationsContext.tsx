@@ -1,6 +1,8 @@
 'use client'
 
-import { createContext, type ReactNode, useContext, useEffect, useState } from 'react'
+import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { getLoadingText } from '@/lib/i18n-helpers'
 import type { TranslationVariables } from '@/hooks/useTranslations'
 
 type Messages = Record<string, unknown>
@@ -86,20 +88,32 @@ export function TranslationsProvider({ children, locale }: TranslationsProviderP
       })
   }, [locale, messages])
 
-  const t: TranslationFunction = (key: string, variables?: TranslationVariables): string => {
-    if (!messages) {
-      // Pendant le chargement, retourner la clé
-      return key
-    }
+  // ⚡ OPTIMISÉ : Fonction t mémorisée avec useCallback
+  const t: TranslationFunction = useCallback(
+    (key: string, variables?: TranslationVariables): string => {
+      if (!messages) {
+        return key
+      }
 
-    const message = getNestedValue(messages, key)
-    return interpolateMessage(message, variables)
-  }
+      const message = getNestedValue(messages, key)
+      return interpolateMessage(message, variables)
+    },
+    [messages]
+  )
 
-  const value: TranslationsContextType = {
-    t,
-    locale,
-    loading,
+  // ⚡ OPTIMISÉ : Valeur du contexte mémorisée avec useMemo
+  const value: TranslationsContextType = useMemo(
+    () => ({
+      t,
+      locale,
+      loading,
+    }),
+    [t, locale, loading]
+  )
+
+  // ✨ ANTI-FOUC: Bloquer le rendu tant que les traductions ne sont pas chargées
+  if (loading) {
+    return <LoadingSpinner text={getLoadingText(locale)} />
   }
 
   return <TranslationsContext.Provider value={value}>{children}</TranslationsContext.Provider>

@@ -32,3 +32,17 @@ export function markdownToHtml(text: string): string {
 export function createInnerHTML(htmlString: string): { __html: string } {
   return { __html: htmlString }
 }
+
+/**
+ * Retourne le texte de chargement selon la locale
+ * Utilisé pendant le chargement initial avant que le système de traduction soit disponible
+ */
+export function getLoadingText(locale: string): string {
+  const loadingTexts: Record<string, string> = {
+    en: 'Loading...',
+    es: 'Cargando...',
+    fr: 'Chargement...',
+  }
+
+  return loadingTexts[locale] || loadingTexts.fr
+}

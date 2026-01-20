@@ -60,7 +60,7 @@ export default function Home() {
   const params = useParams()
   const locale = (params?.locale as string) || 'fr'
   const t = useTranslations(locale)
-  const { user, loading } = useAuth()
+  const { user } = useAuth()
   const [addresses, setAddresses] = useState<Address[]>([])
   const [errors, setErrors] = useState<string[]>([])
   const [fileName, setFileName] = useState<string>('')
@@ -230,7 +230,7 @@ export default function Home() {
       {/* Main Content Area */}
       <main className="flex-1 relative -mt-16">
         {/* Section Hero avec background animé - min-h-screen uniquement pour non connectés */}
-        <div className={`relative flex items-center ${!user && !loading ? 'min-h-screen' : ''}`}>
+        <div className={`relative flex items-center ${!user ? 'min-h-screen' : ''}`}>
           {/* Background animé avec transition progressive */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute inset-0">
@@ -244,16 +244,7 @@ export default function Home() {
 
           <div className="container mx-auto px-4 md:px-6 relative pt-16 w-full">
             {/* Hero Banner - Conditionnel selon connexion */}
-            {loading ? (
-              // Skeleton loader pendant le chargement
-              <div className="py-12 text-center">
-                <div className="max-w-4xl mx-auto animate-pulse">
-                  <div className="h-8 bg-gray-200 rounded w-3/4 mx-auto mb-4"></div>
-                  <div className="h-6 bg-gray-200 rounded w-1/2 mx-auto mb-8"></div>
-                  <HeroSteps t={t} variant="compact" />
-                </div>
-              </div>
-            ) : user ? (
+            {user ? (
               // Hero pour utilisateurs connectés (gratuit + premium) - Version compacte
               <div className="py-12 text-center">
                 <div className="max-w-4xl mx-auto">

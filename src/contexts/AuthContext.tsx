@@ -63,6 +63,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const EXPIRATION_CHECK_TTL = 24 * 60 * 60 * 1000 // 24 heures
 
   /**
+   * 🔧 HELPER : Valide l'email et retourne une erreur si invalide/jetable
+   * ⚡ DRY : Évite la duplication de validation dans sendOtpCode et verifyOtpCode
+   */
+  const validateEmail = useCallback((email: string): { error: AuthError | null } => {
+    const emailValidation = validateEmailDomain(email)
+
+    if (!emailValidation.isValid) {
+      const validationError = createValidationError('INVALID_FORMAT') as AuthError
+      setError(validationError.message)
+      return { error: validationError }
+    }
+
+    if (emailValidation.isDisposable) {
+      const validationError = createValidationError('DISPOSABLE_DOMAIN') as AuthError
+      setError(validationError.message)
+      return { error: validationError }
+    }
+
+    return { error: null }
+  }, [])
+
+  /**
+   * 🔧 HELPER : Gère les erreurs des opérations auth de manière standardisée
+   * ⚡ DRY : Évite la duplication du pattern try/catch + setError
+   */
+  const handleError = useCallback((err: unknown, defaultMessage: string): AuthError => {
+    const errorMessage = err instanceof Error ? err.message : defaultMessage
+    setError(errorMessage)
+    return new Error(errorMessage) as AuthError
+  }, [])
+
+  /**
+   * 🔧 HELPER : Crée une erreur simple avec setError
+   * ⚡ DRY : Évite la duplication du pattern new Error + setError
+   */
+  const createError = useCallback((message: string): { error: AuthError } => {
+    const error = new Error(message) as AuthError
+    setError(error.message)
+    return { error }
+  }, [])
+
+  /**
    * Vérifie et nettoie automatiquement les abonnements expirés
    * 🎯 OPTIMISÉ : Appelée max 1 fois toutes les 30 minutes par utilisateur
    * ⚡ REFACTORISÉ : Utilise les fonctions pures de subscription-helpers.ts
@@ -279,25 +321,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   /**
    * Envoi du code OTP avec validation
+   * ⚡ OPTIMISÉ : Utilise les helpers validateEmail et handleError
    */
   const sendOtpCode = useCallback(
     async (email: string) => {
-      // Reset erreurs précédentes
       setError(null)
 
-      // Validation côté client
-      const emailValidation = validateEmailDomain(email)
-
-      if (!emailValidation.isValid) {
-        const validationError = createValidationError('INVALID_FORMAT') as AuthError
-        setError(validationError.message)
-        return { error: validationError }
-      }
-
-      if (emailValidation.isDisposable) {
-        const validationError = createValidationError('DISPOSABLE_DOMAIN') as AuthError
-        setError(validationError.message)
-        return { error: validationError }
+      // ⚡ Validation avec helper
+      const validation = validateEmail(email)
+      if (validation.error) {
+        return validation
       }
 
       try {
@@ -314,34 +347,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         return { error }
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to send OTP code'
-        setError(errorMessage)
-        return { error: new Error(errorMessage) as AuthError }
+        return { error: handleError(err, 'Failed to send OTP code') }
       }
     },
-    [supabase.auth]
+    [supabase.auth, validateEmail, handleError]
   )
 
   /**
    * Vérification du code OTP
+   * ⚡ OPTIMISÉ : Utilise les helpers validateEmail et handleError
    */
   const verifyOtpCode = useCallback(
     async (email: string, code: string) => {
       setError(null)
 
-      // Validation côté client
-      const emailValidation = validateEmailDomain(email)
-
-      if (!emailValidation.isValid) {
-        const validationError = createValidationError('INVALID_FORMAT') as AuthError
-        setError(validationError.message)
-        return { error: validationError }
-      }
-
-      if (emailValidation.isDisposable) {
-        const validationError = createValidationError('DISPOSABLE_DOMAIN') as AuthError
-        setError(validationError.message)
-        return { error: validationError }
+      // ⚡ Validation avec helper
+      const validation = validateEmail(email)
+      if (validation.error) {
+        return validation
       }
 
       try {
@@ -357,16 +380,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         return { error }
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to verify OTP code'
-        setError(errorMessage)
-        return { error: new Error(errorMessage) as AuthError }
+        return { error: handleError(err, 'Failed to verify OTP code') }
       }
     },
-    [supabase.auth]
+    [supabase.auth, validateEmail, handleError]
   )
 
   /**
    * Déconnexion
+   * ⚡ OPTIMISÉ : Utilise le helper handleError
    */
   const signOut = useCallback(async () => {
     try {
@@ -375,30 +397,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error) {
         setError(error.message)
       } else {
-        // Reset local state
         setError(null)
       }
 
       return { error }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to sign out'
-      setError(errorMessage)
-      return { error: new Error(errorMessage) as AuthError }
+      return { error: handleError(err, 'Failed to sign out') }
     }
-  }, [supabase.auth])
+  }, [supabase.auth, handleError])
 
   /**
    * Suppression du compte
+   * ⚡ OPTIMISÉ : Utilise les helpers createError et handleError
    */
   const deleteAccount = useCallback(async () => {
     if (!user?.id) {
-      const error = new Error('No user logged in') as AuthError
-      setError(error.message)
-      return { error }
+      return createError('No user logged in')
     }
 
     try {
-      // Appel API pour supprimer le compte
       const response = await fetch('/api/auth/delete-account', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
@@ -408,9 +425,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const errorData = await response
           .json()
           .catch(() => ({ message: 'Failed to delete account' }))
-        const error = new Error(errorData.message) as AuthError
-        setError(error.message)
-        return { error }
+        return createError(errorData.message)
       }
 
       // Nettoyage côté client
@@ -450,55 +465,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       return { error: null }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Network error occurred'
-      setError(errorMessage)
-      return { error: new Error(errorMessage) as AuthError }
+      return { error: handleError(err, 'Network error occurred') }
     }
-  }, [user?.id, supabase.auth])
+  }, [user?.id, supabase.auth, createError, handleError])
 
   /**
    * Mise à jour du nom utilisateur
+   * ⚡ OPTIMISÉ : Utilise les helpers createError et handleError
    */
   const updateUserName = useCallback(
     async (fullName: string) => {
       if (!user?.id) {
-        const error = new Error('No user logged in') as AuthError
-        setError(error.message)
-        return { error }
+        return createError('No user logged in')
       }
 
       const trimmedName = fullName.trim()
 
+      // Validations avec helper createError
       if (!trimmedName) {
-        const error = new Error('Le nom ne peut pas être vide') as AuthError
-        setError(error.message)
-        return { error }
+        return createError('Le nom ne peut pas être vide')
       }
 
-      // Validation sécurité : longueur max
       if (trimmedName.length > 100) {
-        const error = new Error('Le nom ne peut pas dépasser 100 caractères') as AuthError
-        setError(error.message)
-        return { error }
+        return createError('Le nom ne peut pas dépasser 100 caractères')
       }
 
       // Validation sécurité : caractères autorisés (lettres, espaces, traits d'union, apostrophes)
       const nameRegex = /^[\p{L}\p{M}\s\-'.]+$/u
       if (!nameRegex.test(trimmedName)) {
-        const error = new Error('Le nom contient des caractères non autorisés') as AuthError
-        setError(error.message)
-        return { error }
+        return createError('Le nom contient des caractères non autorisés')
       }
 
       // Validation sécurité : pas de caractères de contrôle
       if (/[\x00-\x1F\x7F-\x9F]/.test(trimmedName)) {
-        const error = new Error('Le nom contient des caractères invalides') as AuthError
-        setError(error.message)
-        return { error }
+        return createError('Le nom contient des caractères invalides')
       }
 
       try {
-        // Mise à jour des métadonnées utilisateur Supabase
         const { data, error } = await supabase.auth.updateUser({
           data: {
             full_name: trimmedName,
@@ -510,7 +513,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return { error }
         }
 
-        // Mise à jour locale immédiate (l'auth listener se chargera du reste)
+        // Mise à jour locale immédiate
         if (data.user) {
           setUser(data.user)
         }
@@ -519,12 +522,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setError(null)
         return { error: null }
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to update user name'
-        setError(errorMessage)
-        return { error: new Error(errorMessage) as AuthError }
+        return { error: handleError(err, 'Failed to update user name') }
       }
     },
-    [user?.id, supabase.auth]
+    [user?.id, supabase.auth, createError, handleError]
   )
 
   /**
@@ -555,6 +556,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     updateUserName,
     refreshUserPlan,
     clearError,
+  }
+
+  // ✨ ANTI-FOUC: Bloquer le rendu tant que l'authentification initiale n'est pas vérifiée
+  // Cela évite le "flash" du skeleton pendant la vérification de session
+  if (loading) {
+    // Note: Le spinner est déjà géré par TranslationsProvider, on retourne null
+    // pour éviter de doubler les spinners
+    return null
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
