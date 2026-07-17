@@ -78,7 +78,14 @@
       "addButton": "Add an address",
       "importLink": "Import a file"
     },
-    "generateLabels": "Generate labels"
+    "generateLabels": "Generate labels",
+    "selection": {
+      "selectAll": "Select all {count} result(s)",
+      "selectedCount": "{count} selected",
+      "deselectAll": "Deselect all",
+      "deleteSelected": "Delete selected",
+      "selectOne": "Select this address"
+    }
   },
   "editor": {
     "title": {
@@ -99,7 +106,8 @@
       "address2": "Apt 12, Building A",
       "postalCode": "10001",
       "city": "New York",
-      "country": "Select a country"
+      "country": "Select a country",
+      "countryFilter": "Search a country"
     },
     "buttons": {
       "cancel": "Cancel",
@@ -136,6 +144,12 @@
     "deleteAddress": {
       "title": "Delete address",
       "message": "Are you sure you want to delete this address? This action is irreversible.",
+      "accept": "Delete",
+      "reject": "Cancel"
+    },
+    "deleteMultiple": {
+      "title": "Delete addresses",
+      "message": "Are you sure you want to delete {count} address(es)? This action is irreversible.",
       "accept": "Delete",
       "reject": "Cancel"
     }

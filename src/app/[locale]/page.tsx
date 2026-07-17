@@ -165,6 +165,25 @@ export default function Home() {
     [t]
   )
 
+  const handleDeleteMultipleAddresses = useCallback(
+    (addressIds: string[]) => {
+      confirmDialog({
+        message: t('confirm.deleteMultiple.message').replace('{count}', addressIds.length.toString()),
+        header: t('confirm.deleteMultiple.title'),
+        icon: 'pi pi-exclamation-triangle',
+        defaultFocus: 'reject',
+        acceptClassName: 'p-button-danger',
+        acceptLabel: t('confirm.deleteMultiple.accept'),
+        rejectLabel: t('confirm.deleteMultiple.reject'),
+        accept: () => {
+          const idsSet = new Set(addressIds)
+          setAddresses((prev) => prev.filter((addr) => !idsSet.has(addr.id)))
+        },
+      })
+    },
+    [t]
+  )
+
   const handleAddAddress = useCallback(() => {
     setIsAddingAddress(true)
   }, [])
@@ -422,6 +441,7 @@ export default function Home() {
                       errors={errors}
                       onEditAddress={handleEditAddress}
                       onDeleteAddress={handleDeleteAddress}
+                      onDeleteMultipleAddresses={handleDeleteMultipleAddresses}
                       onAddAddress={handleAddAddress}
                       onImportFile={handleBackToFileUpload}
                       onGenerateLabels={handleGenerateLabels}
@@ -453,6 +473,7 @@ export default function Home() {
         onSave={handleSaveAddress}
         onCancel={handleCancelEdit}
         title={editingAddress ? t('editor.title.edit') : t('editor.title.add')}
+        locale={locale}
         t={t}
       />
 

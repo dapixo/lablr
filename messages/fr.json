@@ -78,7 +78,14 @@
       "addButton": "Ajouter une adresse",
       "importLink": "Importer un fichier"
     },
-    "generateLabels": "Générer les étiquettes"
+    "generateLabels": "Générer les étiquettes",
+    "selection": {
+      "selectAll": "Sélectionner les {count} résultat(s)",
+      "selectedCount": "{count} sélectionnée(s)",
+      "deselectAll": "Tout désélectionner",
+      "deleteSelected": "Supprimer la sélection",
+      "selectOne": "Sélectionner cette adresse"
+    }
   },
   "editor": {
     "title": {
@@ -99,7 +106,8 @@
       "address2": "Bât A, Appt 12",
       "postalCode": "75001",
       "city": "Paris",
-      "country": "Sélectionner un pays"
+      "country": "Sélectionner un pays",
+      "countryFilter": "Rechercher un pays"
     },
     "buttons": {
       "cancel": "Annuler",
@@ -136,6 +144,12 @@
     "deleteAddress": {
       "title": "Supprimer l'adresse",
       "message": "Êtes-vous sûr de vouloir supprimer cette adresse ? Cette action est irréversible.",
+      "accept": "Supprimer",
+      "reject": "Annuler"
+    },
+    "deleteMultiple": {
+      "title": "Supprimer les adresses",
+      "message": "Êtes-vous sûr de vouloir supprimer {count} adresse(s) ? Cette action est irréversible.",
       "accept": "Supprimer",
       "reject": "Annuler"
     }

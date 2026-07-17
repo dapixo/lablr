@@ -5,8 +5,8 @@ import { Dialog } from 'primereact/dialog'
 import { Dropdown } from 'primereact/dropdown'
 import { InputText } from 'primereact/inputtext'
 import { Message } from 'primereact/message'
-import { useEffect, useState } from 'react'
-import { DEFAULT_COUNTRY, SUPPORTED_COUNTRIES } from '@/constants'
+import { useEffect, useMemo, useState } from 'react'
+import { getDefaultCountry, getSupportedCountries } from '@/constants'
 import type { Address } from '@/types/address'
 
 interface AddressEditorProps {
@@ -15,10 +15,22 @@ interface AddressEditorProps {
   onSave: (address: Address) => void
   onCancel: () => void
   title?: string
+  locale?: string
   t: (key: string) => string
 }
 
-export function AddressEditor({ address, isOpen, onSave, onCancel, title, t }: AddressEditorProps) {
+export function AddressEditor({
+  address,
+  isOpen,
+  onSave,
+  onCancel,
+  title,
+  locale = 'fr',
+  t,
+}: AddressEditorProps) {
+  const defaultCountry = useMemo(() => getDefaultCountry(locale), [locale])
+  const supportedCountries = useMemo(() => getSupportedCountries(locale), [locale])
+
   const [formData, setFormData] = useState<Omit<Address, 'id'>>({
     firstName: '',
     lastName: '',
@@ -26,13 +38,15 @@ export function AddressEditor({ address, isOpen, onSave, onCancel, title, t }: A
     addressLine2: '',
     postalCode: '',
     city: '',
-    country: DEFAULT_COUNTRY,
+    country: defaultCountry,
   })
 
   const [errors, setErrors] = useState<Record<string, string>>({})
 
-  // Effect pour pré-remplir les champs quand une adresse est fournie
+  // Effect pour pré-remplir les champs à chaque ouverture de la modale
   useEffect(() => {
+    if (!isOpen) return
+
     if (address) {
       setFormData({
         firstName: address.firstName || '',
@@ -41,7 +55,7 @@ export function AddressEditor({ address, isOpen, onSave, onCancel, title, t }: A
         addressLine2: address.addressLine2 || '',
         postalCode: address.postalCode || '',
         city: address.city || '',
-        country: address.country || DEFAULT_COUNTRY,
+        country: address.country || defaultCountry,
       })
     } else {
       // Reset form pour nouvelle adresse
@@ -52,12 +66,12 @@ export function AddressEditor({ address, isOpen, onSave, onCancel, title, t }: A
         addressLine2: '',
         postalCode: '',
         city: '',
-        country: DEFAULT_COUNTRY,
+        country: defaultCountry,
       })
     }
     // Reset errors quand on change d'adresse
     setErrors({})
-  }, [address])
+  }, [address, isOpen, defaultCountry])
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
@@ -105,10 +119,10 @@ export function AddressEditor({ address, isOpen, onSave, onCancel, title, t }: A
     }
   }
 
-  const countryOptions = SUPPORTED_COUNTRIES.map((country) => ({
-    label: country,
-    value: country,
-  }))
+  const countryOptions = useMemo(
+    () => supportedCountries.map((country) => ({ label: country, value: country })),
+    [supportedCountries]
+  )
 
   const footerContent = (
     <div className="flex gap-2">
@@ -249,6 +263,8 @@ export function AddressEditor({ address, isOpen, onSave, onCancel, title, t }: A
             options={countryOptions}
             placeholder={t('editor.placeholders.country')}
             className={`w-full ${errors.country ? 'p-invalid' : ''}`}
+            filter
+            filterPlaceholder={t('editor.placeholders.countryFilter')}
           />
           {errors.country && <Message severity="error" text={errors.country} className="mt-1" />}
         </div>

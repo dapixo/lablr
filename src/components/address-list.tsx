@@ -2,13 +2,14 @@
 
 import { AlertTriangle, MapPin, Search, User } from 'lucide-react'
 import { Button } from 'primereact/button'
+import { Checkbox } from 'primereact/checkbox'
 import { IconField } from 'primereact/iconfield'
 import { InputIcon } from 'primereact/inputicon'
 import { InputText } from 'primereact/inputtext'
 import { Message } from 'primereact/message'
 import { Paginator } from 'primereact/paginator'
 import { Panel } from 'primereact/panel'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useId, useMemo, useState } from 'react'
 import { STORAGE_KEYS, useCollapsiblePanel } from '@/lib/storage'
 import { cn } from '@/lib/utils'
 import type { Address } from '@/types/address'
@@ -19,6 +20,7 @@ interface AddressListProps {
   className?: string
   onEditAddress?: (address: Address) => void
   onDeleteAddress?: (addressId: string) => void
+  onDeleteMultipleAddresses?: (addressIds: string[]) => void
   onAddAddress?: () => void
   onImportFile?: () => void
   onGenerateLabels?: () => void
@@ -35,6 +37,7 @@ export function AddressList({
   className,
   onEditAddress,
   onDeleteAddress,
+  onDeleteMultipleAddresses,
   onAddAddress,
   onImportFile,
   onGenerateLabels,
@@ -42,8 +45,10 @@ export function AddressList({
   showGenerateButton = false,
   t,
 }: AddressListProps) {
+  const selectAllId = useId()
   const [currentPage, setCurrentPage] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
   // Panel collapsible avec hook personnalisé
   const addressesPanel = useCollapsiblePanel(STORAGE_KEYS.ADDRESSES_PANEL_COLLAPSED, false)
@@ -60,7 +65,7 @@ export function AddressList({
   )
 
   // Combinaison optimisée : filtrage + pagination en un seul useMemo
-  const { currentAddresses, totalAddresses, totalPages } = useMemo(() => {
+  const { currentAddresses, totalAddresses, totalPages, filteredIds } = useMemo(() => {
     // Filtrage
     const filtered = !searchQuery.trim()
       ? addresses
@@ -81,8 +86,47 @@ export function AddressList({
       currentAddresses: current,
       totalAddresses: total,
       totalPages: pages,
+      filteredIds: filtered.map((address) => address.id),
     }
   }, [addresses, searchQuery, currentPage])
+
+  // Nettoyage automatique de la sélection quand des adresses sont supprimées ailleurs
+  useEffect(() => {
+    setSelectedIds((prev) => {
+      const validIds = new Set(addresses.map((address) => address.id))
+      const next = new Set([...prev].filter((id) => validIds.has(id)))
+      return next.size === prev.size ? prev : next
+    })
+  }, [addresses])
+
+  const selectedCount = selectedIds.size
+  const isAllFilteredSelected =
+    filteredIds.length > 0 && filteredIds.every((id) => selectedIds.has(id))
+
+  const toggleSelectAll = useCallback(() => {
+    setSelectedIds((prev) => {
+      const allSelected = filteredIds.length > 0 && filteredIds.every((id) => prev.has(id))
+      return allSelected ? new Set() : new Set(filteredIds)
+    })
+  }, [filteredIds])
+
+  const toggleSelectOne = useCallback((addressId: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(addressId)) {
+        next.delete(addressId)
+      } else {
+        next.add(addressId)
+      }
+      return next
+    })
+  }, [])
+
+  const clearSelection = useCallback(() => setSelectedIds(new Set()), [])
+
+  const handleDeleteSelected = useCallback(() => {
+    onDeleteMultipleAddresses?.(Array.from(selectedIds))
+  }, [onDeleteMultipleAddresses, selectedIds])
 
   // Mémorisation des callbacks d'actions par adresse
   const createEditHandler = useCallback(
@@ -103,9 +147,23 @@ export function AddressList({
           address={address}
           onEdit={onEditAddress ? createEditHandler(address) : undefined}
           onDelete={onDeleteAddress ? createDeleteHandler(address.id) : undefined}
+          selectable={!!onDeleteMultipleAddresses}
+          selected={selectedIds.has(address.id)}
+          onToggleSelect={toggleSelectOne}
+          t={t}
         />
       )),
-    [currentAddresses, onEditAddress, onDeleteAddress, createEditHandler, createDeleteHandler]
+    [
+      currentAddresses,
+      onEditAddress,
+      onDeleteAddress,
+      onDeleteMultipleAddresses,
+      createEditHandler,
+      createDeleteHandler,
+      selectedIds,
+      toggleSelectOne,
+      t,
+    ]
   )
 
   // Reset page when addresses or search query change
@@ -174,6 +232,65 @@ export function AddressList({
             />
           )}
         </div>
+
+        {/* Barre de sélection multiple */}
+        {onDeleteMultipleAddresses && totalAddresses > 0 && (
+          <div
+            className={cn(
+              'flex items-center justify-between gap-3 mb-4 px-3 py-2 rounded-lg border transition-colors',
+              selectedCount > 0
+                ? 'bg-blue-50 border-blue-200'
+                : 'bg-transparent border-transparent'
+            )}
+          >
+            <div className="flex items-center gap-2">
+              <Checkbox
+                inputId={selectAllId}
+                checked={isAllFilteredSelected}
+                onChange={toggleSelectAll}
+                aria-label={t('addresses.selection.selectAll').replace(
+                  '{count}',
+                  filteredIds.length.toString()
+                )}
+              />
+              <label
+                htmlFor={selectAllId}
+                className="text-sm text-gray-700 cursor-pointer select-none"
+              >
+                {selectedCount > 0
+                  ? t('addresses.selection.selectedCount').replace(
+                      '{count}',
+                      selectedCount.toString()
+                    )
+                  : t('addresses.selection.selectAll').replace(
+                      '{count}',
+                      filteredIds.length.toString()
+                    )}
+              </label>
+            </div>
+
+            {selectedCount > 0 && (
+              <div className="flex items-center gap-2 animate-in fade-in duration-150">
+                <Button
+                  onClick={clearSelection}
+                  icon="pi pi-times"
+                  className="p-button-text p-button-sm"
+                  size="small"
+                  aria-label={t('addresses.selection.deselectAll')}
+                  tooltip={t('addresses.selection.deselectAll')}
+                  tooltipOptions={{ position: 'top' }}
+                />
+                <Button
+                  onClick={handleDeleteSelected}
+                  icon="pi pi-trash"
+                  label={t('addresses.selection.deleteSelected')}
+                  className="p-button-danger p-button-sm"
+                  size="small"
+                />
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Info pagination mobile */}
         {totalPages > 1 && (
@@ -245,19 +362,39 @@ interface AddressCardProps {
   address: Address
   onEdit?: () => void
   onDelete?: () => void
+  selectable?: boolean
+  selected?: boolean
+  onToggleSelect?: (addressId: string) => void
+  t: (key: string) => string
 }
 
 const AddressCard = React.memo<AddressCardProps>(function AddressCard({
   address,
   onEdit,
   onDelete,
+  selectable,
+  selected,
+  onToggleSelect,
+  t,
 }) {
   return (
-    <div className="bg-white p-4 rounded-lg border border-gray-200">
+    <div
+      className={cn(
+        'bg-white p-4 rounded-lg border transition-colors',
+        selected ? 'border-blue-300 bg-blue-50/50' : 'border-gray-200'
+      )}
+    >
       {/* Mobile Layout */}
       <div className="block sm:hidden">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-2">
+            {selectable && (
+              <Checkbox
+                checked={!!selected}
+                onChange={() => onToggleSelect?.(address.id)}
+                aria-label={t('addresses.selection.selectOne')}
+              />
+            )}
             <User className="h-4 w-4 text-gray-400 flex-shrink-0" />
             <div className="font-semibold text-gray-900 text-sm">
               {address.firstName} {address.lastName}
@@ -299,6 +436,13 @@ const AddressCard = React.memo<AddressCardProps>(function AddressCard({
 
       {/* Desktop Layout */}
       <div className="hidden sm:flex items-center gap-4">
+        {selectable && (
+          <Checkbox
+            checked={!!selected}
+            onChange={() => onToggleSelect?.(address.id)}
+            aria-label={t('addresses.selection.selectOne')}
+          />
+        )}
         <User className="h-4 w-4 text-gray-400 flex-shrink-0" />
         <div className="flex-1 min-w-0">
           <div className="font-semibold text-gray-900 text-sm mb-1">
