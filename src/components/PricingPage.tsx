@@ -8,6 +8,7 @@ import { Skeleton } from 'primereact/skeleton'
 import { Tag } from 'primereact/tag'
 import { Toast } from 'primereact/toast'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useParams, useRouter } from 'next/navigation'
 
 // Lazy loading du AuthModal pour améliorer FCP
 const AuthModal = dynamic(
@@ -22,6 +23,7 @@ import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { useAuth } from '@/hooks/useAuth'
 import { useDodoCheckout } from '@/hooks/useDodoCheckout'
+import { isPremiumModeEnabled } from '@/lib/feature-flags'
 
 type TranslationFunction = (key: string) => string
 
@@ -87,12 +89,19 @@ function createPricingPlan(
  * Composant de page de tarification avec plans Free et Premium
  */
 export function PricingPage({ t }: PricingPageProps) {
+  const router = useRouter()
+  const params = useParams()
+  const locale = (params?.locale as string) || 'fr'
   const [isAnnual, setIsAnnual] = useState(true)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [pendingUpgrade, setPendingUpgrade] = useState(false)
   const { user, userPlan, loading } = useAuth()
   const { createCheckout, isLoading: isUpgrading, error: checkoutError } = useDodoCheckout()
   const toast = useRef<Toast>(null)
+
+  useEffect(() => {
+    if (!isPremiumModeEnabled()) router.replace(`/${locale}`)
+  }, [locale, router])
 
   const { freePlan, premiumPlan } = useMemo(
     () => ({
@@ -146,6 +155,8 @@ export function PricingPage({ t }: PricingPageProps) {
       })
     }
   }, [checkoutError, t])
+
+  if (!isPremiumModeEnabled()) return null
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-blue-50">

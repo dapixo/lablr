@@ -15,6 +15,7 @@ import { useAccountData } from '@/hooks/useAccountData'
 import { useAuth } from '@/hooks/useAuth'
 import { useTranslations } from '@/hooks/useTranslations'
 import { debugLog } from '@/lib/debug'
+import { isPremiumModeEnabled } from '@/lib/feature-flags'
 
 function AccountPageContent() {
   const { locale } = useParams()
@@ -240,7 +241,7 @@ function AccountPageContent() {
             </div>
 
             {/* Status du compte et Gestion d'abonnement */}
-            <Card className="mb-6">
+            {isPremiumModeEnabled() && <Card className="mb-6">
               <div className="space-y-6">
                 <div>
                   <h2 className="text-xl font-semibold text-gray-900 mb-4">
@@ -335,7 +336,7 @@ function AccountPageContent() {
                   </div>
                 )}
               </div>
-            </Card>
+            </Card>}
 
             <Card className="mb-6">
               <div className="space-y-6">

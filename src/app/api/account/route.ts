@@ -5,6 +5,7 @@ import { setupDodoPayments } from '@/lib/dodopayments/client'
 import { checkRateLimit, withRateLimitHeaders } from '@/lib/rate-limit'
 import { formatSubscription, type SubscriptionWithPlan } from '@/lib/subscription'
 import { createClient } from '@/lib/supabase/server'
+import { isPremiumModeEnabled } from '@/lib/feature-flags'
 
 /**
  * Endpoint unifié pour toutes les données de la page Account
@@ -65,7 +66,7 @@ export async function GET(request: NextRequest) {
     // Générer le portail pour tous les abonnements avec un customer_id
     // Permet de gérer l'abonnement même si annulé (réactivation, mise à jour paiement, etc.)
     let portalUrl: string | null = null
-    if (subscriptionData?.customer_id) {
+    if (isPremiumModeEnabled() && subscriptionData?.customer_id) {
       try {
         const client = setupDodoPayments()
         const portalSession = await client.customers.customerPortal.create(

@@ -4,6 +4,7 @@ import { DODO_CONFIG } from '@/lib/dodopayments/config'
 import { logger } from '@/lib/logger'
 import { checkRateLimit, withRateLimitHeaders } from '@/lib/rate-limit'
 import { createClient } from '@/lib/supabase/server'
+import { isPremiumModeEnabled } from '@/lib/feature-flags'
 import type { CheckoutRequest, CheckoutResponse } from '@/types/dodopayments'
 
 /**
@@ -22,6 +23,10 @@ const ALLOWED_DEV_ORIGINS = [
  * Création d'une session de checkout Dodo Payments
  */
 export async function POST(request: NextRequest) {
+  if (!isPremiumModeEnabled()) {
+    return NextResponse.json({ error: 'Subscriptions are temporarily unavailable' }, { status: 503 })
+  }
+
   // 🔒 RATE LIMITING : Protection contre le spam de checkouts
   const rateLimitResult = await checkRateLimit(request, 'checkout')
   if (!rateLimitResult.success) {

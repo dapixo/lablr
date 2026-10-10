@@ -31,6 +31,7 @@ import { PREVIEW_DIMENSIONS, PREVIEW_MAX_LABELS_ROLL, PREVIEW_MAX_PAGES } from '
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { useAuth } from '@/hooks/useAuth'
 import { usePrintLimit } from '@/hooks/usePrintLimit'
+import { isPremiumModeEnabled } from '@/lib/feature-flags'
 import { getEnabledFormats, PRINT_CONFIGS } from '@/lib/print/config'
 import { downloadCSV, generateDebugPrintCSS, getPrintCSS } from '@/lib/print-formats'
 import { printAddresses } from '@/lib/print-utils'
@@ -199,7 +200,7 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
 
   // Vérifier si le format sélectionné nécessite Premium
   const isPremiumFormat = useMemo(() => {
-    return userPlan === 'free' && !FREE_FORMATS.includes(selectedFormat.value)
+    return isPremiumModeEnabled() && userPlan === 'free' && !FREE_FORMATS.includes(selectedFormat.value)
   }, [userPlan, selectedFormat.value])
 
   // Fonction pour exécuter l'impression réelle (appelée directement ou après timer)
@@ -219,7 +220,7 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
         resetPrintFlag()
 
         // L'offset est une fonctionnalité premium uniquement
-        const effectiveOffset = userPlan === 'premium' ? labelOffset : 0
+        const effectiveOffset = !isPremiumModeEnabled() || userPlan === 'premium' ? labelOffset : 0
         printAddresses(addressesToPrint, selectedFormat.value, printCSS, effectiveOffset)
 
         // Track analytics business
@@ -257,7 +258,7 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
       printInProgressRef.current = true
 
       // Si utilisateur premium, impression instantanée
-      if (userPlan === 'premium') {
+      if (!isPremiumModeEnabled() || userPlan === 'premium') {
         await executeActualPrint(addressesToPrint)
         return
       }
@@ -405,7 +406,7 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
                   format={format}
                   isSelected={selectedFormat.value === format}
                   onSelect={selectedFormat.updateValue}
-                  isPremium={userPlan === 'free' && !FREE_FORMATS.includes(format)}
+                  isPremium={isPremiumModeEnabled() && userPlan === 'free' && !FREE_FORMATS.includes(format)}
                   t={t}
                 />
               ))}
@@ -413,7 +414,7 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
           </fieldset>
 
           {/* Message incitatif anti-gaspillage pour utilisateurs gratuits */}
-          {PRINT_CONFIGS[selectedFormat.value]?.layout.type === 'grid' && userPlan === 'free' && (
+          {PRINT_CONFIGS[selectedFormat.value]?.layout.type === 'grid' && isPremiumModeEnabled() && userPlan === 'free' && (
             <div className="mt-4 border-2 border-green-200 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 p-4">
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0 mt-0.5">
@@ -440,7 +441,7 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
 
           {/* Sélecteur d'offset pour planches partiellement utilisées - Premium uniquement */}
           {PRINT_CONFIGS[selectedFormat.value]?.layout.type === 'grid' &&
-            userPlan === 'premium' && (
+            (!isPremiumModeEnabled() || userPlan === 'premium') && (
               <LabelOffsetSelector
                 format={selectedFormat.value}
                 offset={labelOffset}
@@ -492,7 +493,7 @@ export function PrintPreview({ addresses, className, t }: PrintPreviewProps) {
               <PrintPreviewSheet
                 addresses={addresses}
                 format={selectedFormat.value}
-                offset={userPlan === 'premium' ? labelOffset : 0}
+                offset={!isPremiumModeEnabled() || userPlan === 'premium' ? labelOffset : 0}
                 t={t}
               />
             </div>

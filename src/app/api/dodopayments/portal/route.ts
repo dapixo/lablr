@@ -3,12 +3,17 @@ import { setupDodoPayments } from '@/lib/dodopayments/client'
 import { logger } from '@/lib/logger'
 import { checkRateLimit, withRateLimitHeaders } from '@/lib/rate-limit'
 import { createClient } from '@/lib/supabase/server'
+import { isPremiumModeEnabled } from '@/lib/feature-flags'
 
 /**
  * Génère un lien vers le portail client Dodo Payments
  * Permet à l'utilisateur de gérer son abonnement, modifier sa carte de paiement, etc.
  */
 export async function POST(request: NextRequest) {
+  if (!isPremiumModeEnabled()) {
+    return NextResponse.json({ error: 'Subscription management is temporarily unavailable' }, { status: 503 })
+  }
+
   // Rate limiting
   const rateLimitResult = await checkRateLimit(request, 'subscription')
   if (!rateLimitResult.success) {

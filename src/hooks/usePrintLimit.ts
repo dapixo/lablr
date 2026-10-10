@@ -1,6 +1,7 @@
 'use client'
 
 import { useAuth } from './useAuth'
+import { isPremiumModeEnabled } from '@/lib/feature-flags'
 
 const FREE_PRINT_LIMIT = 5
 
@@ -17,6 +18,7 @@ export function usePrintLimit() {
    * Vérifie si l'utilisateur peut imprimer le nombre demandé d'étiquettes
    */
   const canPrintAll = (requestedCount: number): boolean => {
+    if (!isPremiumModeEnabled()) return true
     if (userPlan === 'premium') return true
     return requestedCount <= FREE_PRINT_LIMIT
   }
@@ -25,13 +27,14 @@ export function usePrintLimit() {
    * Retourne le nombre maximum d'étiquettes imprimables
    */
   const getMaxPrintable = (requestedCount: number): number => {
+    if (!isPremiumModeEnabled()) return requestedCount
     if (userPlan === 'premium') return requestedCount
     return Math.min(requestedCount, FREE_PRINT_LIMIT)
   }
 
   return {
     freePrintLimit: FREE_PRINT_LIMIT,
-    isPremium: userPlan === 'premium',
+    isPremium: !isPremiumModeEnabled() || userPlan === 'premium',
     canPrintAll,
     getMaxPrintable,
   }
